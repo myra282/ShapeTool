@@ -1,6 +1,7 @@
 package GraphicLibrary;
 
 import Shape.IShape;
+import Shape.Point;
 
 public interface IShapeUI {
 	

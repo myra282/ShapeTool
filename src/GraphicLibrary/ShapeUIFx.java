@@ -7,6 +7,7 @@ import javafx.scene.shape.Rectangle;
 
 import Shape.RegularPolygon;
 import Shape.IShape;
+import Shape.Point;
 import Shape.Rect;
 import Shape.ShapeComposite;
 
@@ -37,7 +38,10 @@ public class ShapeUIFx implements IShapeUI {
 	}
 	
 	public ShapeUIFx(ShapeComposite s) {
-		
+		for (Iterator<IShape> i = observers.iterator(); i.hasNext();) {
+		    IShape item = i.next();
+		    
+		}
 	}
 
 	@Override

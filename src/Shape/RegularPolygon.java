@@ -1,7 +1,5 @@
 package Shape;
 
-import GraphicLibrary.Point;
-
 public class RegularPolygon extends AbstractShape {
 	
 	private int nbEdges;

@@ -1,7 +1,5 @@
 package Shape;
 
-import GraphicLibrary.Point;
-
 public class Rect extends AbstractShape {
 	
 	private double width;

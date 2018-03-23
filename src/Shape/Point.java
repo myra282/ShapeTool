@@ -1,4 +1,4 @@
-package GraphicLibrary;
+package Shape;
 
 public class Point {
 	

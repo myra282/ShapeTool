@@ -1,7 +1,6 @@
 package Shape;
 
 import GraphicLibrary.Color;
-import GraphicLibrary.Point;
 
 public abstract class AbstractShape implements IShape {
 	
@@ -63,6 +62,10 @@ public abstract class AbstractShape implements IShape {
 
 	public Point getRotationCenter() {
 		return rotationCenter;
+	}
+	
+	public void setRotationCenter(Point p) {
+		this.rotationCenter = p;
 	}
 
 }
