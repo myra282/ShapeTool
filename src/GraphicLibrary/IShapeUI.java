@@ -1,18 +1,13 @@
 package GraphicLibrary;
 
 import Shape.IShape;
-import Shape.Point;
 
 public interface IShapeUI {
 	
-	public void move(Point p);
+	public void draw(IShape s);
 	
-	public void rotate(double angle);
+	public void addTool(IShape s);
 	
-	public void notifyObservers();
-	
-	public void addObserver(IShape o);
-	
-	public void rmObserver(IShape o);
+	public void begin();
 
 }

@@ -1,13 +1,13 @@
 package GraphicLibrary;
 
-public class Color {
+public class Dye {
 	
 	private int r;
 	private int g;
 	private int b;
 	private int alpha;
 	
-	public Color(int r, int g, int b, int alpha) {
+	public Dye(int r, int g, int b, int alpha) {
 		super();
 		this.r = r;
 		this.g = g;
@@ -15,7 +15,7 @@ public class Color {
 		this.alpha = alpha;
 	}
 
-	public Color(int r, int g, int b) {
+	public Dye(int r, int g, int b) {
 		super();
 		this.r = r;
 		this.g = g;

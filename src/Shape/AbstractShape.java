@@ -1,6 +1,6 @@
 package Shape;
 
-import GraphicLibrary.Color;
+import GraphicLibrary.Dye;
 
 public abstract class AbstractShape implements IShape {
 	
@@ -8,14 +8,16 @@ public abstract class AbstractShape implements IShape {
 	private double rotation;
 	private Point rotationCenter;
 	//private int translation
-	private Color color;
+	private Dye color;
 
 	public AbstractShape() {
 	}
 
 	public AbstractShape(Point position) {
 		this.position = position;
-		this.color = new Color(0, 0, 0);
+		this.rotation = 0;
+		this.rotationCenter = new Point(0, 0);
+		this.color = new Dye(0, 0, 0);
 	}
 
 	@Override
@@ -52,11 +54,11 @@ public abstract class AbstractShape implements IShape {
 		this.rotation = rotation;
 	}
 
-	public Color getColor() {
+	public Dye getColor() {
 		return color;
 	}
 
-	public void setColor(Color color) {
+	public void setColor(Dye color) {
 		this.color = color;
 	}
 

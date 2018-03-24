@@ -1,6 +1,6 @@
 package Shape;
 
-import GraphicLibrary.Color;
+import GraphicLibrary.Dye;
 
 public interface IShape extends Cloneable {
 	
@@ -10,13 +10,17 @@ public interface IShape extends Cloneable {
 	
 	public void setPosition(Point p);
 	
+	public double getWidth();
+	
+	public double getHeight();
+	
 	public double getRotation();	
 	
 	public void setRotation(double angle);
 	
-	public Color getColor();
+	public Dye getColor();
 
-	public void setColor(Color color);
+	public void setColor(Dye color);
 
 	public void setRotationCenter(Point p);
 	
