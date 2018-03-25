@@ -5,10 +5,14 @@ import java.util.Vector;
 
 public class ShapeComposite extends AbstractShape {
 	
+	private double width;
+	private double height;
 	private Vector<IShape> shapes;
 
 	public ShapeComposite() {
 		shapes = new Vector<IShape>();
+		width = 0;
+		height = 0;
 	}
 	
 	public void add(IShape s) {
@@ -38,6 +42,9 @@ public class ShapeComposite extends AbstractShape {
 		}
 		this.setPosition(new Point(x,y));
 		
+		width = this.computeWidth();
+		height = this.computeHeight();
+		
 		int size = shapes.size();
 		double xres = 0;
 		double yres = 0;
@@ -60,17 +67,51 @@ public class ShapeComposite extends AbstractShape {
 	public void attributeEditorCreate() {
 		
 	}
+	
+	private double computeWidth() {
+		double minx = shapes.get(0).getPosition().getX();
+		double maxx = 0;
+		double x,w;
+		for (Iterator<IShape> i = shapes.iterator(); i.hasNext();) {
+		    IShape item = i.next();
+		    x = item.getPosition().getX();
+		    w = x + item.getWidth();
+		    if (x < minx) {
+		    	minx = x;
+		    }
+		    if (w > maxx) {
+		    	maxx = w;
+		    }
+		}
+		return (maxx - minx);
+	}
+	
+	private double computeHeight() {
+		double miny = shapes.get(0).getPosition().getY();
+		double maxy = 0;
+		double y,h;
+		for (Iterator<IShape> i = shapes.iterator(); i.hasNext();) {
+		    IShape item = i.next();
+		    y = item.getPosition().getY();
+		    h = y + item.getHeight();
+		    if (y < miny) {
+		    	miny = y;
+		    }
+		    if (h > maxy) {
+		    	maxy = h;
+		    }
+		}
+		return (maxy - miny);
+	}
 
 	@Override
 	public double getWidth() {
-		// TODO Auto-generated method stub
-		return 0;
+		return width;
 	}
 
 	@Override
 	public double getHeight() {
-		// TODO Auto-generated method stub
-		return 0;
+		return height;
 	}
 
 }

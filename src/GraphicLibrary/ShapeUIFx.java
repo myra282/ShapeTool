@@ -3,6 +3,7 @@ package GraphicLibrary;
 import javafx.scene.shape.Shape;
 import javafx.stage.Stage;
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
@@ -10,6 +11,9 @@ import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.Separator;
 import javafx.scene.control.ToolBar;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.MouseDragEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -62,7 +66,6 @@ public class ShapeUIFx extends Application implements IShapeUI {
 				throw new UnsupportedOperationException(getClass()+" is a singleton but constructor was called multiple times !");
 			}
 			instance = this;
-			System.out.println("meh");
 		}
 	}
 	
@@ -84,6 +87,12 @@ public class ShapeUIFx extends Application implements IShapeUI {
 		shape.setTranslateX(p.getPosition().getX());
 		shape.setTranslateY(p.getPosition().getY());
 		pane.getChildren().add(shape);
+		shape.setOnMouseDragged(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				shape.setFill(Color.rgb(0, 200, 0));
+			}
+		});
 	}
 	
 	private void draw(Rect r, Pane pane) {
