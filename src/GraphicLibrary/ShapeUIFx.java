@@ -67,6 +67,34 @@ public class ShapeUIFx extends Application implements IShapeUI {
 				throw new UnsupportedOperationException(getClass()+" is a singleton but constructor was called multiple times !");
 			}
 			else {
+				borderPane = new BorderPane();
+				board = new StackPane();
+				toolbar = new ScrollPane();
+				toolbar.setContent(new StackPane());
+				toolbar.setPannable(true);
+				scene = new Scene(borderPane);
+				menu = new ToolBar();
+				btnSave = new Button("Save");
+				ImageView imSave = new ImageView(ShapeUIFx.class.getResource("/"+"save.png").toString());
+				imSave.setFitWidth(20);
+				imSave.setPreserveRatio(true);
+				btnSave.setGraphic(imSave);
+				btnLoad = new Button("Load");
+				ImageView imLoad = new ImageView(ShapeUIFx.class.getResource("/"+"load.png").toString());
+				imLoad.setFitWidth(20);
+				imLoad.setPreserveRatio(true);
+				btnLoad.setGraphic(imLoad);
+				btnUndo = new Button("Undo");
+				ImageView imUndo = new ImageView(ShapeUIFx.class.getResource("/"+"undo.png").toString());
+				imUndo.setFitWidth(20);
+				imUndo.setPreserveRatio(true);
+				btnUndo.setGraphic(imUndo);
+				btnRedo = new Button("Redo");
+				ImageView imRedo = new ImageView(ShapeUIFx.class.getResource("/"+"redo.png").toString());
+				imRedo.setFitWidth(20);
+				imRedo.setPreserveRatio(true);
+				btnRedo.setGraphic(imRedo);
+				
 				instance = this;
 			}
 		}
@@ -137,6 +165,7 @@ public class ShapeUIFx extends Application implements IShapeUI {
 		else if (s instanceof ShapeComposite) {
 			draw((ShapeComposite) s,(StackPane) toolbar.getContent());
 		}
+		//pStage.setScene(scene);
 	}
 	
 	/*double w = shape.getLayoutBounds().getWidth();
@@ -146,7 +175,7 @@ public class ShapeUIFx extends Application implements IShapeUI {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		pStage = primaryStage;
-		borderPane = new BorderPane();
+		/*borderPane = new BorderPane();
 		board = new StackPane();
 		toolbar = new ScrollPane();
 		toolbar.setContent(new StackPane());
@@ -172,7 +201,7 @@ public class ShapeUIFx extends Application implements IShapeUI {
 		ImageView imRedo = new ImageView(ShapeUIFx.class.getResource("/"+"redo.png").toString());
 		imRedo.setFitWidth(20);
 		imRedo.setPreserveRatio(true);
-		btnRedo.setGraphic(imRedo);
+		btnRedo.setGraphic(imRedo);*/
 		
 		/*Rect rect = new Rect(new Point(0, 0), 30, 20);
 		rect.setColor(new Dye(200,30,30));
@@ -202,6 +231,10 @@ public class ShapeUIFx extends Application implements IShapeUI {
 		primaryStage.show();
 	}
 	
+	public Stage getpStage() {
+		return pStage;
+	}
+
 	@Override
 	public void begin() {
 		//ShapeUIFx.launch();
