@@ -44,8 +44,9 @@ public class ShapeUIFx extends Application implements IShapeUI {
 	private Scene scene;
 	private ToolBar menu;
 	private Button btnSave, btnLoad, btnUndo, btnRedo;
+	private Stage pStage;
 	
-	private static ShapeUIFx instance; // = new ShapeUIFx();
+	private static ShapeUIFx instance = null;
 	
 	/*private ShapeUIFx() {
 		borderPane = new BorderPane();
@@ -60,12 +61,14 @@ public class ShapeUIFx extends Application implements IShapeUI {
 		board.setPrefSize(250, 200);
 	}*/
 	
-	public ShapeUIFx() {
+	public ShapeUIFx() throws Exception {
 		synchronized(ShapeUIFx.class) {
 			if (instance != null) {
 				throw new UnsupportedOperationException(getClass()+" is a singleton but constructor was called multiple times !");
 			}
-			instance = this;
+			else {
+				instance = this;
+			}
 		}
 	}
 	
@@ -142,6 +145,7 @@ public class ShapeUIFx extends Application implements IShapeUI {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
+		pStage = primaryStage;
 		borderPane = new BorderPane();
 		board = new StackPane();
 		toolbar = new ScrollPane();
@@ -170,12 +174,12 @@ public class ShapeUIFx extends Application implements IShapeUI {
 		imRedo.setPreserveRatio(true);
 		btnRedo.setGraphic(imRedo);
 		
-		Rect rect = new Rect(new Point(0, 0), 30, 20);
+		/*Rect rect = new Rect(new Point(0, 0), 30, 20);
 		rect.setColor(new Dye(200,30,30));
 		RegPoly poly = new RegPoly(new Point(0, 30), 5, 20);
 		poly.setColor(new Dye(30,30,200));
 		addTool(rect);
-		addTool(poly);
+		addTool(poly);*/
 		
 		HBox statusbar = new HBox();
 		board.setStyle("-fx-border-color: black;");
