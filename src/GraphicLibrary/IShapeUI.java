@@ -8,6 +8,8 @@ public interface IShapeUI {
 	
 	public void addTool(IShape s);
 	
+	public void clear();
+	
 	public void begin();
 
 }

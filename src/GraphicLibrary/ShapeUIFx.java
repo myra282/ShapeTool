@@ -11,8 +11,6 @@ import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.Separator;
 import javafx.scene.control.ToolBar;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -21,14 +19,10 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
-
 import Shape.RegPoly;
 import Shape.ShapeComposite;
-
 import java.util.Iterator;
-
 import Shape.IShape;
-import Shape.Point;
 import Shape.Rect;
 
 public class ShapeUIFx extends Application implements IShapeUI {
@@ -47,19 +41,6 @@ public class ShapeUIFx extends Application implements IShapeUI {
 	private Stage pStage;
 	
 	private static ShapeUIFx instance = null;
-	
-	/*private ShapeUIFx() {
-		borderPane = new BorderPane();
-		stage = new Stage();
-		board = new StackPane();
-		scene = new Scene(board);
-		ToolBar menu = new ToolBar();
-		HBox statusbar = new HBox();
-		borderPane.setTop(menu);
-		borderPane.setCenter(board);
-		borderPane.setBottom(statusbar);
-		board.setPrefSize(250, 200);
-	}*/
 	
 	public ShapeUIFx() throws Exception {
 		synchronized(ShapeUIFx.class) {
@@ -165,50 +146,16 @@ public class ShapeUIFx extends Application implements IShapeUI {
 		else if (s instanceof ShapeComposite) {
 			draw((ShapeComposite) s,(StackPane) toolbar.getContent());
 		}
-		//pStage.setScene(scene);
 	}
 	
-	/*double w = shape.getLayoutBounds().getWidth();
-	double h = shape.getLayoutBounds().getHeight();
-	double ratio = w / h;*/
+	@Override
+	public void clear() {
+		board.getChildren().clear();
+	}
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		pStage = primaryStage;
-		/*borderPane = new BorderPane();
-		board = new StackPane();
-		toolbar = new ScrollPane();
-		toolbar.setContent(new StackPane());
-		toolbar.setPannable(true);
-		scene = new Scene(borderPane);
-		menu = new ToolBar();
-		btnSave = new Button("Save");
-		ImageView imSave = new ImageView(ShapeUIFx.class.getResource("/"+"save.png").toString());
-		imSave.setFitWidth(20);
-		imSave.setPreserveRatio(true);
-		btnSave.setGraphic(imSave);
-		btnLoad = new Button("Load");
-		ImageView imLoad = new ImageView(ShapeUIFx.class.getResource("/"+"load.png").toString());
-		imLoad.setFitWidth(20);
-		imLoad.setPreserveRatio(true);
-		btnLoad.setGraphic(imLoad);
-		btnUndo = new Button("Undo");
-		ImageView imUndo = new ImageView(ShapeUIFx.class.getResource("/"+"undo.png").toString());
-		imUndo.setFitWidth(20);
-		imUndo.setPreserveRatio(true);
-		btnUndo.setGraphic(imUndo);
-		btnRedo = new Button("Redo");
-		ImageView imRedo = new ImageView(ShapeUIFx.class.getResource("/"+"redo.png").toString());
-		imRedo.setFitWidth(20);
-		imRedo.setPreserveRatio(true);
-		btnRedo.setGraphic(imRedo);*/
-		
-		/*Rect rect = new Rect(new Point(0, 0), 30, 20);
-		rect.setColor(new Dye(200,30,30));
-		RegPoly poly = new RegPoly(new Point(0, 30), 5, 20);
-		poly.setColor(new Dye(30,30,200));
-		addTool(rect);
-		addTool(poly);*/
 		
 		HBox statusbar = new HBox();
 		board.setStyle("-fx-border-color: black;");
@@ -237,9 +184,7 @@ public class ShapeUIFx extends Application implements IShapeUI {
 
 	@Override
 	public void begin() {
-		//ShapeUIFx.launch();
 		Application.launch(ShapeUIFx.class);
-		//launch();
 	}
 
 }
