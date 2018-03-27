@@ -5,10 +5,9 @@ public class Dye {
 	private int r;
 	private int g;
 	private int b;
-	private int alpha;
+	private double alpha;
 	
-	public Dye(int r, int g, int b, int alpha) {
-		super();
+	public Dye(int r, int g, int b, double alpha) {
 		this.r = r;
 		this.g = g;
 		this.b = b;
@@ -16,7 +15,6 @@ public class Dye {
 	}
 
 	public Dye(int r, int g, int b) {
-		super();
 		this.r = r;
 		this.g = g;
 		this.b = b;
@@ -47,11 +45,11 @@ public class Dye {
 		this.b = b;
 	}
 
-	public int getAlpha() {
+	public double getAlpha() {
 		return alpha;
 	}
 
-	public void setAlpha(int alpha) {
+	public void setAlpha(double alpha) {
 		this.alpha = alpha;
 	}
 
