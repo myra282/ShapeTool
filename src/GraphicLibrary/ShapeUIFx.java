@@ -172,6 +172,23 @@ public class ShapeUIFx extends Application implements IShapeUI {
 		}
 	}
 	
+	private boolean inBoard(double x, double y) {
+		Bounds b = board.localToScene(board.getBoundsInLocal());
+		if ((x > b.getMinX() && x < b.getMinX() + board.getWidth())
+		&& (y > b.getMinY() && y < b.getMinY() + board.getHeight())) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	
+	private Point pointToBoard(double x, double y) {
+		Bounds b = board.localToScene(board.getBoundsInLocal());
+		Point p = new Point(b.getMinX() + x, b.getMinY() + y);
+		return p;
+	}
+	
 	private void dragNDrop(RegPoly p, Pane pane) {
 		Shape s = draw(p,pane);
 		Color c = (Color) s.getFill();
@@ -203,15 +220,11 @@ public class ShapeUIFx extends Application implements IShapeUI {
 				s.setOnMouseReleased(new EventHandler<MouseEvent>() {
 					@Override
 					public void handle(MouseEvent dropEvent) {
-						if (borderPane.getCenter().contains(dropEvent.getX(), dropEvent.getY())) {
-							System.out.println("Oui");
+						if (inBoard(dropEvent.getSceneX(), dropEvent.getSceneY())) {
+							Point p = pointToBoard(dropEvent.getSceneX(), dropEvent.getSceneY());
+							r.setPosition(p);
+							draw(r);
 						}
-						else {
-							System.out.println("Non");
-						}
-						r.getPosition().setX(dropEvent.getX());
-						r.getPosition().setY(dropEvent.getY());
-						draw(r);
 						s.setFill(c);
 					}
 				});
