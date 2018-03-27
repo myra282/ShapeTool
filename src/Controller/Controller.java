@@ -46,7 +46,9 @@ public class Controller {
 		poly.setColor(new Dye(30,30,200));
 		addTool(rect);
 		addTool(poly);
-		dragNDrop(poly.clone());
+		dragNDrop(poly);
+		dragNDrop(rect);
+
 	}
 	
 	public void draw(IShape s) {

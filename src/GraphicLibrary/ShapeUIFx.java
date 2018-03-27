@@ -95,6 +95,7 @@ public class ShapeUIFx extends Application implements IShapeUI {
 					public void handle(DragEvent event) {
 						((Shape) event.getGestureSource()).setFill(Color.rgb(0, 200, 0));
 						event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+
 					}				
 				});
 				
@@ -126,12 +127,13 @@ public class ShapeUIFx extends Application implements IShapeUI {
 		
 	}
 	
-	private void draw(Rect r, Pane pane) {
+	private Shape draw(Rect r, Pane pane) {
 		Shape shape = new Rectangle(r.getPosition().getX(), r.getPosition().getY(), r.getWidth(), r.getHeight());
 		shape.setFill(Color.rgb(r.getColor().getR(), r.getColor().getG(), r.getColor().getB()));
 		shape.setTranslateX(r.getPosition().getX());
 		shape.setTranslateY(r.getPosition().getY());
 		pane.getChildren().add(shape);
+		return shape;
 	}
 	
 	private void draw(ShapeComposite s, Pane pane) {
@@ -145,19 +147,11 @@ public class ShapeUIFx extends Application implements IShapeUI {
 	public void draw(IShape s) {
 		Shape sh;
 		if (s instanceof Rect) {
-			draw((Rect) s,board);
+			sh = draw((Rect) s,board);
 		}
 		else if (s instanceof RegPoly) {
 			sh = draw((RegPoly) s,board);
-			sh.setOnMouseReleased(new EventHandler<MouseEvent>() {
-				@Override
-				public void handle(MouseEvent event) {
-					sh.setTranslateX(event.getX());
-					sh.setTranslateY(event.getY());
-					event.consume();
-					//notify
-				}
-			});
+
 		}
 		else if (s instanceof ShapeComposite) {
 			draw((ShapeComposite) s,board);
@@ -181,9 +175,39 @@ public class ShapeUIFx extends Application implements IShapeUI {
 		Shape s = draw(p,pane);
 		s.setOnMouseDragged(new EventHandler<MouseEvent>() {
 			@Override
-			public void handle(MouseEvent event) {
+			public void handle(MouseEvent dragEvent) {
 				s.setFill(Color.rgb(0, 200, 0));
-				draw(p);
+				s.setOnMouseReleased(new EventHandler<MouseEvent>() {
+
+					@Override
+					public void handle(MouseEvent dropEvent) {
+						p.getPosition().setX(dropEvent.getSceneX());
+						p.getPosition().setY(dropEvent.getSceneY());
+						draw(p);
+						s.setFill(Color.rgb(30,30,200));
+					}
+				});
+				//notify
+			}
+		});
+	}
+	
+	private void dragNDrop(Rect r, Pane pane) {
+		Shape s = draw((Rect) r, pane);
+		s.setOnMouseDragged(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent dragEvent) {
+				s.setFill(Color.rgb(0, 200, 0));
+				s.setOnMouseReleased(new EventHandler<MouseEvent>() {
+
+					@Override
+					public void handle(MouseEvent dropEvent) {
+						r.getPosition().setX(dropEvent.getX());
+						r.getPosition().setY(dropEvent.getY());
+						draw(r);
+						s.setFill(Color.rgb(30,30,200));
+					}
+				});
 				//notify
 			}
 		});
@@ -192,6 +216,9 @@ public class ShapeUIFx extends Application implements IShapeUI {
 	public void dragNDrop(IShape s) {		
 		if(s instanceof RegPoly) {
 			dragNDrop((RegPoly) s,(StackPane) toolbar.getContent());
+		}
+		else if (s instanceof Rect) {
+			dragNDrop((Rect) s, (StackPane) toolbar.getContent());
 		}
 	}
 	
