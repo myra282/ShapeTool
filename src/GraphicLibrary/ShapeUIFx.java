@@ -4,6 +4,7 @@ import javafx.scene.shape.Shape;
 import javafx.stage.Stage;
 import javafx.application.Application;
 import javafx.event.EventHandler;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
@@ -36,8 +37,8 @@ public class ShapeUIFx extends Application implements IShapeUI {
 	private StackPane board;
 	private ScrollPane toolbar;
 	private Scene scene;
-	private ToolBar menu;
-	private Button btnSave, btnLoad, btnUndo, btnRedo;
+	private ToolBar menu,trash;
+	private Button btnSave, btnLoad, btnUndo, btnRedo,btnTrash;
 	private Stage pStage;
 	
 	private static ShapeUIFx instance = null;
@@ -55,26 +56,37 @@ public class ShapeUIFx extends Application implements IShapeUI {
 				toolbar.setPannable(true);
 				scene = new Scene(borderPane);
 				menu = new ToolBar();
+				trash = new ToolBar(); // Pour la poubelle en bas
+				
 				btnSave = new Button("Save");
 				ImageView imSave = new ImageView(ShapeUIFx.class.getResource("/"+"save.png").toString());
 				imSave.setFitWidth(20);
 				imSave.setPreserveRatio(true);
 				btnSave.setGraphic(imSave);
+				
 				btnLoad = new Button("Load");
 				ImageView imLoad = new ImageView(ShapeUIFx.class.getResource("/"+"load.png").toString());
 				imLoad.setFitWidth(20);
 				imLoad.setPreserveRatio(true);
 				btnLoad.setGraphic(imLoad);
+				
 				btnUndo = new Button("Undo");
 				ImageView imUndo = new ImageView(ShapeUIFx.class.getResource("/"+"undo.png").toString());
 				imUndo.setFitWidth(20);
 				imUndo.setPreserveRatio(true);
 				btnUndo.setGraphic(imUndo);
+				
 				btnRedo = new Button("Redo");
 				ImageView imRedo = new ImageView(ShapeUIFx.class.getResource("/"+"redo.png").toString());
 				imRedo.setFitWidth(20);
 				imRedo.setPreserveRatio(true);
 				btnRedo.setGraphic(imRedo);
+				
+				btnTrash = new Button("");
+				ImageView imTrash = new ImageView(ShapeUIFx.class.getResource("/"+"trash.png").toString());
+				imTrash.setFitWidth(20);
+				imTrash.setPreserveRatio(true);
+				btnTrash.setGraphic(imTrash);
 				
 				instance = this;
 			}
@@ -85,7 +97,7 @@ public class ShapeUIFx extends Application implements IShapeUI {
 		return instance;
 	}
 
-	private void draw(RegPoly p, Pane pane) {
+	private Shape draw(RegPoly p, Pane pane) {
 		double points[] = new double[p.getNbEdges() * 2];
 		double angle = 0;
 		double inc = 360 / p.getNbEdges();
@@ -99,12 +111,9 @@ public class ShapeUIFx extends Application implements IShapeUI {
 		shape.setTranslateX(p.getPosition().getX());
 		shape.setTranslateY(p.getPosition().getY());
 		pane.getChildren().add(shape);
-		shape.setOnMouseDragged(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent event) {
-				shape.setFill(Color.rgb(0, 200, 0));
-			}
-		});
+		
+		return shape;
+		
 	}
 	
 	private void draw(Rect r, Pane pane) {
@@ -148,6 +157,25 @@ public class ShapeUIFx extends Application implements IShapeUI {
 		}
 	}
 	
+	public void dragNDrop(RegPoly p, Pane pane) {
+		Shape s = draw(p,pane);
+		s.setOnMouseDragged(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				s.setFill(Color.rgb(0, 200, 0));
+				draw(p);
+				//notify
+			}
+		});
+	}
+	
+	public void dragNDrop(IShape s) {		
+		if(s instanceof RegPoly) {
+			dragNDrop((RegPoly) s,(StackPane) toolbar.getContent());
+		}
+	}
+
+	
 	@Override
 	public void clear() {
 		board.getChildren().clear();
@@ -169,8 +197,12 @@ public class ShapeUIFx extends Application implements IShapeUI {
 		borderPane.setLeft(toolbar);
 		borderPane.setCenter(board);
 		borderPane.setBottom(statusbar);
+		borderPane.setBottom(trash);
 		board.setPrefSize(BOARD_WIDTH, BOARD_HEIGHT);
+		trash.getItems().add(btnTrash);
+		trash.setMinWidth(BAR_MIN_WIDTH);		
 		menu.getItems().addAll(new Separator(), btnSave, btnLoad, new Separator(), btnUndo, btnRedo, new Separator());
+		
 		// set app
 		primaryStage.setTitle("ShapeOfView");
 		primaryStage.setScene(scene);
@@ -186,5 +218,11 @@ public class ShapeUIFx extends Application implements IShapeUI {
 	public void begin() {
 		Application.launch(ShapeUIFx.class);
 	}
+
+		
+
+
+
+	
 
 }

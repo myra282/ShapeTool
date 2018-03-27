@@ -10,6 +10,10 @@ import Shape.Point;
 import Shape.Rect;
 import Shape.RegPoly;
 import javafx.application.Application;
+import javafx.event.EventHandler;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Shape;
 
 public class Controller {
 	
@@ -42,11 +46,16 @@ public class Controller {
 		poly.setColor(new Dye(30,30,200));
 		addTool(rect);
 		addTool(poly);
+		dragNDrop(poly);
 	}
 	
 	public void draw(IShape s) {
 		observers.add(s);
 		view.draw(s);
+	}
+	
+	public void dragNDrop(IShape s) {
+		view.dragNDrop(s);
 	}
 	
 	public void erase(IShape s) {

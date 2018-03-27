@@ -1,5 +1,8 @@
 package Shape;
 
+import javafx.event.EventHandler;
+import javafx.scene.input.MouseEvent;
+
 public class RegPoly extends AbstractShape {
 	
 	private int nbEdges;
