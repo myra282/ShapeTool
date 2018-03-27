@@ -4,6 +4,7 @@ import javafx.scene.shape.Shape;
 import javafx.stage.Stage;
 import javafx.application.Application;
 import javafx.event.EventHandler;
+import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -40,8 +41,8 @@ public class ShapeUIFx extends Application implements IShapeUI {
 	private StackPane board;
 	private ScrollPane toolbar;
 	private Scene scene;
-	private ToolBar menu,trash;
-	private Button btnSave, btnLoad, btnUndo, btnRedo,btnTrash;
+	private ToolBar menu, trash;
+	private Button btnSave, btnLoad, btnUndo, btnRedo, btnTrash;
 	private Stage pStage;
 	
 	private static ShapeUIFx instance = null;
@@ -173,18 +174,18 @@ public class ShapeUIFx extends Application implements IShapeUI {
 	
 	private void dragNDrop(RegPoly p, Pane pane) {
 		Shape s = draw(p,pane);
+		Color c = (Color) s.getFill();
 		s.setOnMouseDragged(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent dragEvent) {
 				s.setFill(Color.rgb(0, 200, 0));
 				s.setOnMouseReleased(new EventHandler<MouseEvent>() {
-
 					@Override
 					public void handle(MouseEvent dropEvent) {
 						p.getPosition().setX(dropEvent.getSceneX());
 						p.getPosition().setY(dropEvent.getSceneY());
 						draw(p);
-						s.setFill(Color.rgb(30,30,200));
+						s.setFill(c);
 					}
 				});
 				//notify
@@ -194,18 +195,24 @@ public class ShapeUIFx extends Application implements IShapeUI {
 	
 	private void dragNDrop(Rect r, Pane pane) {
 		Shape s = draw((Rect) r, pane);
+		Color c = (Color) s.getFill();
 		s.setOnMouseDragged(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent dragEvent) {
 				s.setFill(Color.rgb(0, 200, 0));
 				s.setOnMouseReleased(new EventHandler<MouseEvent>() {
-
 					@Override
 					public void handle(MouseEvent dropEvent) {
+						if (borderPane.getCenter().contains(dropEvent.getX(), dropEvent.getY())) {
+							System.out.println("Oui");
+						}
+						else {
+							System.out.println("Non");
+						}
 						r.getPosition().setX(dropEvent.getX());
 						r.getPosition().setY(dropEvent.getY());
 						draw(r);
-						s.setFill(Color.rgb(30,30,200));
+						s.setFill(c);
 					}
 				});
 				//notify
@@ -275,7 +282,7 @@ public class ShapeUIFx extends Application implements IShapeUI {
 		board.setStyle("-fx-border-color: black;");
 		toolbar.setStyle("-fx-border-color: black;");
 		toolbar.setMaxWidth(BAR_MAX_WIDTH);
-		toolbar.setMinWidth(BAR_MIN_WIDTH);
+		toolbar.setMinWidth(BAR_MAX_WIDTH);
 		toolbar.setHbarPolicy(ScrollBarPolicy.ALWAYS);
 		toolbar.setVbarPolicy(ScrollBarPolicy.ALWAYS);
 		toolbar.setFitToWidth(true);
@@ -285,14 +292,16 @@ public class ShapeUIFx extends Application implements IShapeUI {
 		borderPane.setBottom(statusbar);
 		borderPane.setBottom(trash);
 		board.setPrefSize(BOARD_WIDTH, BOARD_HEIGHT);
+		board.resize(BOARD_WIDTH, BOARD_HEIGHT);
 		trash.getItems().add(btnTrash);
-		trash.setMinWidth(BAR_MIN_WIDTH);		
+		trash.setMinWidth(BAR_MIN_WIDTH);
+		trash.setMaxWidth(BAR_MIN_WIDTH);
 		menu.getItems().addAll(new Separator(), btnSave, btnLoad, new Separator(), btnUndo, btnRedo, new Separator());
 		
 		// set app
 		primaryStage.setTitle("ShapeOfView");
 		primaryStage.setScene(scene);
-		primaryStage.setResizable(true);
+		primaryStage.setResizable(false);
 		primaryStage.show();
 	}
 	

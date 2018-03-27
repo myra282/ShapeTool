@@ -48,7 +48,6 @@ public class Controller {
 		addTool(poly);
 		dragNDrop(poly);
 		dragNDrop(rect);
-
 	}
 	
 	public void draw(IShape s) {
@@ -58,6 +57,7 @@ public class Controller {
 	
 	public void dragNDrop(IShape s) {
 		view.dragNDrop(s);
+		redraw();
 	}
 	
 	public void erase(IShape s) {
