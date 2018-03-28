@@ -5,6 +5,7 @@ import javafx.stage.Stage;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -26,6 +27,8 @@ import javafx.scene.shape.Rectangle;
 import Shape.RegPoly;
 import Shape.ShapeComposite;
 import java.util.Iterator;
+
+import Controller.Controller;
 import Shape.IShape;
 import Shape.Point;
 import Shape.Rect;
@@ -185,12 +188,13 @@ public class ShapeUIFx extends Application implements IShapeUI {
 	
 	private Point pointToBoard(double x, double y) {
 		Bounds b = board.localToScene(board.getBoundsInLocal());
-		Point p = new Point(b.getMinX() + x, b.getMinY() + y);
+		Point p = new Point(x - b.getMinX(), y - b.getMinY());
+		System.out.println(p.getX()+" , "+p.getY());
 		return p;
 	}
 	
-	private void dragNDrop(RegPoly p, Pane pane) {
-		Shape s = draw(p,pane);
+	private void dragNDrop(RegPoly rp, Pane pane) {
+		Shape s = draw(rp,pane);
 		Color c = (Color) s.getFill();
 		s.setOnMouseDragged(new EventHandler<MouseEvent>() {
 			@Override
@@ -199,9 +203,11 @@ public class ShapeUIFx extends Application implements IShapeUI {
 				s.setOnMouseReleased(new EventHandler<MouseEvent>() {
 					@Override
 					public void handle(MouseEvent dropEvent) {
-						p.getPosition().setX(dropEvent.getSceneX());
-						p.getPosition().setY(dropEvent.getSceneY());
-						draw(p);
+						if (inBoard(dropEvent.getSceneX(), dropEvent.getSceneY())) {
+							Point p = pointToBoard(dropEvent.getSceneX(), dropEvent.getSceneY());
+							Controller.getInstance().dragNDrop(rp, p);
+							
+						}
 						s.setFill(c);
 					}
 				});
@@ -222,8 +228,8 @@ public class ShapeUIFx extends Application implements IShapeUI {
 					public void handle(MouseEvent dropEvent) {
 						if (inBoard(dropEvent.getSceneX(), dropEvent.getSceneY())) {
 							Point p = pointToBoard(dropEvent.getSceneX(), dropEvent.getSceneY());
-							r.setPosition(p);
-							draw(r);
+							Controller.getInstance().dragNDrop(r, p);
+							
 						}
 						s.setFill(c);
 					}
@@ -241,46 +247,6 @@ public class ShapeUIFx extends Application implements IShapeUI {
 			dragNDrop((Rect) s, (StackPane) toolbar.getContent());
 		}
 	}
-	
-	private Shape getShape(IShape s, Pane p) {
-		for (Iterator<Node> i = p.getChildren().iterator(); i.hasNext();) {
-		    Node item = i.next();
-		    Shape sh;
-		    if (item instanceof Shape) {
-		    	sh = (Shape) item;
-		    	Point pos = new Point(sh.getLayoutX(), sh.getLayoutY());
-		    	double w = sh.getLayoutBounds().getWidth();
-		    	double h = sh.getLayoutBounds().getHeight();
-		    	double r = sh.getRotate();
-		    	Color c = (Color) sh.getFill();
-		    	Dye dye = s.getColor();
-		    	Color c2 = Color.rgb(dye.getR(), dye.getG(), dye.getB(), dye.getAlpha());
-		    	if ((s.getPosition() == pos) && (w == s.getWidth()) && (h == s.getHeight()) 
-		    		&& (r == s.getRotation() && (c == c2))) {
-		    	 	return sh;
-		    	}
-		    }
-		}
-		return null;
-	}
-	
-	/*private void dragNMove(RegPoly p, Pane pane) {
-		Shape s = getShape(p, pane);
-		s.setOnMouseDragEntered(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent event) {
-				s.setTranslateX(event.getX());
-				s.setTranslateY(event.getY());
-				//notify
-			}
-		});
-	}
-
-	public void dragNMove(IShape s) {		
-		if(s instanceof RegPoly) {
-			dragNMove((RegPoly) s, board);
-		}
-	}*/
 	
 	@Override
 	public void clear() {
@@ -306,6 +272,7 @@ public class ShapeUIFx extends Application implements IShapeUI {
 		borderPane.setBottom(trash);
 		board.setPrefSize(BOARD_WIDTH, BOARD_HEIGHT);
 		board.resize(BOARD_WIDTH, BOARD_HEIGHT);
+		board.setAlignment(Pos.TOP_LEFT);
 		trash.getItems().add(btnTrash);
 		trash.setMinWidth(BAR_MIN_WIDTH);
 		trash.setMaxWidth(BAR_MIN_WIDTH);

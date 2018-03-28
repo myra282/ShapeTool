@@ -1,6 +1,6 @@
 package Controller;
 
-import java.util.Iterator;
+import java.util.ListIterator;
 import java.util.Vector;
 
 import GraphicLibrary.Dye;
@@ -10,10 +10,6 @@ import Shape.Point;
 import Shape.Rect;
 import Shape.RegPoly;
 import javafx.application.Application;
-import javafx.event.EventHandler;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Shape;
 
 public class Controller {
 	
@@ -21,8 +17,9 @@ public class Controller {
 	private Vector<IShape> tools;
 	
 	private ShapeUIFx view;
+	private static Controller controller = new Controller();
 	
-	public Controller() {
+	private Controller() {
 		observers = new Vector<IShape>();
 		tools = new Vector<IShape>();
 		Thread t1 = new Thread() {
@@ -38,6 +35,10 @@ public class Controller {
         begin();
 	}
 	
+	public static Controller getInstance() {
+		return controller;
+	}
+	
 	public void begin() {
 		view = ShapeUIFx.getInstance();
 		Rect rect = new Rect(new Point(0, 0), 30, 20);
@@ -46,40 +47,44 @@ public class Controller {
 		poly.setColor(new Dye(30,30,200));
 		addTool(rect);
 		addTool(poly);
-		dragNDrop(poly);
-		dragNDrop(rect);
 	}
 	
 	public void draw(IShape s) {
-		observers.add(s);
 		view.draw(s);
 	}
 	
-	public void dragNDrop(IShape s) {
-		view.dragNDrop(s);
+	public void dragNDrop(IShape s, Point p) {
+		IShape s2 = s.clone();
+		s2.setPosition(p);
+		addObserver(s2);
 		redraw();
 	}
 	
 	public void erase(IShape s) {
-		observers.remove(s);
+		rmObserver(s);
 		redraw();
 	}
 	
 	public void addTool(IShape s) {
 		tools.add(s);
 		view.addTool(s);
+		view.dragNDrop(s);
 	}
 	
 	public void redraw() {
 		view.clear();
-		for (Iterator<IShape> i = observers.iterator(); i.hasNext();) {
+		for (ListIterator<IShape> i = iterator(); i.hasNext();) {
 		    IShape item = i.next();
 		    draw(item);
 		}
 	}
 	
+	public ListIterator<IShape> iterator() {
+		return observers.listIterator();
+	}
+	
 	public void notifyObservers() {
-		for (Iterator<IShape> i = observers.iterator(); i.hasNext();) {
+		for (ListIterator<IShape> i = iterator(); i.hasNext();) {
 		    IShape item = i.next();
 		    item.update();
 		}
