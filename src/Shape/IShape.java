@@ -28,6 +28,8 @@ public interface IShape extends Cloneable {
 	
 	public void resize(double ratio);
 	
+	public boolean contained(Point min, Point max);
+	
 	public void update();
 
 }

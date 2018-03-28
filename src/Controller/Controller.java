@@ -9,6 +9,7 @@ import Shape.IShape;
 import Shape.Point;
 import Shape.Rect;
 import Shape.RegPoly;
+import Shape.ShapeComposite;
 import javafx.application.Application;
 
 public class Controller {
@@ -76,6 +77,58 @@ public class Controller {
 		    i.remove();
 		}
 		redraw();
+	}
+	
+	public void group(Point p1, Point p2) {
+		double minx, miny, maxx, maxy;
+		if (p1.getX() < p2.getX()) {
+			minx = p1.getX();
+			maxx = p2.getX();
+		}
+		else {
+			minx = p2.getX();
+			maxx = p1.getX();
+		}
+		if (p1.getY() < p2.getY()) {
+			miny = p1.getY();
+			maxy = p2.getY();
+		}
+		else {
+			miny = p2.getY();
+			maxy = p1.getY();
+		}
+		System.out.println("group from ("+minx+", "+miny+") to ("+maxx+", "+maxy+")");
+		ShapeComposite group = new ShapeComposite();
+		Vector<IShape> toGroup = new Vector<IShape>();
+		for (ListIterator<IShape> i = iterator(); i.hasNext();) {
+		    IShape item = i.next();
+		    Point p = item.getPosition();
+		    //System.out.println("p = "+p);
+		    //System.out.println("p = "+p.getX()+", "+p.getY());
+		    /*if ((p.getX() > minx && p.getY() > miny) 
+		    && (p.getX() + item.getWidth() < maxx && p.getY() + item.getHeight() < maxy)) {*/
+		    if (item.contained(new Point(minx, miny), new Point(maxx, maxy))) {
+		    	toGroup.add(item);
+		    }
+		}
+		if (toGroup.size() > 1) {
+			System.out.println("grouped "+toGroup.size()+" shapes");
+			for (ListIterator<IShape> i = toGroup.listIterator(); i.hasNext();) {
+			    IShape item = i.next();
+			    rmObserver(item);
+			    group.add(item);
+			}
+			addObserver(group);
+		}
+	}
+	
+	public void ungroup(ShapeComposite s) {
+		rmObserver(s);
+		for (ListIterator<IShape> i = s.getShapes().listIterator(); i.hasNext();) {
+		    IShape item = i.next();
+		    addObserver(item);
+		    i.remove();
+		}
 	}
 	
 	public void addTool(IShape s) {

@@ -28,8 +28,8 @@ public class ShapeComposite extends AbstractShape {
 	}
 	
 	private void updateInfos() {
-		double x = 0;
-		double y = 0;
+		double x = shapes.get(0).getPosition().getX();
+		double y = shapes.get(0).getPosition().getY();
 		for (Iterator<IShape> i = shapes.iterator(); i.hasNext();) {
 		    IShape item = i.next();
 		    Point pos = item.getPosition();
