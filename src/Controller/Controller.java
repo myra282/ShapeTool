@@ -60,6 +60,11 @@ public class Controller {
 		redraw();
 	}
 	
+	public void dragNMove(IShape s, Point p) {
+		s.setPosition(p);
+		redraw();
+	}
+	
 	public void erase(IShape s) {
 		rmObserver(s);
 		redraw();

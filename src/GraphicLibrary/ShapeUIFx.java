@@ -27,6 +27,7 @@ import javafx.scene.shape.Rectangle;
 import Shape.RegPoly;
 import Shape.ShapeComposite;
 import java.util.Iterator;
+import java.util.ListIterator;
 
 import Controller.Controller;
 import Shape.IShape;
@@ -150,12 +151,28 @@ public class ShapeUIFx extends Application implements IShapeUI {
 	@Override
 	public void draw(IShape s) {
 		Shape sh;
-		if (s instanceof Rect) {
-			sh = draw((Rect) s,board);
-		}
-		else if (s instanceof RegPoly) {
-			sh = draw((RegPoly) s,board);
-
+		if ((s instanceof Rect) || (s instanceof RegPoly)) {
+			if (s instanceof Rect) {
+				sh = draw((Rect) s,board);
+			}
+			else {
+				sh = draw((RegPoly) s,board);
+			}
+			sh.setOnMouseDragged(new EventHandler<MouseEvent>() {
+				@Override
+				public void handle(MouseEvent dragEvent) {
+					sh.setOnMouseReleased(new EventHandler<MouseEvent>() {
+						@Override
+						public void handle(MouseEvent dropEvent) {
+							if (inBoard(dropEvent.getSceneX(), dropEvent.getSceneY())) {
+								Point p = pointToBoard(dropEvent.getSceneX(), dropEvent.getSceneY());
+								Controller.getInstance().dragNMove(s, p);
+							}
+						}
+					});
+					//notify
+				}
+			});
 		}
 		else if (s instanceof ShapeComposite) {
 			draw((ShapeComposite) s,board);
@@ -189,11 +206,10 @@ public class ShapeUIFx extends Application implements IShapeUI {
 	private Point pointToBoard(double x, double y) {
 		Bounds b = board.localToScene(board.getBoundsInLocal());
 		Point p = new Point(x - b.getMinX(), y - b.getMinY());
-		System.out.println(p.getX()+" , "+p.getY());
 		return p;
 	}
 	
-	private void dragNDrop(RegPoly rp, Pane pane) {
+	/*private void dragNDrop(RegPoly rp, Pane pane) {
 		Shape s = draw(rp,pane);
 		Color c = (Color) s.getFill();
 		s.setOnMouseDragged(new EventHandler<MouseEvent>() {
@@ -206,7 +222,6 @@ public class ShapeUIFx extends Application implements IShapeUI {
 						if (inBoard(dropEvent.getSceneX(), dropEvent.getSceneY())) {
 							Point p = pointToBoard(dropEvent.getSceneX(), dropEvent.getSceneY());
 							Controller.getInstance().dragNDrop(rp, p);
-							
 						}
 						s.setFill(c);
 					}
@@ -229,7 +244,34 @@ public class ShapeUIFx extends Application implements IShapeUI {
 						if (inBoard(dropEvent.getSceneX(), dropEvent.getSceneY())) {
 							Point p = pointToBoard(dropEvent.getSceneX(), dropEvent.getSceneY());
 							Controller.getInstance().dragNDrop(r, p);
-							
+						}
+						s.setFill(c);
+					}
+				});
+				//notify
+			}
+		});
+	}*/
+	
+	private void dragNDrop(IShape sh, Pane pane) {
+		Shape s;
+		if (sh instanceof Rect) {
+			s = draw((Rect) sh, pane);
+		}
+		else {
+			s = draw((RegPoly) sh, pane);
+		}
+		Color c = (Color) s.getFill();
+		s.setOnMouseDragged(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent dragEvent) {
+				s.setFill(Color.rgb(0, 200, 0));
+				s.setOnMouseReleased(new EventHandler<MouseEvent>() {
+					@Override
+					public void handle(MouseEvent dropEvent) {
+						if (inBoard(dropEvent.getSceneX(), dropEvent.getSceneY())) {
+							Point p = pointToBoard(dropEvent.getSceneX(), dropEvent.getSceneY());
+							Controller.getInstance().dragNDrop(sh, p);
 						}
 						s.setFill(c);
 					}
@@ -252,6 +294,24 @@ public class ShapeUIFx extends Application implements IShapeUI {
 	public void clear() {
 		board.getChildren().clear();
 	}
+	
+	private IShape getIShape(Shape sh, Pane p) {
+		for (ListIterator<IShape> i = Controller.getInstance().iterator(); i.hasNext();) {
+		    IShape item = i.next();
+	    	Point pos = pointToBoard(sh.getTranslateX(), sh.getTranslateY());
+	    	double w = sh.getLayoutBounds().getWidth();
+	    	double h = sh.getLayoutBounds().getHeight();
+	    	double r = sh.getRotate();
+	    	Color c = (Color) sh.getFill();
+	    	Dye dye = item.getColor();
+	    	Color c2 = Color.rgb(dye.getR(), dye.getG(), dye.getB(), dye.getAlpha());
+	    	if ((item.getPosition().equals(pos)) && (w == item.getWidth()) && (h == item.getHeight()) 
+	    		&& (r == item.getRotation() && (c.equals(c2)))) {
+	    	 	return item;
+	    	}
+		}
+		return null;
+}
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
