@@ -3,10 +3,10 @@ package GraphicLibrary;
 import javafx.scene.shape.Shape;
 import javafx.stage.Stage;
 import javafx.application.Application;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
@@ -95,13 +95,11 @@ public class ShapeUIFx extends Application implements IShapeUI {
 				imTrash.setFitWidth(20);
 				imTrash.setPreserveRatio(true);
 				btnTrash.setGraphic(imTrash);
-				btnTrash.setOnDragDone(new EventHandler<DragEvent>() {
+				btnTrash.setOnAction(new EventHandler<ActionEvent>() {
 					@Override
-					public void handle(DragEvent event) {
-						((Shape) event.getGestureSource()).setFill(Color.rgb(0, 200, 0));
-						event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
-
-					}				
+					public void handle(ActionEvent event) {
+						Controller.getInstance().eraseAll();
+					}
 				});
 				
 				instance = this;
@@ -111,6 +109,34 @@ public class ShapeUIFx extends Application implements IShapeUI {
 	
 	public static ShapeUIFx getInstance() {
 		return instance;
+	}
+	
+	private boolean inBoard(double x, double y) {
+		Bounds b = board.localToScene(board.getBoundsInLocal());
+		if ((x > b.getMinX() && x < b.getMinX() + board.getWidth())
+		&& (y > b.getMinY() && y < b.getMinY() + board.getHeight())) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	
+	private Point pointToBoard(double x, double y) {
+		Bounds b = board.localToScene(board.getBoundsInLocal());
+		Point p = new Point(x - b.getMinX(), y - b.getMinY());
+		return p;
+	}
+	
+	private boolean inTrash(double x, double y) {
+		Bounds b = btnTrash.localToScene(btnTrash.getBoundsInLocal());
+		if ((x > b.getMinX() && x < b.getMinX() + btnTrash.getWidth())
+		&& (y > b.getMinY() && y < b.getMinY() + btnTrash.getHeight())) {
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 
 	private Shape draw(RegPoly p, Pane pane) {
@@ -164,10 +190,14 @@ public class ShapeUIFx extends Application implements IShapeUI {
 					sh.setOnMouseReleased(new EventHandler<MouseEvent>() {
 						@Override
 						public void handle(MouseEvent dropEvent) {
-							if (inBoard(dropEvent.getSceneX(), dropEvent.getSceneY())) {
+							if (inTrash(dropEvent.getSceneX(), dropEvent.getSceneY())) {
+								Controller.getInstance().erase(s);
+							}
+							else if (inBoard(dropEvent.getSceneX(), dropEvent.getSceneY())) {
 								Point p = pointToBoard(dropEvent.getSceneX(), dropEvent.getSceneY());
 								Controller.getInstance().dragNMove(s, p);
 							}
+							
 						}
 					});
 					//notify
@@ -191,67 +221,6 @@ public class ShapeUIFx extends Application implements IShapeUI {
 			draw((ShapeComposite) s,(StackPane) toolbar.getContent());
 		}
 	}
-	
-	private boolean inBoard(double x, double y) {
-		Bounds b = board.localToScene(board.getBoundsInLocal());
-		if ((x > b.getMinX() && x < b.getMinX() + board.getWidth())
-		&& (y > b.getMinY() && y < b.getMinY() + board.getHeight())) {
-			return true;
-		}
-		else {
-			return false;
-		}
-	}
-	
-	private Point pointToBoard(double x, double y) {
-		Bounds b = board.localToScene(board.getBoundsInLocal());
-		Point p = new Point(x - b.getMinX(), y - b.getMinY());
-		return p;
-	}
-	
-	/*private void dragNDrop(RegPoly rp, Pane pane) {
-		Shape s = draw(rp,pane);
-		Color c = (Color) s.getFill();
-		s.setOnMouseDragged(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent dragEvent) {
-				s.setFill(Color.rgb(0, 200, 0));
-				s.setOnMouseReleased(new EventHandler<MouseEvent>() {
-					@Override
-					public void handle(MouseEvent dropEvent) {
-						if (inBoard(dropEvent.getSceneX(), dropEvent.getSceneY())) {
-							Point p = pointToBoard(dropEvent.getSceneX(), dropEvent.getSceneY());
-							Controller.getInstance().dragNDrop(rp, p);
-						}
-						s.setFill(c);
-					}
-				});
-				//notify
-			}
-		});
-	}
-	
-	private void dragNDrop(Rect r, Pane pane) {
-		Shape s = draw((Rect) r, pane);
-		Color c = (Color) s.getFill();
-		s.setOnMouseDragged(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent dragEvent) {
-				s.setFill(Color.rgb(0, 200, 0));
-				s.setOnMouseReleased(new EventHandler<MouseEvent>() {
-					@Override
-					public void handle(MouseEvent dropEvent) {
-						if (inBoard(dropEvent.getSceneX(), dropEvent.getSceneY())) {
-							Point p = pointToBoard(dropEvent.getSceneX(), dropEvent.getSceneY());
-							Controller.getInstance().dragNDrop(r, p);
-						}
-						s.setFill(c);
-					}
-				});
-				//notify
-			}
-		});
-	}*/
 	
 	private void dragNDrop(IShape sh, Pane pane) {
 		Shape s;

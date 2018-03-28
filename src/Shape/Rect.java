@@ -49,4 +49,10 @@ public class Rect extends AbstractShape {
 		
 	}
 
+	@Override
+	public void resize(double ratio) {
+		setWidth(width*ratio);
+		setHeight(height*ratio);
+	}
+
 }

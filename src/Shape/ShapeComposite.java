@@ -114,4 +114,12 @@ public class ShapeComposite extends AbstractShape {
 		return height;
 	}
 
+	@Override
+	public void resize(double ratio) {
+		for (Iterator<IShape> i = shapes.iterator(); i.hasNext();) {
+		    IShape item = i.next();
+		    item.resize(ratio);
+		}
+	}
+
 }

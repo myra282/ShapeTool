@@ -26,6 +26,8 @@ public interface IShape extends Cloneable {
 	
 	public Point getRotationCenter();
 	
+	public void resize(double ratio);
+	
 	public void update();
 
 }

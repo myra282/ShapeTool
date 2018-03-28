@@ -70,6 +70,14 @@ public class Controller {
 		redraw();
 	}
 	
+	public void eraseAll() {
+		for (ListIterator<IShape> i = iterator(); i.hasNext();) {
+		    IShape item = i.next();
+		    i.remove();
+		}
+		redraw();
+	}
+	
 	public void addTool(IShape s) {
 		tools.add(s);
 		view.addTool(s);

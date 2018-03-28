@@ -1,7 +1,5 @@
 package Shape;
 
-import GraphicLibrary.Dye;
-
 public class Point {
 	
 	private double x;

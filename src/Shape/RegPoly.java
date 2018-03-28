@@ -1,8 +1,5 @@
 package Shape;
 
-import javafx.event.EventHandler;
-import javafx.scene.input.MouseEvent;
-
 public class RegPoly extends AbstractShape {
 	
 	private int nbEdges;
@@ -49,6 +46,12 @@ public class RegPoly extends AbstractShape {
 
 	public double getRadius() {
 		return radius;
+	}
+
+	@Override
+	public void resize(double ratio) {
+		setEdgeWidth(edgeWidth*ratio);
+		this.radius = edgeWidth / (2 * Math.sin(Math.toRadians(180/nbEdges)));
 	}
 
 }
