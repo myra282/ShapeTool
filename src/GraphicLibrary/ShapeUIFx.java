@@ -9,11 +9,14 @@ import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.Separator;
 import javafx.scene.control.ToolBar;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
@@ -194,6 +197,7 @@ public class ShapeUIFx extends Application implements IShapeUI {
 							}
 							else if (inBoard(dropEvent.getSceneX(), dropEvent.getSceneY())) {
 								Point p = pointToBoard(dropEvent.getSceneX(), dropEvent.getSceneY());
+								System.out.println(s.getParent());
 								Controller.getInstance().dragNMove(s, p);
 							}
 							dropEvent.consume();
@@ -202,9 +206,30 @@ public class ShapeUIFx extends Application implements IShapeUI {
 					dragEvent.consume();
 				}
 			});
+			
+			ContextMenu contextMenu = new ContextMenu();
+	        MenuItem groupOption = new MenuItem("Group");
+	        groupOption.setOnAction(new EventHandler<ActionEvent>() {
+	            @Override
+	            public void handle(ActionEvent event) {
+	                Controller.getInstance().group();
+	            }
+	        });
+	        // Add MenuItem to ContextMenu
+	        contextMenu.getItems().addAll(groupOption);
+	        sh.setOnContextMenuRequested(new EventHandler<ContextMenuEvent>() {
+	            @Override
+	            public void handle(ContextMenuEvent event) {
+	                contextMenu.show(sh, event.getScreenX(), event.getScreenY());
+	            }
+	        });
 		}
 		else if (s instanceof ShapeComposite) {
-			draw((ShapeComposite) s,board);
+			//draw((ShapeComposite) s,board);
+			for (ListIterator<IShape> i = ((ShapeComposite) s).getShapes().listIterator(); i.hasNext();) {
+			    IShape item = i.next();
+			    draw(item);
+			}
 		}
 	}
 	
@@ -320,8 +345,8 @@ public class ShapeUIFx extends Application implements IShapeUI {
 						double dropY = dropEvent.getSceneY();
 						if (inBoard(dragX, dragY)
 						&& inBoard(dropX, dropY)) {
-							Controller.getInstance().group(pointToBoard(dragEvent.getSceneX(), dragEvent.getSceneY()), 
-														pointToBoard(dropEvent.getSceneX(), dropEvent.getSceneY()));
+							Controller.getInstance().select(pointToBoard(dragEvent.getSceneX(), dragEvent.getSceneY()), 
+														    pointToBoard(dropEvent.getSceneX(), dropEvent.getSceneY()));
 							
 						}
 					}

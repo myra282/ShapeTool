@@ -4,6 +4,7 @@ import GraphicLibrary.Dye;
 
 public abstract class AbstractShape implements IShape {
 	
+	private IShape parent;
 	private Point position;
 	private double rotation;
 	private Point rotationCenter;
@@ -11,9 +12,15 @@ public abstract class AbstractShape implements IShape {
 	private Dye color;
 
 	public AbstractShape() {
+		this.parent = null;
+		this.position = new Point(0, 0);
+		this.rotation = 0;
+		this.rotationCenter = new Point(0, 0);
+		this.color = new Dye(0, 0, 0);
 	}
 
 	public AbstractShape(Point position) {
+		this.parent = null;
 		this.position = position;
 		this.rotation = 0;
 		this.rotationCenter = new Point(0, 0);
@@ -34,8 +41,28 @@ public abstract class AbstractShape implements IShape {
 	}
 
 	@Override
-	public void update() {
+	public void update(Point newPos) {
+		rotationCenter = new Point(newPos.getX()+getWidth()/2, newPos.getY()+getHeight()/2);
+	}
 
+	@Override
+	public IShape getParent() {
+		return parent;
+	}
+
+	@Override
+	public void setParent(IShape parent) {
+		this.parent = parent;
+	}
+	
+	public void notify(double diffX, double diffY) {
+		if (parent != null) {
+			parent.notify(diffX, diffY);
+		}
+		else {
+			Point pos = getPosition();
+			setPosition(new Point(pos.getX()+diffX, pos.getY()+diffY));
+		}
 	}
 
 	public Point getPosition() {

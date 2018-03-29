@@ -6,6 +6,12 @@ public interface IShape extends Cloneable {
 	
 	public IShape clone();
 	
+	public IShape getParent();
+	
+	public void setParent(IShape parent);
+	
+	public void notify(double diffX, double diffY);
+	
 	public Point getPosition();
 	
 	public void setPosition(Point p);
@@ -30,6 +36,6 @@ public interface IShape extends Cloneable {
 	
 	public boolean contained(Point min, Point max);
 	
-	public void update();
+	public void update(Point newPos);
 
 }

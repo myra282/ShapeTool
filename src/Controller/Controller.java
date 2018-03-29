@@ -16,6 +16,7 @@ public class Controller {
 	
 	private Vector<IShape> observers;
 	private Vector<IShape> tools;
+	private Vector<IShape> selected;
 	
 	private ShapeUIFx view;
 	private static Controller controller = new Controller();
@@ -23,6 +24,7 @@ public class Controller {
 	private Controller() {
 		observers = new Vector<IShape>();
 		tools = new Vector<IShape>();
+		selected = new Vector<IShape>();
 		Thread t1 = new Thread() {
             @Override
             public void run() {
@@ -50,10 +52,6 @@ public class Controller {
 		addTool(poly);
 	}
 	
-	public void draw(IShape s) {
-		view.draw(s);
-	}
-	
 	public void dragNDrop(IShape s, Point p) {
 		IShape s2 = s.clone();
 		s2.setPosition(p);
@@ -62,7 +60,11 @@ public class Controller {
 	}
 	
 	public void dragNMove(IShape s, Point p) {
-		s.setPosition(p);
+		Point oldPos = s.getPosition();
+		//s.setPosition(p);
+		double diffX = p.getX() - oldPos.getX();
+		double diffY = p.getY() - oldPos.getY();
+		s.notify(diffX, diffY);
 		redraw();
 	}
 	
@@ -79,7 +81,7 @@ public class Controller {
 		redraw();
 	}
 	
-	public void group(Point p1, Point p2) {
+	public void select(Point p1, Point p2) {
 		double minx, miny, maxx, maxy;
 		if (p1.getX() < p2.getX()) {
 			minx = p1.getX();
@@ -97,28 +99,25 @@ public class Controller {
 			miny = p2.getY();
 			maxy = p1.getY();
 		}
-		System.out.println("group from ("+minx+", "+miny+") to ("+maxx+", "+maxy+")");
-		ShapeComposite group = new ShapeComposite();
-		Vector<IShape> toGroup = new Vector<IShape>();
 		for (ListIterator<IShape> i = iterator(); i.hasNext();) {
 		    IShape item = i.next();
-		    Point p = item.getPosition();
-		    //System.out.println("p = "+p);
-		    System.out.println("p = "+p.getX()+", "+p.getY());
-		    /*if ((p.getX() > minx && p.getY() > miny) 
-		    && (p.getX() + item.getWidth() < maxx && p.getY() + item.getHeight() < maxy)) {*/
 		    if (item.contained(new Point(minx, miny), new Point(maxx, maxy))) {
-		    	toGroup.add(item);
+		    	selected.add(item);
 		    }
 		}
-		if (toGroup.size() > 1) {
-			System.out.println("grouped "+toGroup.size()+" shapes");
-			for (ListIterator<IShape> i = toGroup.listIterator(); i.hasNext();) {
+	}
+	
+	public void group() {
+		if (selected.size() > 1) {
+			ShapeComposite group = new ShapeComposite();
+			for (ListIterator<IShape> i = selected.listIterator(); i.hasNext();) {
 			    IShape item = i.next();
 			    rmObserver(item);
 			    group.add(item);
 			}
 			addObserver(group);
+			group.updatePosition();
+			System.out.println("Grouped (Yay !)");
 		}
 	}
 	
@@ -141,7 +140,7 @@ public class Controller {
 		view.clear();
 		for (ListIterator<IShape> i = iterator(); i.hasNext();) {
 		    IShape item = i.next();
-		    draw(item);
+		    view.draw(item);
 		}
 	}
 	
@@ -149,12 +148,12 @@ public class Controller {
 		return observers.listIterator();
 	}
 	
-	public void notifyObservers() {
+	/*public void notifyObservers() {
 		for (ListIterator<IShape> i = iterator(); i.hasNext();) {
 		    IShape item = i.next();
 		    item.update();
 		}
-	}
+	}*/
 
 	public void addObserver(IShape o) {
 		observers.add(o);

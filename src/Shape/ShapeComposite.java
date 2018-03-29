@@ -1,6 +1,6 @@
 package Shape;
 
-import java.util.Iterator;
+import java.util.ListIterator;
 import java.util.Vector;
 
 public class ShapeComposite extends AbstractShape {
@@ -10,27 +10,43 @@ public class ShapeComposite extends AbstractShape {
 	private Vector<IShape> shapes;
 
 	public ShapeComposite() {
+		super();
 		shapes = new Vector<IShape>();
 		width = 0;
 		height = 0;
 	}
 	
+	@Override
+	public void notify(double diffX, double diffY) {
+		if (getParent() != null) {
+			getParent().notify(diffX, diffY);
+		}
+		else {
+			Point pos = getPosition();
+			Point newPos = new Point(pos.getX()+diffX, pos.getY()+diffY);
+			update(newPos);
+			setPosition(newPos);
+		}
+	}
+	
 	public void add(IShape s) {
+		s.setParent(this);
 		shapes.add(s);
-		updateInfos();
+		updatePosition();
 	}
 	
 	public IShape remove(IShape s) {
 		int id = shapes.indexOf(s);
 		IShape removed = shapes.remove(id);
-		updateInfos();
+		updatePosition();
 		return removed;
 	}
 	
-	private void updateInfos() {
+	public void updatePosition() {
+		// compute new position
 		double x = shapes.get(0).getPosition().getX();
 		double y = shapes.get(0).getPosition().getY();
-		for (Iterator<IShape> i = shapes.iterator(); i.hasNext();) {
+		for (ListIterator<IShape> i = shapes.listIterator(); i.hasNext();) {
 		    IShape item = i.next();
 		    Point pos = item.getPosition();
 		    if (pos.getX() < x) {
@@ -40,23 +56,27 @@ public class ShapeComposite extends AbstractShape {
 		    	y = pos.getY();
 		    }
 		}
-		this.setPosition(new Point(x,y));
-		
+		Point p = new Point(x,y);
+		update(p);
+		setPosition(p);
+	}
+	
+	@Override
+	public void update(Point newPos) {
+		Point oldPos = getPosition();
+		// compute new width and height
 		width = this.computeWidth();
 		height = this.computeHeight();
-		
-		int size = shapes.size();
-		double xres = 0;
-		double yres = 0;
-		for (Iterator<IShape> i = shapes.iterator(); i.hasNext();) {
+		// update rotation center
+		super.update(newPos);
+		// update each shape position
+		double diffX = newPos.getX() - oldPos.getX();
+		double diffY = newPos.getY() - oldPos.getY();
+		for (ListIterator<IShape> i = shapes.listIterator(); i.hasNext();) {
 		    IShape item = i.next();
-			xres += item.getRotationCenter().getX();
-			xres += item.getRotationCenter().getY();
+		    Point pos = item.getPosition();
+		    item.setPosition(new Point(pos.getX()+diffX, pos.getY()+diffY));
 		}
-		xres /= size;
-		yres /= size;
-		Point r = new Point(xres, yres);
-		this.setRotationCenter(r);
 	}
 
 	public Vector<IShape> getShapes() {
@@ -72,7 +92,7 @@ public class ShapeComposite extends AbstractShape {
 		double minx = shapes.get(0).getPosition().getX();
 		double maxx = 0;
 		double x,w;
-		for (Iterator<IShape> i = shapes.iterator(); i.hasNext();) {
+		for (ListIterator<IShape> i = shapes.listIterator(); i.hasNext();) {
 		    IShape item = i.next();
 		    x = item.getPosition().getX();
 		    w = x + item.getWidth();
@@ -90,7 +110,7 @@ public class ShapeComposite extends AbstractShape {
 		double miny = shapes.get(0).getPosition().getY();
 		double maxy = 0;
 		double y,h;
-		for (Iterator<IShape> i = shapes.iterator(); i.hasNext();) {
+		for (ListIterator<IShape> i = shapes.listIterator(); i.hasNext();) {
 		    IShape item = i.next();
 		    y = item.getPosition().getY();
 		    h = y + item.getHeight();
@@ -116,7 +136,7 @@ public class ShapeComposite extends AbstractShape {
 
 	@Override
 	public void resize(double ratio) {
-		for (Iterator<IShape> i = shapes.iterator(); i.hasNext();) {
+		for (ListIterator<IShape> i = shapes.listIterator(); i.hasNext();) {
 		    IShape item = i.next();
 		    item.resize(ratio);
 		}
