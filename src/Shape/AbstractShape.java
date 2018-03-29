@@ -72,13 +72,9 @@ public abstract class AbstractShape implements IShape {
 	
 	public boolean contained(Point min, Point max) {
 		Point p = getPosition();
-		if ((p.getX() > min.getX() && p.getY() > min.getY()) 
-		&& (p.getX() + getWidth() < max.getX() && p.getY() + getHeight() < max.getY())) {
-			return true;
-		}
-		else {
-			return false;
-		}
+		return ((p.getX() >= min.getX() && p.getY() >= min.getY()) && 
+				(p.getX() + getWidth() <= max.getX() && 
+				 p.getY() + getHeight() <= max.getY()));
 	}
 
 }

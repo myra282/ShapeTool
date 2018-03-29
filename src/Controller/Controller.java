@@ -104,7 +104,7 @@ public class Controller {
 		    IShape item = i.next();
 		    Point p = item.getPosition();
 		    //System.out.println("p = "+p);
-		    //System.out.println("p = "+p.getX()+", "+p.getY());
+		    System.out.println("p = "+p.getX()+", "+p.getY());
 		    /*if ((p.getX() > minx && p.getY() > miny) 
 		    && (p.getX() + item.getWidth() < maxx && p.getY() + item.getHeight() < maxy)) {*/
 		    if (item.contained(new Point(minx, miny), new Point(maxx, maxy))) {

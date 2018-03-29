@@ -101,7 +101,6 @@ public class ShapeUIFx extends Application implements IShapeUI {
 						Controller.getInstance().eraseAll();
 					}
 				});
-				
 				instance = this;
 			}
 		}
@@ -201,7 +200,6 @@ public class ShapeUIFx extends Application implements IShapeUI {
 						}
 					});
 					dragEvent.consume();
-					//notify
 				}
 			});
 		}
@@ -248,7 +246,6 @@ public class ShapeUIFx extends Application implements IShapeUI {
 					}
 				});
 				dragEvent.consume();
-				//notify
 			}
 		});
 	}
@@ -311,7 +308,7 @@ public class ShapeUIFx extends Application implements IShapeUI {
 		menu.getItems().addAll(new Separator(), btnSave, btnLoad, new Separator(), btnUndo, btnRedo, new Separator());
 		
 		// for selection
-		board.setOnMouseClicked(new EventHandler<MouseEvent>() {
+		board.setOnDragDetected(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent dragEvent) {
 				double dragX = dragEvent.getSceneX();
@@ -321,18 +318,14 @@ public class ShapeUIFx extends Application implements IShapeUI {
 					public void handle(MouseEvent dropEvent) {
 						double dropX = dropEvent.getSceneX();
 						double dropY = dropEvent.getSceneY();
-						System.out.println("trying to select");
 						if (inBoard(dragX, dragY)
 						&& inBoard(dropX, dropY)) {
-							System.out.println("Drag = "+dragX+", "+dragY+" | Drop = "+dropX+", "+dropY);
 							Controller.getInstance().group(pointToBoard(dragEvent.getSceneX(), dragEvent.getSceneY()), 
 														pointToBoard(dropEvent.getSceneX(), dropEvent.getSceneY()));
+							
 						}
-						//dropEvent.consume();
 					}
 				});
-				//dragEvent.consume();
-				//notify
 			}
 		});
 		
