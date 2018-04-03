@@ -118,6 +118,7 @@ public class Controller {
 			addObserver(group);
 			group.updatePosition();
 			System.out.println("Grouped (Yay !)");
+			selected.removeAllElements();
 		}
 	}
 	
