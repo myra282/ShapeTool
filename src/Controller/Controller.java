@@ -14,7 +14,7 @@ import javafx.application.Application;
 
 public class Controller {
 	
-	private Vector<IShapeObserver> observers;
+	private IShapeObserver observer;
 	private Vector<IShape> tools;
 	private Vector<IShape> shapes;
 	private Vector<IShape> selected;
@@ -23,8 +23,9 @@ public class Controller {
 	private static Controller controller = new Controller();
 	
 	private Controller() {
-		observers = new Vector<IShapeObserver>();
+		observer = new IShapeObserver();
 		tools = new Vector<IShape>();
+		shapes = new Vector<IShape>();
 		selected = new Vector<IShape>();
 		Thread t1 = new Thread() {
             @Override
@@ -46,32 +47,31 @@ public class Controller {
 	public void begin() {
 		view = ShapeUIFx.getInstance();
 		Rect rect = new Rect(new Point(0, 0), 30, 20);
-		rect.setColor(new Dye(200,30,30));
+		rect.setColor(new Dye(200, 30, 30));
 		RegPoly poly = new RegPoly(new Point(0, 30), 5, 20);
-		poly.setColor(new Dye(30,30,200));
+		poly.setColor(new Dye(30, 30, 200));
 		addTool(rect);
 		addTool(poly);
+		/*Rect rect2 = (Rect) rect.clone();
+		addShape(rect2);
+		dragNMove(rect2,new Point(0, 0));*/
 	}
 	
 	public void dragNDrop(IShape s, Point p) {
 		IShape s2 = s.clone();
 		s2.setPosition(p);
-		//addObserver(s2);
+		addShape(s2);
 		redraw();
 	}
 	
 	public void dragNMove(IShape s, Point p) {
-		//Point oldPos = s.getPosition();
-		//s.setPosition(p);
-		//double diffX = p.getX() - oldPos.getX();
-		//double diffY = p.getY() - oldPos.getY();
-		//s.notify(diffX, diffY);
-		notify(s, p);
+		//notify(s, p);
+		observer.updatePosition(s, p);
 		redraw();
 	}
 	
 	public void erase(IShape s) {
-		//rmObserver(s);
+		rmShape(s);
 		redraw();
 	}
 	
@@ -84,6 +84,8 @@ public class Controller {
 	}
 	
 	public void select(Point p1, Point p2) {
+		selected.removeAllElements();
+		System.out.println("Bamboozled");
 		double minx, miny, maxx, maxy;
 		if (p1.getX() < p2.getX()) {
 			minx = p1.getX();
@@ -105,31 +107,31 @@ public class Controller {
 		    IShape item = i.next();
 		    if (item.contained(new Point(minx, miny), new Point(maxx, maxy))) {
 		    	selected.add(item);
+		    	System.out.println(item+" : "+item.getClass());
 		    }
 		}
 	}
 	
 	public void group() {
+		System.out.println(selected.size());
 		if (selected.size() > 1) {
 			ShapeComposite group = new ShapeComposite();
 			for (ListIterator<IShape> i = selected.listIterator(); i.hasNext();) {
 			    IShape item = i.next();
-			    //rmObserver(item);
+			    rmShape(item);
 			    group.add(item);
 			}
-			//addObserver(group);
-			//group.computePosition();
+			addShape(group);
 			System.out.println("Grouped (Yay !)");
 			selected.removeAllElements();
 		}
 	}
 	
 	public void ungroup(ShapeComposite s) {
-		//rmObserver(s);
+		rmShape(s);
 		for (ListIterator<IShape> i = s.getShapes().listIterator(); i.hasNext();) {
-		    //IShape item = i.next();
-			i.next();
-		    //addObserver(item);
+		    IShape item = i.next();
+		    addShape(item);
 		    i.remove();
 		}
 	}
@@ -146,38 +148,19 @@ public class Controller {
 		    IShape item = i.next();
 		    view.draw(item);
 		}
+		view.activate();
 	}
 	
 	public ListIterator<IShape> shapeIterator() {
 		return shapes.listIterator();
 	}
 	
-	public ListIterator<IShapeObserver> observerIterator() {
-		return observers.listIterator();
-	}
-	
-	/*public void notifyObservers() {
-		for (ListIterator<IShape> i = iterator(); i.hasNext();) {
-		    IShape item = i.next();
-		    item.update();
-		}
-	}*/
-	
-	public void notify(IShape s, Point p) {
-		//s.notifyParent(p);
-		for (ListIterator<IShapeObserver> i = observerIterator(); i.hasNext();) {
-		    IShapeObserver item = i.next();
-		    item.updatePosition(s, p);
-		}
-		//redraw();
+	public void addShape(IShape s) {
+		shapes.add(s);
 	}
 
-	public void addObserver(IShapeObserver o) {
-		observers.add(o);
-	}
-
-	public void rmObserver(IShapeObserver o) {
-		observers.remove(o);
+	public void rmShape(IShape s) {
+		shapes.remove(s);
 	}
 
 }

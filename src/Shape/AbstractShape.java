@@ -55,18 +55,6 @@ public abstract class AbstractShape implements IShape {
 	public void setParent(IShape parent) {
 		this.parent = parent;
 	}
-	
-	/*public void notifyParent(Point p) {
-		if (parent != null) {
-			parent.notifyParent(p);
-		}
-		else {
-			Point oldPos = getPosition();
-			double diffX = p.getX() - oldPos.getX();
-			double diffY = p.getY() - oldPos.getY();
-			setPosition(new Point(oldPos.getX()+diffX, oldPos.getY()+diffY));
-		}
-	}*/
 
 	public Point getPosition() {
 		return position;

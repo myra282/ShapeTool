@@ -16,32 +16,19 @@ public class ShapeComposite extends AbstractShape {
 		height = 0;
 	}
 	
-	/*@Override
-	public void notifyParent(Point p) {
-		if (getParent() != null) {
-			getParent().notifyParent(p);
-		}
-		else {
-			Point oldPos = getPosition();
-			double diffX = p.getX() - oldPos.getX();
-			double diffY = p.getY() - oldPos.getY();
-			Point newPos = new Point(oldPos.getX()+diffX, oldPos.getY()+diffY);
-			update();
-			setPosition(newPos);
-		}
+	@Override
+	public double getWidth() {
+		return width;
+	}
+
+	@Override
+	public double getHeight() {
+		return height;
 	}
 	
-	public void notifyChildren(Point p) {
-		Point oldPos = getPosition();
-		double diffX = p.getX() - oldPos.getX();
-		double diffY = p.getY() - oldPos.getY();
-		// update each shape position
-		for (ListIterator<IShape> i = shapes.listIterator(); i.hasNext();) {
-		    IShape item = i.next();
-		    Point pos = item.getPosition();
-		    item.setPosition(new Point(pos.getX()+diffX, pos.getY()+diffY));
-		}
-	}*/
+	public Vector<IShape> getShapes() {
+		return shapes;
+	}
 	
 	public void add(IShape s) {
 		s.setParent(this);
@@ -57,41 +44,17 @@ public class ShapeComposite extends AbstractShape {
 	}
 	
 	@Override
-	public void update() {
-		// compute new width and height
-		computeWidth();
-		computeHeight();
-		// compute new position
-		computePosition();
-		// update rotation center
-		super.update();
-	}
-	
-	public void computePosition() {
-		// compute new position
-		double x = shapes.get(0).getPosition().getX();
-		double y = shapes.get(0).getPosition().getY();
+	public void setPosition(Point p) {
+		Point oldPos = getPosition();
+		double diffX = p.getX() - oldPos.getX();
+		double diffY = p.getY() - oldPos.getY();
+		// update each shape position
 		for (ListIterator<IShape> i = shapes.listIterator(); i.hasNext();) {
 		    IShape item = i.next();
 		    Point pos = item.getPosition();
-		    if (pos.getX() < x) {
-		    	x = pos.getX();
-		    }
-		    if (pos.getY() < y) {
-		    	y = pos.getY();
-		    }
+		    item.setPosition(new Point(pos.getX()+diffX, pos.getY()+diffY));
 		}
-		Point p = new Point(x,y);
-		setPosition(p);
-	}
-
-	public Vector<IShape> getShapes() {
-		return shapes;
-	}
-
-	@Override
-	public void attributeEditorCreate() {
-		
+		super.setPosition(p);
 	}
 	
 	private void computeWidth() {
@@ -129,15 +92,39 @@ public class ShapeComposite extends AbstractShape {
 		}
 		height = (maxy - miny);
 	}
-
+	
+	public void computePosition() {
+		// compute new position
+		double x = shapes.get(0).getPosition().getX();
+		double y = shapes.get(0).getPosition().getY();
+		for (ListIterator<IShape> i = shapes.listIterator(); i.hasNext();) {
+		    IShape item = i.next();
+		    Point pos = item.getPosition();
+		    if (pos.getX() < x) {
+		    	x = pos.getX();
+		    }
+		    if (pos.getY() < y) {
+		    	y = pos.getY();
+		    }
+		}
+		Point p = new Point(x,y);
+		setPosition(p);
+	}
+	
 	@Override
-	public double getWidth() {
-		return width;
+	public void update() {
+		// compute new width and height
+		computeWidth();
+		computeHeight();
+		// compute new position
+		computePosition();
+		// update rotation center
+		super.update();
 	}
 
 	@Override
-	public double getHeight() {
-		return height;
+	public void attributeEditorCreate() {
+		
 	}
 
 	@Override
