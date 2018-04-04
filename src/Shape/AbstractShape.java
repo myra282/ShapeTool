@@ -41,8 +41,9 @@ public abstract class AbstractShape implements IShape {
 	}
 
 	@Override
-	public void update(Point newPos) {
-		rotationCenter = new Point(newPos.getX()+getWidth()/2, newPos.getY()+getHeight()/2);
+	public void update() {
+		Point pos = getPosition();
+		rotationCenter = new Point(pos.getX()+getWidth()/2, pos.getY()+getHeight()/2);
 	}
 
 	@Override
@@ -55,15 +56,17 @@ public abstract class AbstractShape implements IShape {
 		this.parent = parent;
 	}
 	
-	public void notify(double diffX, double diffY) {
+	/*public void notifyParent(Point p) {
 		if (parent != null) {
-			parent.notify(diffX, diffY);
+			parent.notifyParent(p);
 		}
 		else {
-			Point pos = getPosition();
-			setPosition(new Point(pos.getX()+diffX, pos.getY()+diffY));
+			Point oldPos = getPosition();
+			double diffX = p.getX() - oldPos.getX();
+			double diffY = p.getY() - oldPos.getY();
+			setPosition(new Point(oldPos.getX()+diffX, oldPos.getY()+diffY));
 		}
-	}
+	}*/
 
 	public Point getPosition() {
 		return position;
