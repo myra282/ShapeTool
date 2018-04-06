@@ -1,6 +1,7 @@
 package Shape;
 
 import GraphicLibrary.Dye;
+import GraphicLibrary.IObservableShape;
 
 public interface IShape extends Cloneable {
 	
@@ -37,5 +38,7 @@ public interface IShape extends Cloneable {
 	public boolean contained(Point min, Point max);
 	
 	public void update();
+	
+	public void update(IObservableShape s);
 
 }
