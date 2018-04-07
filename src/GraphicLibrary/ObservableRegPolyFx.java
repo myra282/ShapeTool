@@ -33,7 +33,7 @@ public class ObservableRegPolyFx extends Polygon implements IObservableShape {
 	
 	public ObservableRegPolyFx(Point position, int nbEdges, double edgeWidth) {
 		super(computePoints(position, nbEdges, edgeWidth));
-		setFill(Color.BLACK);
+		observers = new Vector<IShape>();
 		setTranslateX(position.getX());
 		setTranslateY(position.getY());
 	}

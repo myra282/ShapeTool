@@ -3,6 +3,8 @@ package Shape;
 import java.util.ListIterator;
 import java.util.Vector;
 
+import GraphicLibrary.IObservableShape;
+
 public class ShapeComposite extends AbstractShape {
 	
 	private double width;
@@ -133,6 +135,11 @@ public class ShapeComposite extends AbstractShape {
 		    IShape item = i.next();
 		    item.resize(ratio);
 		}
+	}
+
+	@Override
+	public void update(IObservableShape s) {
+		throw new UnsupportedOperationException();
 	}
 
 }

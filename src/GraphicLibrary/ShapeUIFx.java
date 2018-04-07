@@ -148,29 +148,18 @@ public class ShapeUIFx extends Application implements IShapeUI {
 	}
 
 	private Shape draw(RegPoly p, Pane pane) {
-		double points[] = new double[p.getNbEdges() * 2];
-		double angle = 0;
-		double inc = 360 / p.getNbEdges();
-		for (int i = 0 ; i < p.getNbEdges() ; ++i) {
-			points[2 * i] = p.getRotationCenter().getX() + (p.getRadius() * Math.cos(Math.toRadians(angle)));
-			points[2 * i + 1] = p.getRotationCenter().getY() + (p.getRadius() * Math.sin(Math.toRadians(angle)));
-			angle += inc;
-		}
-		Shape shape = new Polygon(points);
-		shape.setFill(Color.rgb(p.getColor().getR(), p.getColor().getG(), p.getColor().getB()));
-		shape.setTranslateX(p.getPosition().getX());
-		shape.setTranslateY(p.getPosition().getY());
+		ObservableRegPolyFx shape = new ObservableRegPolyFx(p.getPosition(), p.getNbEdges(), p.getEdgeWidth());
+		shape.setFill(Color.rgb(p.getColor().getR(), p.getColor().getG(), p.getColor().getB(), p.getColor().getAlpha()));
+		shape.addObserver(p);
 		pane.getChildren().add(shape);
-		
 		return shape;
 		
 	}
 	
 	private Shape draw(Rect r, Pane pane) {
-		Shape shape = new Rectangle(r.getPosition().getX(), r.getPosition().getY(), r.getWidth(), r.getHeight());
-		shape.setFill(Color.rgb(r.getColor().getR(), r.getColor().getG(), r.getColor().getB()));
-		shape.setTranslateX(r.getPosition().getX());
-		shape.setTranslateY(r.getPosition().getY());
+		ObservableRectFx shape = new ObservableRectFx(r.getPosition().getX(), r.getPosition().getY(), r.getWidth(), r.getHeight());
+		shape.setFill(Color.rgb(r.getColor().getR(), r.getColor().getG(), r.getColor().getB(), r.getColor().getAlpha()));
+		shape.addObserver(r);
 		pane.getChildren().add(shape);
 		return shape;
 	}
@@ -184,15 +173,16 @@ public class ShapeUIFx extends Application implements IShapeUI {
 	
 	@Override
 	public void draw(IShape s) {
-		Shape sh;
 		if ((s instanceof Rect) || (s instanceof RegPoly)) {
+			Shape sh;
 			if (s instanceof Rect) {
 				sh = draw((Rect) s,board);
 			}
 			else {
 				sh = draw((RegPoly) s,board);
 			}
-			/*sh.setOnMouseDragged(new EventHandler<MouseEvent>() {
+			// Drag and Move
+			sh.setOnMouseDragged(new EventHandler<MouseEvent>() {
 				@Override
 				public void handle(MouseEvent dragEvent) {
 					if (dragEvent.getEventType() == MouseEvent.MOUSE_DRAGGED && dragEvent.isPrimaryButtonDown()) {
@@ -205,7 +195,9 @@ public class ShapeUIFx extends Application implements IShapeUI {
 								else if (inBoard(dropEvent.getSceneX(), dropEvent.getSceneY())) {
 									Point p = pointToBoard(dropEvent.getSceneX(), dropEvent.getSceneY());
 									System.out.println(s.getParent()+s.getClass().toString());
-									Controller.getInstance().dragNMove(s, p);
+									//Controller.getInstance().dragNMove(s, p);
+									sh.setTranslateX(p.getX());
+									sh.setTranslateY(p.getY());
 								}
 								dropEvent.consume();
 							}
@@ -213,26 +205,7 @@ public class ShapeUIFx extends Application implements IShapeUI {
 					}
 					dragEvent.consume();
 				}
-			});*/
-			
-			/*ContextMenu contextMenu = new ContextMenu();
-	        MenuItem groupOption = new MenuItem("Group");
-	        groupOption.setOnAction(new EventHandler<ActionEvent>() {
-	            @Override
-	            public void handle(ActionEvent event) {
-	                Controller.getInstance().group();
-	                event.consume();
-	            }
-	        });
-	        // Add MenuItem to ContextMenu
-	        contextMenu.getItems().addAll(groupOption);
-	        sh.setOnContextMenuRequested(new EventHandler<ContextMenuEvent>() {
-	            @Override
-	            public void handle(ContextMenuEvent event) {
-            		contextMenu.show(sh, event.getScreenX(), event.getScreenY());
-            		event.consume();
-	            }
-	        });*/
+			});
 		}
 		else if (s instanceof ShapeComposite) {
 			//draw((ShapeComposite) s,board);
@@ -256,28 +229,28 @@ public class ShapeUIFx extends Application implements IShapeUI {
 		}
 	}
 	
-	private void dragNDrop(IShape sh, Pane pane) {
-		Shape s;
-		if (sh instanceof Rect) {
-			s = draw((Rect) sh, pane);
+	private void dragNDrop(IShape s, Pane pane) {
+		Shape sh;
+		if (s instanceof Rect) {
+			sh = draw((Rect) s, pane);
 		}
 		else {
-			s = draw((RegPoly) sh, pane);
+			sh = draw((RegPoly) s, pane);
 		}
-		Color c = (Color) s.getFill();
-		s.setOnMouseDragged(new EventHandler<MouseEvent>() {
+		Color c = (Color) sh.getFill();
+		sh.setOnMouseDragged(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent dragEvent) {
 				if (dragEvent.getEventType() == MouseEvent.MOUSE_DRAGGED  && dragEvent.isPrimaryButtonDown()) {
-					s.setFill(Color.rgb(0, 200, 0));
-					s.setOnMouseReleased(new EventHandler<MouseEvent>() {
+					sh.setFill(Color.rgb(0, 200, 0));
+					sh.setOnMouseReleased(new EventHandler<MouseEvent>() {
 						@Override
 						public void handle(MouseEvent dropEvent) {
 							if (inBoard(dropEvent.getSceneX(), dropEvent.getSceneY())) {
 								Point p = pointToBoard(dropEvent.getSceneX(), dropEvent.getSceneY());
-								Controller.getInstance().dragNDrop(sh, p);
+								Controller.getInstance().dragNDrop(s, p);
 							}
-							s.setFill(c);
+							sh.setFill(c);
 							dropEvent.consume();
 						}
 					});
@@ -309,15 +282,13 @@ public class ShapeUIFx extends Application implements IShapeUI {
 				for (Node sh : board.getChildren()) {
 					if (sh instanceof Shape) {
 						// Drag and Move
-						sh.setOnMouseDragged(new EventHandler<MouseEvent>() {
+						/*sh.setOnMouseDragged(new EventHandler<MouseEvent>() {
 							@Override
 							public void handle(MouseEvent dragEvent) {
 								if (dragEvent.getEventType() == MouseEvent.MOUSE_DRAGGED && dragEvent.isPrimaryButtonDown()) {
 									sh.setOnMouseReleased(new EventHandler<MouseEvent>() {
 										@Override
 										public void handle(MouseEvent dropEvent) {
-											IShape s = getIShape((Shape) sh,board);
-											System.out.println("J'ai recup "+s);
 											if (inTrash(dropEvent.getSceneX(), dropEvent.getSceneY())) {
 												Controller.getInstance().erase(s);
 											}
@@ -333,7 +304,7 @@ public class ShapeUIFx extends Application implements IShapeUI {
 								dragEvent.consume();
 								draggedEvent.consume();
 							}
-						});
+						});*/
 						// Context Menu
 						if (!draggedEvent.isConsumed()) {
 							ContextMenu contextMenu = new ContextMenu();
@@ -388,25 +359,6 @@ public class ShapeUIFx extends Application implements IShapeUI {
 	public void activate() {
 		addEvents();
 	}
-	
-	private IShape getIShape(Shape sh, Pane p) {
-		for (ListIterator<IShape> i = Controller.getInstance().shapeIterator(); i.hasNext();) {
-		    IShape item = i.next();
-	    	Point pos = pointFromBoard(new Point(sh.getTranslateX(), sh.getTranslateY()));
-	    	double w = sh.getLayoutBounds().getWidth();
-	    	double h = sh.getLayoutBounds().getHeight();
-	    	double r = sh.getRotate();
-	    	Color c = (Color) sh.getFill();
-	    	Dye dye = item.getColor();
-	    	Color c2 = Color.rgb(dye.getR(), dye.getG(), dye.getB(), dye.getAlpha());
-	    	System.out.println(w+","+h+" | "+item.getWidth()+","+item.getHeight());
-	    	if ((item.getPosition().equals(pos)) && (w == item.getWidth()) && (h == item.getHeight()) 
-	    		&& (r == item.getRotation() && (c.equals(c2)))) {
-	    	 	return item;
-	    	}
-		}
-		return null;
-}
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {

@@ -14,7 +14,6 @@ import javafx.application.Application;
 
 public class Controller {
 	
-	private IShapeObserver observer;
 	private Vector<IShape> tools;
 	private Vector<IShape> shapes;
 	private Vector<IShape> selected;
@@ -23,7 +22,6 @@ public class Controller {
 	private static Controller controller = new Controller();
 	
 	private Controller() {
-		observer = new IShapeObserver();
 		tools = new Vector<IShape>();
 		shapes = new Vector<IShape>();
 		selected = new Vector<IShape>();
@@ -52,21 +50,12 @@ public class Controller {
 		poly.setColor(new Dye(30, 30, 200));
 		addTool(rect);
 		addTool(poly);
-		/*Rect rect2 = (Rect) rect.clone();
-		addShape(rect2);
-		dragNMove(rect2,new Point(0, 0));*/
 	}
 	
 	public void dragNDrop(IShape s, Point p) {
 		IShape s2 = s.clone();
 		s2.setPosition(p);
 		addShape(s2);
-		redraw();
-	}
-	
-	public void dragNMove(IShape s, Point p) {
-		//notify(s, p);
-		observer.updatePosition(s, p);
 		redraw();
 	}
 	

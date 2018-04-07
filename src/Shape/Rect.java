@@ -1,5 +1,7 @@
 package Shape;
 
+import GraphicLibrary.IObservableShape;
+
 public class Rect extends AbstractShape {
 	
 	private double width;
@@ -53,6 +55,12 @@ public class Rect extends AbstractShape {
 	public void resize(double ratio) {
 		setWidth(width*ratio);
 		setHeight(height*ratio);
+	}
+
+	@Override
+	public void update(IObservableShape s) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

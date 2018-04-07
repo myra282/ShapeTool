@@ -4,6 +4,7 @@ import java.util.ListIterator;
 import java.util.Vector;
 
 import Shape.IShape;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 public class ObservableRectFx extends Rectangle implements IObservableShape {
@@ -12,6 +13,8 @@ public class ObservableRectFx extends Rectangle implements IObservableShape {
 	
 	public ObservableRectFx(double x, double y, double width, double height) {
 		super(x, y, width, height);
+		setTranslateX(x);
+		setTranslateY(y);
 		observers = new Vector<IShape>();
 	}
 	

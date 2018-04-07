@@ -1,5 +1,7 @@
 package Shape;
 
+import GraphicLibrary.IObservableShape;
+
 public class RegPoly extends AbstractShape {
 	
 	private int nbEdges;
@@ -52,6 +54,12 @@ public class RegPoly extends AbstractShape {
 	public void resize(double ratio) {
 		setEdgeWidth(edgeWidth*ratio);
 		this.radius = edgeWidth / (2 * Math.sin(Math.toRadians(180/nbEdges)));
+	}
+
+	@Override
+	public void update(IObservableShape s) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
