@@ -5,9 +5,7 @@ import java.util.Vector;
 
 import Shape.IShape;
 import Shape.Point;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
-import javafx.scene.shape.Shape;
 
 public class ObservableRegPolyFx extends Polygon implements IObservableShape {
 	

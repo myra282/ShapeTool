@@ -147,7 +147,7 @@ public class ShapeUIFx extends Application implements IShapeUI {
 		}
 	}
 
-	private Shape draw(RegPoly p, Pane pane) {
+	private ObservableRegPolyFx draw(RegPoly p, Pane pane) {
 		ObservableRegPolyFx shape = new ObservableRegPolyFx(p.getPosition(), p.getNbEdges(), p.getEdgeWidth());
 		shape.setFill(Color.rgb(p.getColor().getR(), p.getColor().getG(), p.getColor().getB(), p.getColor().getAlpha()));
 		shape.addObserver(p);
@@ -156,7 +156,7 @@ public class ShapeUIFx extends Application implements IShapeUI {
 		
 	}
 	
-	private Shape draw(Rect r, Pane pane) {
+	private ObservableRectFx draw(Rect r, Pane pane) {
 		ObservableRectFx shape = new ObservableRectFx(r.getPosition().getX(), r.getPosition().getY(), r.getWidth(), r.getHeight());
 		shape.setFill(Color.rgb(r.getColor().getR(), r.getColor().getG(), r.getColor().getB(), r.getColor().getAlpha()));
 		shape.addObserver(r);
@@ -167,52 +167,72 @@ public class ShapeUIFx extends Application implements IShapeUI {
 	private void draw(ShapeComposite s, Pane pane) {
 		for (Iterator<IShape> i = s.getShapes().iterator(); i.hasNext();) {
 		    IShape item = i.next();
-		    draw(item);
+		    if (item instanceof Rect) {
+		    	draw((Rect) item, pane);
+		    }
+		    else if (item instanceof RegPoly) {
+		    	draw((RegPoly) item, pane);
+		    }
+		    if (item instanceof ShapeComposite) {
+		    	draw((ShapeComposite) item, pane);
+		    }
 		}
 	}
 	
-	@Override
-	public void draw(IShape s) {
-		if ((s instanceof Rect) || (s instanceof RegPoly)) {
-			Shape sh;
-			if (s instanceof Rect) {
-				sh = draw((Rect) s,board);
-			}
-			else {
-				sh = draw((RegPoly) s,board);
-			}
-			// Drag and Move
-			sh.setOnMouseDragged(new EventHandler<MouseEvent>() {
-				@Override
-				public void handle(MouseEvent dragEvent) {
-					if (dragEvent.getEventType() == MouseEvent.MOUSE_DRAGGED && dragEvent.isPrimaryButtonDown()) {
-						sh.setOnMouseReleased(new EventHandler<MouseEvent>() {
-							@Override
-							public void handle(MouseEvent dropEvent) {
-								if (inTrash(dropEvent.getSceneX(), dropEvent.getSceneY())) {
-									Controller.getInstance().erase(s);
-								}
-								else if (inBoard(dropEvent.getSceneX(), dropEvent.getSceneY())) {
-									Point p = pointToBoard(dropEvent.getSceneX(), dropEvent.getSceneY());
-									System.out.println(s.getParent()+s.getClass().toString());
-									//Controller.getInstance().dragNMove(s, p);
-									sh.setTranslateX(p.getX());
-									sh.setTranslateY(p.getY());
-								}
-								dropEvent.consume();
+	private void setOnDragNMove(IShape s, Shape sh) {
+		sh.setOnMouseDragged(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent dragEvent) {
+				if (dragEvent.getEventType() == MouseEvent.MOUSE_DRAGGED && dragEvent.isPrimaryButtonDown()) {
+					sh.setOnMouseReleased(new EventHandler<MouseEvent>() {
+						@Override
+						public void handle(MouseEvent dropEvent) {
+							if (inTrash(dropEvent.getSceneX(), dropEvent.getSceneY())) {
+								Controller.getInstance().erase(s);
 							}
-						});
-					}
-					dragEvent.consume();
+							else if (inBoard(dropEvent.getSceneX(), dropEvent.getSceneY())) {
+								Point p = pointToBoard(dropEvent.getSceneX(), dropEvent.getSceneY());
+								System.out.println(s.getParent()+s.getClass().toString());
+								//Controller.getInstance().dragNMove(s, p);
+								sh.setTranslateX(p.getX());
+								sh.setTranslateY(p.getY());
+								((IObservableShape) sh).notifyObserver();
+							}
+							dropEvent.consume();
+						}
+					});
 				}
-			});
-		}
-		else if (s instanceof ShapeComposite) {
-			//draw((ShapeComposite) s,board);
-			for (ListIterator<IShape> i = ((ShapeComposite) s).getShapes().listIterator(); i.hasNext();) {
-			    IShape item = i.next();
-			    draw(item);
+				dragEvent.consume();
 			}
+		});
+	}
+	
+	public void draw(Rect s) {
+		ObservableRectFx sh;
+		sh = (ObservableRectFx) draw((Rect) s,board);
+		// Drag and Move
+		setOnDragNMove(s, sh);
+	}
+	
+	public void draw(RegPoly s) {
+		ObservableRegPolyFx sh;
+		sh = (ObservableRegPolyFx) draw((RegPoly) s,board);
+		// Drag and Move
+		setOnDragNMove(s, sh);
+	}
+	
+	public void draw(ShapeComposite s) {
+		for (ListIterator<IShape> i = ((ShapeComposite) s).iterator(); i.hasNext();) {
+		    IShape item = i.next();
+		    if (item instanceof Rect) {
+		    	draw((Rect) item);
+		    }
+		    else if (item instanceof RegPoly) {
+		    	draw((RegPoly) item);
+		    }
+		    if (item instanceof ShapeComposite) {
+		    	draw((ShapeComposite) item);
+		    }
 		}
 	}
 	

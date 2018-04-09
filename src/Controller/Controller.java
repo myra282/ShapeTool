@@ -135,7 +135,15 @@ public class Controller {
 		view.clear();
 		for (ListIterator<IShape> i = shapeIterator(); i.hasNext();) {
 		    IShape item = i.next();
-		    view.draw(item);
+		    if (item instanceof Rect) {
+		    	view.draw((Rect) item);
+		    }
+		    else if (item instanceof RegPoly) {
+		    	view.draw((RegPoly) item);
+		    }
+		    if (item instanceof ShapeComposite) {
+		    	view.draw((ShapeComposite) item);
+		    }
 		}
 		view.activate();
 	}

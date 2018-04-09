@@ -142,4 +142,8 @@ public class ShapeComposite extends AbstractShape {
 		throw new UnsupportedOperationException();
 	}
 
+	public ListIterator<IShape> iterator() {
+		return shapes.listIterator();
+	}
+
 }
