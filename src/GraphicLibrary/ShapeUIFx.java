@@ -179,46 +179,12 @@ public class ShapeUIFx extends Application implements IShapeUI {
 		}
 	}
 	
-	private void setOnDragNMove(IShape s, Shape sh) {
-		sh.setOnMouseDragged(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent dragEvent) {
-				if (dragEvent.getEventType() == MouseEvent.MOUSE_DRAGGED && dragEvent.isPrimaryButtonDown()) {
-					sh.setOnMouseReleased(new EventHandler<MouseEvent>() {
-						@Override
-						public void handle(MouseEvent dropEvent) {
-							if (inTrash(dropEvent.getSceneX(), dropEvent.getSceneY())) {
-								Controller.getInstance().erase(s);
-							}
-							else if (inBoard(dropEvent.getSceneX(), dropEvent.getSceneY())) {
-								Point p = pointToBoard(dropEvent.getSceneX(), dropEvent.getSceneY());
-								System.out.println(s.getParent()+s.getClass().toString());
-								//Controller.getInstance().dragNMove(s, p);
-								sh.setTranslateX(p.getX());
-								sh.setTranslateY(p.getY());
-								((IObservableShape) sh).notifyObserver();
-							}
-							dropEvent.consume();
-						}
-					});
-				}
-				dragEvent.consume();
-			}
-		});
-	}
-	
 	public void draw(Rect s) {
-		ObservableRectFx sh;
-		sh = (ObservableRectFx) draw((Rect) s,board);
-		// Drag and Move
-		setOnDragNMove(s, sh);
+		draw((Rect) s,board);
 	}
 	
 	public void draw(RegPoly s) {
-		ObservableRegPolyFx sh;
-		sh = (ObservableRegPolyFx) draw((RegPoly) s,board);
-		// Drag and Move
-		setOnDragNMove(s, sh);
+		draw((RegPoly) s,board);
 	}
 	
 	public void draw(ShapeComposite s) {
@@ -294,37 +260,41 @@ public class ShapeUIFx extends Application implements IShapeUI {
 		board.getChildren().clear();
 	}
 	
-	private void addEvents() {
+	public void addEvents() {
 		// for selection
 		board.setOnDragDetected(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent draggedEvent) {
 				for (Node sh : board.getChildren()) {
-					if (sh instanceof Shape) {
-						// Drag and Move
-						/*sh.setOnMouseDragged(new EventHandler<MouseEvent>() {
-							@Override
-							public void handle(MouseEvent dragEvent) {
-								if (dragEvent.getEventType() == MouseEvent.MOUSE_DRAGGED && dragEvent.isPrimaryButtonDown()) {
-									sh.setOnMouseReleased(new EventHandler<MouseEvent>() {
-										@Override
-										public void handle(MouseEvent dropEvent) {
-											if (inTrash(dropEvent.getSceneX(), dropEvent.getSceneY())) {
-												Controller.getInstance().erase(s);
+					if (sh instanceof Shape && sh instanceof IObservableShape) {
+							// Drag and Move
+							sh.setOnMouseDragged(new EventHandler<MouseEvent>() {
+								@Override
+								public void handle(MouseEvent dragEvent) {
+									if (dragEvent.getEventType() == MouseEvent.MOUSE_DRAGGED && dragEvent.isPrimaryButtonDown()) {
+										sh.setOnMouseReleased(new EventHandler<MouseEvent>() {
+											@Override
+											public void handle(MouseEvent dropEvent) {
+												if (inTrash(dropEvent.getSceneX(), dropEvent.getSceneY())) {
+													for (ListIterator<IShape> i = ((IObservableShape) sh).iterator(); i.hasNext();) {
+														Controller.getInstance().erase(i.next());
+													}
+												}
+												else if (inBoard(dropEvent.getSceneX(), dropEvent.getSceneY())) {
+													Point p = pointToBoard(dropEvent.getSceneX(), dropEvent.getSceneY());
+													sh.setTranslateX(p.getX());
+													sh.setTranslateY(p.getY());
+													((IObservableShape) sh).notifyObserver();
+												}
+												dropEvent.consume();
+												draggedEvent.consume();
 											}
-											else if (inBoard(dropEvent.getSceneX(), dropEvent.getSceneY())) {
-												Point p = pointToBoard(dropEvent.getSceneX(), dropEvent.getSceneY());
-												System.out.println(s.getParent()+s.getClass().toString());
-												Controller.getInstance().dragNMove(s, p);
-											}
-											dropEvent.consume();
-										}
-									});
+										});
+									}
+									dragEvent.consume();
 								}
-								dragEvent.consume();
-								draggedEvent.consume();
-							}
-						});*/
+							});
+						}
 						// Context Menu
 						if (!draggedEvent.isConsumed()) {
 							ContextMenu contextMenu = new ContextMenu();
@@ -343,12 +313,11 @@ public class ShapeUIFx extends Application implements IShapeUI {
 					            public void handle(ContextMenuEvent event) {
 				            		contextMenu.show(sh, event.getScreenX(), event.getScreenY());
 				            		event.consume();
-				            		draggedEvent.consume();
 					            }
 					        });
+					        draggedEvent.consume();
 						}
 					}
-				}
 				//
 				if (!draggedEvent.isConsumed()) {
 					System.out.println("ça select ?");
@@ -374,10 +343,6 @@ public class ShapeUIFx extends Application implements IShapeUI {
 				}
 			}
 		});
-	}
-	
-	public void activate() {
-		addEvents();
 	}
 
 	@Override

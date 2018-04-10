@@ -34,4 +34,9 @@ public class ObservableRectFx extends Rectangle implements IObservableShape {
 		}
 	}
 
+	@Override
+	public ListIterator<IShape> iterator() {
+		return observers.listIterator();
+	}
+
 }

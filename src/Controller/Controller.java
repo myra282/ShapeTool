@@ -145,7 +145,7 @@ public class Controller {
 		    	view.draw((ShapeComposite) item);
 		    }
 		}
-		view.activate();
+		view.addEvents();
 	}
 	
 	public ListIterator<IShape> shapeIterator() {

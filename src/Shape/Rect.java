@@ -59,6 +59,7 @@ public class Rect extends AbstractShape {
 
 	@Override
 	public void update(IObservableShape s) {
+		
 		// TODO Auto-generated method stub
 		
 	}

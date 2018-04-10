@@ -53,4 +53,9 @@ public class ObservableRegPolyFx extends Polygon implements IObservableShape {
 		}
 	}
 
+	@Override
+	public ListIterator<IShape> iterator() {
+		return observers.listIterator();
+	}
+	
 }
