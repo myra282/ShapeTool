@@ -1,19 +1,17 @@
-package Shape;
+package shape.model;
 
 import java.util.ListIterator;
 import java.util.Vector;
-
-import GraphicLibrary.IObservableShape;
 
 public class ShapeComposite extends AbstractShape {
 	
 	private double width;
 	private double height;
-	private Vector<IShape> shapes;
+	private Vector<IShapeSimple> shapes;
 
 	public ShapeComposite() {
 		super();
-		shapes = new Vector<IShape>();
+		shapes = new Vector<IShapeSimple>();
 		width = 0;
 		height = 0;
 	}
@@ -28,19 +26,19 @@ public class ShapeComposite extends AbstractShape {
 		return height;
 	}
 	
-	public Vector<IShape> getShapes() {
+	public Vector<IShapeSimple> getShapes() {
 		return shapes;
 	}
 	
-	public void add(IShape s) {
-		s.setParent(this);
+	public void add(IShapeSimple s) {
+		((AbstractShape) s).setParent(this);
 		shapes.add(s);
 		computePosition();
 	}
 	
-	public IShape remove(IShape s) {
+	public IShapeSimple remove(IShapeSimple s) {
 		int id = shapes.indexOf(s);
-		IShape removed = shapes.remove(id);
+		IShapeSimple removed = shapes.remove(id);
 		computePosition();
 		return removed;
 	}
@@ -51,8 +49,8 @@ public class ShapeComposite extends AbstractShape {
 		double diffX = p.getX() - oldPos.getX();
 		double diffY = p.getY() - oldPos.getY();
 		// update each shape position
-		for (ListIterator<IShape> i = shapes.listIterator(); i.hasNext();) {
-		    IShape item = i.next();
+		for (ListIterator<IShapeSimple> i = shapes.listIterator(); i.hasNext();) {
+		    IShapeSimple item = i.next();
 		    Point pos = item.getPosition();
 		    item.setPosition(new Point(pos.getX()+diffX, pos.getY()+diffY));
 		}
@@ -63,8 +61,8 @@ public class ShapeComposite extends AbstractShape {
 		double minx = shapes.get(0).getPosition().getX();
 		double maxx = 0;
 		double x,w;
-		for (ListIterator<IShape> i = shapes.listIterator(); i.hasNext();) {
-		    IShape item = i.next();
+		for (ListIterator<IShapeSimple> i = shapes.listIterator(); i.hasNext();) {
+		    IShapeSimple item = i.next();
 		    x = item.getPosition().getX();
 		    w = x + item.getWidth();
 		    if (x < minx) {
@@ -81,8 +79,8 @@ public class ShapeComposite extends AbstractShape {
 		double miny = shapes.get(0).getPosition().getY();
 		double maxy = 0;
 		double y,h;
-		for (ListIterator<IShape> i = shapes.listIterator(); i.hasNext();) {
-		    IShape item = i.next();
+		for (ListIterator<IShapeSimple> i = shapes.listIterator(); i.hasNext();) {
+		    IShapeSimple item = i.next();
 		    y = item.getPosition().getY();
 		    h = y + item.getHeight();
 		    if (y < miny) {
@@ -99,8 +97,8 @@ public class ShapeComposite extends AbstractShape {
 		// compute new position
 		double x = shapes.get(0).getPosition().getX();
 		double y = shapes.get(0).getPosition().getY();
-		for (ListIterator<IShape> i = shapes.listIterator(); i.hasNext();) {
-		    IShape item = i.next();
+		for (ListIterator<IShapeSimple> i = shapes.listIterator(); i.hasNext();) {
+		    IShapeSimple item = i.next();
 		    Point pos = item.getPosition();
 		    if (pos.getX() < x) {
 		    	x = pos.getX();
@@ -130,19 +128,14 @@ public class ShapeComposite extends AbstractShape {
 	}
 
 	@Override
-	public void resize(double ratio) {
-		for (ListIterator<IShape> i = shapes.listIterator(); i.hasNext();) {
-		    IShape item = i.next();
-		    item.resize(ratio);
+	public void scale(double ratio) {
+		for (ListIterator<IShapeSimple> i = shapes.listIterator(); i.hasNext();) {
+		    IShapeSimple item = i.next();
+		    item.scale(ratio);
 		}
 	}
 
-	@Override
-	public void update(IObservableShape s) {
-		throw new UnsupportedOperationException();
-	}
-
-	public ListIterator<IShape> iterator() {
+	public ListIterator<IShapeSimple> iterator() {
 		return shapes.listIterator();
 	}
 

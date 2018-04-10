@@ -1,4 +1,4 @@
-package Shape;
+package shape.model;
 
 public class Point {
 	

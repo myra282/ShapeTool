@@ -1,20 +1,20 @@
 package GraphicLibrary;
 
-public class Dye {
+public class Color {
 	
 	private int r;
 	private int g;
 	private int b;
 	private double alpha;
 	
-	public Dye(int r, int g, int b, double alpha) {
+	public Color(int r, int g, int b, double alpha) {
 		this.r = r;
 		this.g = g;
 		this.b = b;
 		this.alpha = alpha;
 	}
 
-	public Dye(int r, int g, int b) {
+	public Color(int r, int g, int b) {
 		this.r = r;
 		this.g = g;
 		this.b = b;

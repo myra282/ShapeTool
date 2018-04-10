@@ -1,22 +1,21 @@
-package Shape;
+package shape.model;
 
-import GraphicLibrary.Dye;
+import GraphicLibrary.Color;
 
-public abstract class AbstractShape implements IShape {
+public abstract class AbstractShape implements IShapeSimple {
 	
-	private IShape parent;
+	private IShapeSimple parent;
 	private Point position;
 	private double rotation;
 	private Point rotationCenter;
-	//private int translation
-	private Dye color;
+	private Color color;
 
 	public AbstractShape() {
 		this.parent = null;
 		this.position = new Point(0, 0);
 		this.rotation = 0;
 		this.rotationCenter = new Point(0, 0);
-		this.color = new Dye(0, 0, 0);
+		this.color = new Color(0, 0, 0);
 	}
 
 	public AbstractShape(Point position) {
@@ -24,13 +23,13 @@ public abstract class AbstractShape implements IShape {
 		this.position = position;
 		this.rotation = 0;
 		this.rotationCenter = new Point(0, 0);
-		this.color = new Dye(0, 0, 0);
+		this.color = new Color(0, 0, 0);
 	}
 
 	@Override
-	public IShape clone() {
+	public IShapeSimple clone() {
 		try {
-			return (IShape) super.clone();
+			return (IShapeSimple) super.clone();
 		} catch (CloneNotSupportedException e) {}
 		
 		return null;
@@ -40,19 +39,17 @@ public abstract class AbstractShape implements IShape {
 		
 	}
 
-	@Override
-	public void update() {
+	void update() {
 		Point pos = getPosition();
 		rotationCenter = new Point(pos.getX()+getWidth()/2, pos.getY()+getHeight()/2);
 	}
 
 	@Override
-	public IShape getParent() {
+	public IShapeSimple getParent() {
 		return parent;
 	}
 
-	@Override
-	public void setParent(IShape parent) {
+	void setParent(IShapeSimple parent) {
 		this.parent = parent;
 	}
 
@@ -72,11 +69,11 @@ public abstract class AbstractShape implements IShape {
 		this.rotation = rotation;
 	}
 
-	public Dye getColor() {
+	public Color getColor() {
 		return color;
 	}
 
-	public void setColor(Dye color) {
+	public void setColor(Color color) {
 		this.color = color;
 	}
 
@@ -88,7 +85,7 @@ public abstract class AbstractShape implements IShape {
 		this.rotationCenter = p;
 	}
 	
-	public boolean contained(Point min, Point max) {
+	public boolean isInside(Point min, Point max) {
 		Point p = getPosition();
 		return ((p.getX() >= min.getX() && p.getY() >= min.getY()) && 
 				(p.getX() + getWidth() <= max.getX() && 

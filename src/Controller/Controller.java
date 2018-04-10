@@ -3,36 +3,36 @@ package Controller;
 import java.util.ListIterator;
 import java.util.Vector;
 
-import GraphicLibrary.Dye;
-import GraphicLibrary.ShapeUIFx;
-import Shape.IShape;
-import Shape.Point;
-import Shape.Rect;
-import Shape.RegPoly;
-import Shape.ShapeComposite;
+import GraphicLibrary.Color;
+import GraphicLibrary.ApplicationFx;
 import javafx.application.Application;
+import shape.model.IShapeSimple;
+import shape.model.Point;
+import shape.model.Rectangle;
+import shape.model.RegularPolygon;
+import shape.model.ShapeComposite;
 
 public class Controller {
 	
-	private Vector<IShape> tools;
-	private Vector<IShape> shapes;
-	private Vector<IShape> selected;
+	private Vector<IShapeSimple> tools;
+	private Vector<IShapeSimple> shapes;
+	private Vector<IShapeSimple> selected;
 	
-	private ShapeUIFx view;
+	private ApplicationFx view;
 	private static Controller controller = new Controller();
 	
 	private Controller() {
-		tools = new Vector<IShape>();
-		shapes = new Vector<IShape>();
-		selected = new Vector<IShape>();
+		tools = new Vector<IShapeSimple>();
+		shapes = new Vector<IShapeSimple>();
+		selected = new Vector<IShapeSimple>();
 		Thread t1 = new Thread() {
             @Override
             public void run() {
-            	Application.launch(ShapeUIFx.class);
+            	Application.launch(ApplicationFx.class);
             }
         };
         t1.start();
-        while (!t1.isAlive() || ShapeUIFx.getInstance() == null) {
+        while (!t1.isAlive() || ApplicationFx.getInstance() == null) {
         	// Wait for initialisation
         }
         begin();
@@ -43,29 +43,29 @@ public class Controller {
 	}
 	
 	public void begin() {
-		view = ShapeUIFx.getInstance();
-		Rect rect = new Rect(new Point(0, 0), 30, 20);
-		rect.setColor(new Dye(200, 30, 30));
-		RegPoly poly = new RegPoly(new Point(0, 30), 5, 20);
-		poly.setColor(new Dye(30, 30, 200));
+		view = ApplicationFx.getInstance();
+		Rectangle rect = new Rectangle(new Point(0, 0), 30, 20);
+		rect.setColor(new Color(200, 30, 30));
+		RegularPolygon poly = new RegularPolygon(new Point(0, 30), 5, 20);
+		poly.setColor(new Color(30, 30, 200));
 		addTool(rect);
 		addTool(poly);
 	}
 	
-	public void dragNDrop(IShape s, Point p) {
-		IShape s2 = s.clone();
+	public void dragNDrop(IShapeSimple s, Point p) {
+		IShapeSimple s2 = s.clone();
 		s2.setPosition(p);
 		addShape(s2);
 		redraw();
 	}
 	
-	public void erase(IShape s) {
+	public void erase(IShapeSimple s) {
 		rmShape(s);
 		redraw();
 	}
 	
 	public void eraseAll() {
-		for (ListIterator<IShape> i = shapeIterator(); i.hasNext();) {
+		for (ListIterator<IShapeSimple> i = shapeIterator(); i.hasNext();) {
 			i.next();
 		    i.remove();
 		}
@@ -92,9 +92,9 @@ public class Controller {
 			miny = p2.getY();
 			maxy = p1.getY();
 		}
-		for (ListIterator<IShape> i = shapeIterator(); i.hasNext();) {
-		    IShape item = i.next();
-		    if (item.contained(new Point(minx, miny), new Point(maxx, maxy))) {
+		for (ListIterator<IShapeSimple> i = shapeIterator(); i.hasNext();) {
+		    IShapeSimple item = i.next();
+		    if (item.isInside(new Point(minx, miny), new Point(maxx, maxy))) {
 		    	selected.add(item);
 		    	System.out.println(item+" : "+item.getClass());
 		    }
@@ -105,8 +105,8 @@ public class Controller {
 		System.out.println(selected.size());
 		if (selected.size() > 1) {
 			ShapeComposite group = new ShapeComposite();
-			for (ListIterator<IShape> i = selected.listIterator(); i.hasNext();) {
-			    IShape item = i.next();
+			for (ListIterator<IShapeSimple> i = selected.listIterator(); i.hasNext();) {
+			    IShapeSimple item = i.next();
 			    rmShape(item);
 			    group.add(item);
 			}
@@ -118,14 +118,14 @@ public class Controller {
 	
 	public void ungroup(ShapeComposite s) {
 		rmShape(s);
-		for (ListIterator<IShape> i = s.getShapes().listIterator(); i.hasNext();) {
-		    IShape item = i.next();
+		for (ListIterator<IShapeSimple> i = s.getShapes().listIterator(); i.hasNext();) {
+		    IShapeSimple item = i.next();
 		    addShape(item);
 		    i.remove();
 		}
 	}
 	
-	public void addTool(IShape s) {
+	public void addTool(IShapeSimple s) {
 		tools.add(s);
 		view.addTool(s);
 		view.dragNDrop(s);
@@ -133,13 +133,13 @@ public class Controller {
 	
 	public void redraw() {
 		view.clear();
-		for (ListIterator<IShape> i = shapeIterator(); i.hasNext();) {
-		    IShape item = i.next();
-		    if (item instanceof Rect) {
-		    	view.draw((Rect) item);
+		for (ListIterator<IShapeSimple> i = shapeIterator(); i.hasNext();) {
+		    IShapeSimple item = i.next();
+		    if (item instanceof Rectangle) {
+		    	view.draw((Rectangle) item);
 		    }
-		    else if (item instanceof RegPoly) {
-		    	view.draw((RegPoly) item);
+		    else if (item instanceof RegularPolygon) {
+		    	view.draw((RegularPolygon) item);
 		    }
 		    if (item instanceof ShapeComposite) {
 		    	view.draw((ShapeComposite) item);
@@ -148,15 +148,15 @@ public class Controller {
 		view.addEvents();
 	}
 	
-	public ListIterator<IShape> shapeIterator() {
+	public ListIterator<IShapeSimple> shapeIterator() {
 		return shapes.listIterator();
 	}
 	
-	public void addShape(IShape s) {
+	public void addShape(IShapeSimple s) {
 		shapes.add(s);
 	}
 
-	public void rmShape(IShape s) {
+	public void rmShape(IShapeSimple s) {
 		shapes.remove(s);
 	}
 

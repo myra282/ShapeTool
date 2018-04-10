@@ -1,25 +1,23 @@
-package Shape;
+package shape.model;
 
-import GraphicLibrary.IObservableShape;
-
-public class Rect extends AbstractShape {
+public class Rectangle extends AbstractShape {
 	
 	private double width;
 	private double height;
-	private double rounded;
+	private boolean rounded;
 
-	public Rect(Point position, double width, double height, double rounded) {
+	public Rectangle(Point position, double width, double height, boolean rounded) {
 		super(position);
 		this.width = width;
 		this.height = height;
 		this.rounded = rounded;
 	}
 
-	public Rect(Point position, double width, double height) {
+	public Rectangle(Point position, double width, double height) {
 		super(position);
 		this.width = width;
 		this.height = height;
-		this.rounded = 0;
+		this.rounded = false;
 	}
 
 	public double getWidth() {
@@ -38,11 +36,11 @@ public class Rect extends AbstractShape {
 		this.height = height;
 	}
 
-	public double getRounded() {
+	public boolean getRounded() {
 		return rounded;
 	}
 
-	public void setRounded(double rounded) {
+	public void setRounded(boolean rounded) {
 		this.rounded = rounded;
 	}
 
@@ -52,16 +50,9 @@ public class Rect extends AbstractShape {
 	}
 
 	@Override
-	public void resize(double ratio) {
+	public void scale(double ratio) {
 		setWidth(width*ratio);
 		setHeight(height*ratio);
-	}
-
-	@Override
-	public void update(IObservableShape s) {
-		
-		// TODO Auto-generated method stub
-		
 	}
 
 }

@@ -2,6 +2,10 @@ package GraphicLibrary;
 
 import javafx.scene.shape.Shape;
 import javafx.stage.Stage;
+import shape.model.IShapeSimple;
+import shape.model.Point;
+import shape.model.RegularPolygon;
+import shape.model.ShapeComposite;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -26,17 +30,13 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
-import Shape.RegPoly;
-import Shape.ShapeComposite;
+
 import java.util.Iterator;
 import java.util.ListIterator;
 
 import Controller.Controller;
-import Shape.IShape;
-import Shape.Point;
-import Shape.Rect;
 
-public class ShapeUIFx extends Application implements IShapeUI {
+public class ApplicationFx extends Application implements IApplication {
 	
 	private static final double BOARD_WIDTH = 1000;
 	private static final double BOARD_HEIGHT = 800;
@@ -51,10 +51,10 @@ public class ShapeUIFx extends Application implements IShapeUI {
 	private Button btnSave, btnLoad, btnUndo, btnRedo, btnTrash;
 	private Stage pStage;
 	
-	private static ShapeUIFx instance = null;
+	private static ApplicationFx instance = null;
 	
-	public ShapeUIFx() throws Exception {
-		synchronized(ShapeUIFx.class) {
+	public ApplicationFx() throws Exception {
+		synchronized(ApplicationFx.class) {
 			if (instance != null) {
 				throw new UnsupportedOperationException(getClass()+" is a singleton but constructor was called multiple times !");
 			}
@@ -69,31 +69,31 @@ public class ShapeUIFx extends Application implements IShapeUI {
 				trash = new ToolBar(); // Pour la poubelle en bas
 				
 				btnSave = new Button("Save");
-				ImageView imSave = new ImageView(ShapeUIFx.class.getResource("/"+"save.png").toString());
+				ImageView imSave = new ImageView(ApplicationFx.class.getResource("/"+"save.png").toString());
 				imSave.setFitWidth(20);
 				imSave.setPreserveRatio(true);
 				btnSave.setGraphic(imSave);
 				
 				btnLoad = new Button("Load");
-				ImageView imLoad = new ImageView(ShapeUIFx.class.getResource("/"+"load.png").toString());
+				ImageView imLoad = new ImageView(ApplicationFx.class.getResource("/"+"load.png").toString());
 				imLoad.setFitWidth(20);
 				imLoad.setPreserveRatio(true);
 				btnLoad.setGraphic(imLoad);
 				
 				btnUndo = new Button("Undo");
-				ImageView imUndo = new ImageView(ShapeUIFx.class.getResource("/"+"undo.png").toString());
+				ImageView imUndo = new ImageView(ApplicationFx.class.getResource("/"+"undo.png").toString());
 				imUndo.setFitWidth(20);
 				imUndo.setPreserveRatio(true);
 				btnUndo.setGraphic(imUndo);
 				
 				btnRedo = new Button("Redo");
-				ImageView imRedo = new ImageView(ShapeUIFx.class.getResource("/"+"redo.png").toString());
+				ImageView imRedo = new ImageView(ApplicationFx.class.getResource("/"+"redo.png").toString());
 				imRedo.setFitWidth(20);
 				imRedo.setPreserveRatio(true);
 				btnRedo.setGraphic(imRedo);
 				
 				btnTrash = new Button("");
-				ImageView imTrash = new ImageView(ShapeUIFx.class.getResource("/"+"trash.png").toString());
+				ImageView imTrash = new ImageView(ApplicationFx.class.getResource("/"+"trash.png").toString());
 				imTrash.setFitWidth(20);
 				imTrash.setPreserveRatio(true);
 				btnTrash.setGraphic(imTrash);
@@ -109,7 +109,7 @@ public class ShapeUIFx extends Application implements IShapeUI {
 		}
 	}
 	
-	public static ShapeUIFx getInstance() {
+	public static ApplicationFx getInstance() {
 		return instance;
 	}
 	
@@ -146,32 +146,29 @@ public class ShapeUIFx extends Application implements IShapeUI {
 			return false;
 		}
 	}
-
-	private ObservableRegPolyFx draw(RegPoly p, Pane pane) {
-		ObservableRegPolyFx shape = new ObservableRegPolyFx(p.getPosition(), p.getNbEdges(), p.getEdgeWidth());
-		shape.setFill(Color.rgb(p.getColor().getR(), p.getColor().getG(), p.getColor().getB(), p.getColor().getAlpha()));
-		shape.addObserver(p);
-		pane.getChildren().add(shape);
-		return shape;
-		
+	
+	private Shape draw(shape.model.Rectangle r, Pane pane) {
+		Shape sh = new Rectangle(r.getPosition().getX(), r.getPosition().getY(), r.getWidth(), r.getHeight());
+		sh.setFill(Color.rgb(r.getColor().getR(), r.getColor().getG(), r.getColor().getB(), r.getColor().getAlpha()));
+		pane.getChildren().add(sh);
+		return sh;
 	}
 	
-	private ObservableRectFx draw(Rect r, Pane pane) {
-		ObservableRectFx shape = new ObservableRectFx(r.getPosition().getX(), r.getPosition().getY(), r.getWidth(), r.getHeight());
-		shape.setFill(Color.rgb(r.getColor().getR(), r.getColor().getG(), r.getColor().getB(), r.getColor().getAlpha()));
-		shape.addObserver(r);
-		pane.getChildren().add(shape);
-		return shape;
+	private Shape draw(RegularPolygon r, Pane pane) {
+		Shape sh = new Polygon(r.computePoints());
+		sh.setFill(Color.rgb(r.getColor().getR(), r.getColor().getG(), r.getColor().getB(), r.getColor().getAlpha()));
+		pane.getChildren().add(sh);
+		return sh;
 	}
 	
 	private void draw(ShapeComposite s, Pane pane) {
-		for (Iterator<IShape> i = s.getShapes().iterator(); i.hasNext();) {
-		    IShape item = i.next();
-		    if (item instanceof Rect) {
-		    	draw((Rect) item, pane);
+		for (Iterator<IShapeSimple> i = s.getShapes().iterator(); i.hasNext();) {
+		    IShapeSimple item = i.next();
+		    if (item instanceof Rectangle) {
+		    	draw((shape.model.Rectangle) item, pane);
 		    }
-		    else if (item instanceof RegPoly) {
-		    	draw((RegPoly) item, pane);
+		    else if (item instanceof RegularPolygon) {
+		    	draw((RegularPolygon) item, pane);
 		    }
 		    if (item instanceof ShapeComposite) {
 		    	draw((ShapeComposite) item, pane);
@@ -179,22 +176,22 @@ public class ShapeUIFx extends Application implements IShapeUI {
 		}
 	}
 	
-	public void draw(Rect s) {
-		draw((Rect) s,board);
+	public void draw(shape.model.Rectangle s) {
+		draw(s,board);
 	}
 	
-	public void draw(RegPoly s) {
-		draw((RegPoly) s,board);
+	public void draw(RegularPolygon s) {
+		draw(s,board);
 	}
 	
 	public void draw(ShapeComposite s) {
-		for (ListIterator<IShape> i = ((ShapeComposite) s).iterator(); i.hasNext();) {
-		    IShape item = i.next();
-		    if (item instanceof Rect) {
-		    	draw((Rect) item);
+		for (ListIterator<IShapeSimple> i = ((ShapeComposite) s).iterator(); i.hasNext();) {
+		    IShapeSimple item = i.next();
+		    if (item instanceof Rectangle) {
+		    	draw((shape.model.Rectangle) item);
 		    }
-		    else if (item instanceof RegPoly) {
-		    	draw((RegPoly) item);
+		    else if (item instanceof RegularPolygon) {
+		    	draw((RegularPolygon) item);
 		    }
 		    if (item instanceof ShapeComposite) {
 		    	draw((ShapeComposite) item);
@@ -203,25 +200,25 @@ public class ShapeUIFx extends Application implements IShapeUI {
 	}
 	
 	@Override
-	public void addTool(IShape s) {
-		if (s instanceof Rect) {
-			draw((Rect) s,(StackPane) toolbar.getContent());
+	public void addTool(IShapeSimple s) {
+		if (s instanceof Rectangle) {
+			draw((shape.model.Rectangle) s,(StackPane) toolbar.getContent());
 		}
-		else if (s instanceof RegPoly) {
-			draw((RegPoly) s,(StackPane) toolbar.getContent());
+		else if (s instanceof RegularPolygon) {
+			draw((RegularPolygon) s,(StackPane) toolbar.getContent());
 		}
 		else if (s instanceof ShapeComposite) {
 			draw((ShapeComposite) s,(StackPane) toolbar.getContent());
 		}
 	}
 	
-	private void dragNDrop(IShape s, Pane pane) {
+	private void dragNDrop(IShapeSimple s, Pane pane) {
 		Shape sh;
-		if (s instanceof Rect) {
-			sh = draw((Rect) s, pane);
+		if (s instanceof Rectangle) {
+			sh = draw((shape.model.Rectangle) s, pane);
 		}
 		else {
-			sh = draw((RegPoly) s, pane);
+			sh = draw((RegularPolygon) s, pane);
 		}
 		Color c = (Color) sh.getFill();
 		sh.setOnMouseDragged(new EventHandler<MouseEvent>() {
@@ -246,12 +243,12 @@ public class ShapeUIFx extends Application implements IShapeUI {
 		});
 	}
 	
-	public void dragNDrop(IShape s) {		
-		if(s instanceof RegPoly) {
-			dragNDrop((RegPoly) s,(StackPane) toolbar.getContent());
+	public void dragNDrop(IShapeSimple s) {		
+		if(s instanceof RegularPolygon) {
+			dragNDrop((RegularPolygon) s,(StackPane) toolbar.getContent());
 		}
-		else if (s instanceof Rect) {
-			dragNDrop((Rect) s, (StackPane) toolbar.getContent());
+		else if (s instanceof Rectangle) {
+			dragNDrop((shape.model.Rectangle) s, (StackPane) toolbar.getContent());
 		}
 	}
 	
@@ -266,7 +263,7 @@ public class ShapeUIFx extends Application implements IShapeUI {
 			@Override
 			public void handle(MouseEvent draggedEvent) {
 				for (Node sh : board.getChildren()) {
-					if (sh instanceof Shape && sh instanceof IObservableShape) {
+					if (sh instanceof Shape) {
 							// Drag and Move
 							sh.setOnMouseDragged(new EventHandler<MouseEvent>() {
 								@Override
@@ -276,15 +273,12 @@ public class ShapeUIFx extends Application implements IShapeUI {
 											@Override
 											public void handle(MouseEvent dropEvent) {
 												if (inTrash(dropEvent.getSceneX(), dropEvent.getSceneY())) {
-													for (ListIterator<IShape> i = ((IObservableShape) sh).iterator(); i.hasNext();) {
-														Controller.getInstance().erase(i.next());
-													}
+													//Controller.getInstance().erase(s);
 												}
 												else if (inBoard(dropEvent.getSceneX(), dropEvent.getSceneY())) {
 													Point p = pointToBoard(dropEvent.getSceneX(), dropEvent.getSceneY());
 													sh.setTranslateX(p.getX());
 													sh.setTranslateY(p.getY());
-													((IObservableShape) sh).notifyObserver();
 												}
 												dropEvent.consume();
 												draggedEvent.consume();
@@ -385,7 +379,7 @@ public class ShapeUIFx extends Application implements IShapeUI {
 
 	@Override
 	public void begin() {
-		Application.launch(ShapeUIFx.class);
+		Application.launch(ApplicationFx.class);
 	}
 
 		

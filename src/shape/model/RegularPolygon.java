@@ -1,14 +1,12 @@
-package Shape;
+package shape.model;
 
-import GraphicLibrary.IObservableShape;
-
-public class RegPoly extends AbstractShape {
+public class RegularPolygon extends AbstractShape {
 	
 	private int nbEdges;
 	private double edgeWidth;
 	private double radius;
 
-	public RegPoly(Point position, int nbEdges, double edgeWidth) {
+	public RegularPolygon(Point position, int nbEdges, double edgeWidth) {
 		super(position);
 		this.nbEdges = nbEdges;
 		this.edgeWidth = edgeWidth;
@@ -49,17 +47,24 @@ public class RegPoly extends AbstractShape {
 	public double getRadius() {
 		return radius;
 	}
+	
+	public double[] computePoints() {
+		double points[] = new double[nbEdges * 2];
+		double angle = 0;
+		double inc = 360 / nbEdges;
+		double radius = edgeWidth / (2 * Math.sin(Math.toRadians(180/nbEdges)));
+		for (int i = 0 ; i < nbEdges ; ++i) {
+			points[2 * i] = (radius * Math.cos(Math.toRadians(angle)));
+			points[2 * i + 1] = (radius * Math.sin(Math.toRadians(angle)));
+			angle += inc;
+		}
+		return points;
+}
 
 	@Override
-	public void resize(double ratio) {
+	public void scale(double ratio) {
 		setEdgeWidth(edgeWidth*ratio);
 		this.radius = edgeWidth / (2 * Math.sin(Math.toRadians(180/nbEdges)));
-	}
-
-	@Override
-	public void update(IObservableShape s) {
-		// TODO Auto-generated method stub
-		
 	}
 
 }

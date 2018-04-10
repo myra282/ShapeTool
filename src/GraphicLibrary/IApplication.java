@@ -1,12 +1,12 @@
 package GraphicLibrary;
 
-import Shape.IShape;
+import shape.model.IShapeSimple;
 
-public interface IShapeUI {
+public interface IApplication {
 	
 	//public void draw(IShape s);
 	
-	public void addTool(IShape s);
+	public void addTool(IShapeSimple s);
 	
 	public void clear();
 	
