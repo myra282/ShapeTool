@@ -8,6 +8,7 @@ import shape.model.RegularPolygon;
 import shape.model.ShapeComposite;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
@@ -22,7 +23,10 @@ import javafx.scene.control.Separator;
 import javafx.scene.control.ToolBar;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.ContextMenuEvent;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -187,7 +191,7 @@ public class ApplicationFx extends Application implements IApplication {
 	public void draw(ShapeComposite s) {
 		for (ListIterator<IShapeSimple> i = ((ShapeComposite) s).iterator(); i.hasNext();) {
 		    IShapeSimple item = i.next();
-		    if (item instanceof Rectangle) {
+		    if (item instanceof shape.model.Rectangle) {
 		    	draw((shape.model.Rectangle) item);
 		    }
 		    else if (item instanceof RegularPolygon) {
@@ -201,7 +205,7 @@ public class ApplicationFx extends Application implements IApplication {
 	
 	@Override
 	public void addTool(IShapeSimple s) {
-		if (s instanceof Rectangle) {
+		if (s instanceof shape.model.Rectangle) {
 			draw((shape.model.Rectangle) s,(StackPane) toolbar.getContent());
 		}
 		else if (s instanceof RegularPolygon) {
@@ -214,7 +218,7 @@ public class ApplicationFx extends Application implements IApplication {
 	
 	private void dragNDrop(IShapeSimple s, Pane pane) {
 		Shape sh;
-		if (s instanceof Rectangle) {
+		if (s instanceof shape.model.Rectangle) {
 			sh = draw((shape.model.Rectangle) s, pane);
 		}
 		else {
@@ -231,6 +235,7 @@ public class ApplicationFx extends Application implements IApplication {
 						public void handle(MouseEvent dropEvent) {
 							if (inBoard(dropEvent.getSceneX(), dropEvent.getSceneY())) {
 								Point p = pointToBoard(dropEvent.getSceneX(), dropEvent.getSceneY());
+								System.out.println(p.getX()+","+p.getY());
 								Controller.getInstance().dragNDrop(s, p);
 							}
 							sh.setFill(c);
@@ -243,11 +248,47 @@ public class ApplicationFx extends Application implements IApplication {
 		});
 	}
 	
+//	private void dragNDrop(IShapeSimple s, Pane pane) {
+//		Shape sh;
+//		if(s instanceof shape.model.Rectangle) sh = draw((shape.model.Rectangle) s, pane);
+//		else  sh = draw((RegularPolygon) s, pane); 
+//		sh.setOnD(new EventHandler<DragEvent>() {
+//		    @Override 
+//		    public void handle(DragEvent event) {
+//		    	System.out.println("drag: ");
+//		        sh.setFill(Color.rgb(0, 200, 0));
+//	            event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+//		        event.consume();
+//		    }
+//		});
+//
+//		sh.setOnDragDropped(new EventHandler<DragEvent>() {
+//			@Override
+//		    public void handle(DragEvent event) {
+//		        Dragboard db = event.getDragboard();
+//		        boolean success = false;
+//		        if (db.hasString()) {
+//		            System.out.println("Dropped: " + db.getString());
+//		            success = true;
+//		            if (inBoard(event.getSceneX(), event.getSceneY())) {
+//						Point p = pointToBoard(event.getSceneX(), event.getSceneY());
+//						System.out.println(p.getX()+","+p.getY());
+//						Controller.getInstance().dragNDrop(s, p);
+//		            }
+//		        }
+//		        event.setDropCompleted(success);
+//		        event.consume();
+//		    }
+//		});
+//		
+//			
+//	}
+	
 	public void dragNDrop(IShapeSimple s) {		
 		if(s instanceof RegularPolygon) {
 			dragNDrop((RegularPolygon) s,(StackPane) toolbar.getContent());
 		}
-		else if (s instanceof Rectangle) {
+		else if (s instanceof shape.model.Rectangle) {
 			dragNDrop((shape.model.Rectangle) s, (StackPane) toolbar.getContent());
 		}
 	}
@@ -314,9 +355,9 @@ public class ApplicationFx extends Application implements IApplication {
 					}
 				//
 				if (!draggedEvent.isConsumed()) {
-					System.out.println("ça select ?");
+					System.out.println("ï¿½a select ?");
 					if (draggedEvent.getEventType() == MouseEvent.DRAG_DETECTED && draggedEvent.isPrimaryButtonDown()) {
-						System.out.println("ça select !");
+						System.out.println("ï¿½a select !");
 						double dragX = draggedEvent.getSceneX();
 						double dragY = draggedEvent.getSceneY();
 						board.setOnMouseReleased(new EventHandler<MouseEvent>() {

@@ -44,7 +44,7 @@ public class Controller {
 	
 	public void begin() {
 		view = ApplicationFx.getInstance();
-		Rectangle rect = new Rectangle(new Point(0, 0), 30, 20);
+		shape.model.Rectangle rect = new Rectangle(new Point(0, 0), 30, 20);
 		rect.setColor(new Color(200, 30, 30));
 		RegularPolygon poly = new RegularPolygon(new Point(0, 30), 5, 20);
 		poly.setColor(new Color(30, 30, 200));
@@ -55,6 +55,7 @@ public class Controller {
 	public void dragNDrop(IShapeSimple s, Point p) {
 		IShapeSimple s2 = s.clone();
 		s2.setPosition(p);
+		System.out.println("Le point" + p.toString());
 		addShape(s2);
 		redraw();
 	}
@@ -140,6 +141,7 @@ public class Controller {
 		    }
 		    else if (item instanceof RegularPolygon) {
 		    	view.draw((RegularPolygon) item);
+		    	System.out.println(item.getPosition());
 		    }
 		    if (item instanceof ShapeComposite) {
 		    	view.draw((ShapeComposite) item);
