@@ -66,5 +66,22 @@ public class RegularPolygon extends AbstractShape {
 		setEdgeWidth(edgeWidth*ratio);
 		this.radius = edgeWidth / (2 * Math.sin(Math.toRadians(180/nbEdges)));
 	}
+	
+	@Override
+	public boolean contains(Point p) {
+		double[] points = computePoints();
+		int i, j, nvert = points.length;
+		boolean res = false;
+
+		for(i = 0, j = nvert - 1; i < nvert; j = i+=2) {
+			Point point = new Point(points[i], points[j]);
+			if( ( (point.getY() >= p.getY() ) != (point.getY() >= p.getY()) ) &&
+			(p.getX() <= (point.getX() - point.getX()) * (p.getY() - point.getY()) / (point.getY() - point.getY()) + point.getX())
+			) {
+				res = !res;
+			}
+		}
+		return res;
+	}
 
 }

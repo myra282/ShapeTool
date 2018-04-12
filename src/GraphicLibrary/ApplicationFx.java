@@ -25,6 +25,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BorderPane;
@@ -184,12 +185,36 @@ public class ApplicationFx extends Application implements IApplication {
 		}
 	}
 	
+	private void addMenu(Shape sh) {
+		// Context Menu
+		ContextMenu contextMenu = new ContextMenu();
+        MenuItem groupOption = new MenuItem("Group");
+        groupOption.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Controller.getInstance().group();
+                event.consume();
+            }
+        });
+        // Add MenuItem to ContextMenu
+        contextMenu.getItems().addAll(groupOption);
+        sh.setOnContextMenuRequested(new EventHandler<ContextMenuEvent>() {
+            @Override
+            public void handle(ContextMenuEvent event) {
+        		contextMenu.show(sh, event.getScreenX(), event.getScreenY());
+        		event.consume();
+            }
+        });
+	}
+	
 	public void draw(shape.model.Rectangle s) {
-		draw(s,board);
+		Shape sh = draw(s,board);
+		addMenu(sh);
 	}
 	
 	public void draw(RegularPolygon s) {
-		draw(s,board);
+		Shape sh = draw(s,board);
+		addMenu(sh);
 	}
 	
 	public void draw(ShapeComposite s) {
@@ -251,42 +276,6 @@ public class ApplicationFx extends Application implements IApplication {
 		});
 	}
 	
-//	private void dragNDrop(IShapeSimple s, Pane pane) {
-//		Shape sh;
-//		if(s instanceof shape.model.Rectangle) sh = draw((shape.model.Rectangle) s, pane);
-//		else  sh = draw((RegularPolygon) s, pane); 
-//		sh.setOnD(new EventHandler<DragEvent>() {
-//		    @Override 
-//		    public void handle(DragEvent event) {
-//		    	System.out.println("drag: ");
-//		        sh.setFill(Color.rgb(0, 200, 0));
-//	            event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
-//		        event.consume();
-//		    }
-//		});
-//
-//		sh.setOnDragDropped(new EventHandler<DragEvent>() {
-//			@Override
-//		    public void handle(DragEvent event) {
-//		        Dragboard db = event.getDragboard();
-//		        boolean success = false;
-//		        if (db.hasString()) {
-//		            System.out.println("Dropped: " + db.getString());
-//		            success = true;
-//		            if (inBoard(event.getSceneX(), event.getSceneY())) {
-//						Point p = pointToBoard(event.getSceneX(), event.getSceneY());
-//						System.out.println(p.getX()+","+p.getY());
-//						Controller.getInstance().dragNDrop(s, p);
-//		            }
-//		        }
-//		        event.setDropCompleted(success);
-//		        event.consume();
-//		    }
-//		});
-//		
-//			
-//	}
-	
 	public void dragNDrop(IShapeSimple s) {		
 		if(s instanceof RegularPolygon) {
 			dragNDrop((RegularPolygon) s,(StackPane) toolbar.getContent());
@@ -302,83 +291,26 @@ public class ApplicationFx extends Application implements IApplication {
 	}
 	
 	public void addEvents() {
-		// for selection
-		board.setOnDragDetected(new EventHandler<MouseEvent>() {
+		Point p1 = new Point(-1,-1);
+		Point p2 = new Point(0,0);
+		board.setOnMouseDragged(new EventHandler<MouseEvent>() {
 			@Override
-			public void handle(MouseEvent draggedEvent) {
-				for (Node sh : board.getChildren()) {
-					if (sh instanceof Shape) {
-							// Drag and Move
-							sh.setOnMouseDragged(new EventHandler<MouseEvent>() {
-								@Override
-								public void handle(MouseEvent dragEvent) {
-									if (dragEvent.getEventType() == MouseEvent.MOUSE_DRAGGED && dragEvent.isPrimaryButtonDown()) {
-										sh.setOnMouseReleased(new EventHandler<MouseEvent>() {
-											@Override
-											public void handle(MouseEvent dropEvent) {
-												if (inTrash(dropEvent.getSceneX(), dropEvent.getSceneY())) {
-													//Controller.getInstance().erase(s);
-												}
-												else if (inBoard(dropEvent.getSceneX(), dropEvent.getSceneY())) {
-													Point p = pointToBoard(dropEvent.getSceneX(), dropEvent.getSceneY());
-													sh.setTranslateX(p.getX());
-													sh.setTranslateY(p.getY());
-												}
-												dropEvent.consume();
-												draggedEvent.consume();
-											}
-										});
-									}
-									dragEvent.consume();
-								}
-							});
-						}
-						// Context Menu
-						if (!draggedEvent.isConsumed()) {
-							ContextMenu contextMenu = new ContextMenu();
-					        MenuItem groupOption = new MenuItem("Group");
-					        groupOption.setOnAction(new EventHandler<ActionEvent>() {
-					            @Override
-					            public void handle(ActionEvent event) {
-					                Controller.getInstance().group();
-					                event.consume();
-					            }
-					        });
-					        // Add MenuItem to ContextMenu
-					        contextMenu.getItems().addAll(groupOption);
-					        sh.setOnContextMenuRequested(new EventHandler<ContextMenuEvent>() {
-					            @Override
-					            public void handle(ContextMenuEvent event) {
-				            		contextMenu.show(sh, event.getScreenX(), event.getScreenY());
-				            		event.consume();
-					            }
-					        });
-					        draggedEvent.consume();
-						}
-					}
-				//
-				if (!draggedEvent.isConsumed()) {
-					System.out.println("ca select ?");
-					if (draggedEvent.getEventType() == MouseEvent.DRAG_DETECTED && draggedEvent.isPrimaryButtonDown()) {
-						System.out.println("ca select !");
-						double dragX = draggedEvent.getSceneX();
-						double dragY = draggedEvent.getSceneY();
-						board.setOnMouseReleased(new EventHandler<MouseEvent>() {
-							@Override
-							public void handle(MouseEvent dropEvent) {
-								double dropX = dropEvent.getSceneX();
-								double dropY = dropEvent.getSceneY();
-								if (inBoard(dragX, dragY)
-								&& inBoard(dropX, dropY)) {
-									Controller.getInstance().select(pointToBoard(draggedEvent.getSceneX(), draggedEvent.getSceneY()), 
-																    pointToBoard(dropEvent.getSceneX(), dropEvent.getSceneY()));
-								}
-								dropEvent.consume();
-							}
-						});
-					}
-					draggedEvent.consume();
+			public void handle(MouseEvent event) {
+				if (p1.equals(new Point(-1,-1))) {
+					Point tmp = pointToBoard(event.getSceneX(), event.getSceneY());
+					p1.setX(tmp.getX());
+					p1.setY(tmp.getY());
 				}
+			}
+		});
+		board.setOnMouseReleased(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				Point tmp = pointToBoard(event.getSceneX(), event.getSceneY());
+				p2.setX(tmp.getX());
+				p2.setY(tmp.getY());
+				boolean mouseKey = event.getButton().compareTo(MouseButton.PRIMARY) == 0;
+				Controller.getInstance().handleMouseEvent(p1,p2,mouseKey);
 			}
 		});
 	}
@@ -408,7 +340,7 @@ public class ApplicationFx extends Application implements IApplication {
 		trash.setMaxWidth(BAR_MIN_WIDTH);
 		menu.getItems().addAll(new Separator(), btnSave, btnLoad, new Separator(), btnUndo, btnRedo, new Separator());
 		
-		//addEvents();
+		addEvents();
 		
 		// set app
 		primaryStage.setTitle("ShapeOfView");

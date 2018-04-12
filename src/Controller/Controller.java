@@ -160,4 +160,23 @@ public class Controller {
 		shapes.remove(s);
 	}
 
+	public void handleMouseEvent(Point p1, Point p2, boolean mouseKey) { //mouseKey : true for primary key
+		if (mouseKey) {
+			System.out.println(shapes.size());
+			for (ListIterator<IShapeSimple> i = shapeIterator(); i.hasPrevious();) {
+				System.out.println(i.hasPrevious());
+			    IShapeSimple item = i.previous();
+			    System.out.println(item);
+			    if (item.contains(p1)) { //Move
+			    	item.setPosition(p2);
+			    	break;
+			    }
+			    else {
+			    	select(p1, p2);
+			    }
+			}
+			redraw();
+		}
+	}
+
 }

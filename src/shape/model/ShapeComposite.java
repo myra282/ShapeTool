@@ -138,5 +138,15 @@ public class ShapeComposite extends AbstractShape {
 	public ListIterator<IShapeSimple> iterator() {
 		return shapes.listIterator();
 	}
+	
+	@Override
+	public boolean contains(Point p) {
+		boolean res = false;
+		for (ListIterator<IShapeSimple> i = shapes.listIterator(); i.hasNext();) {
+		    IShapeSimple item = i.next();
+		    res |= item.contains(p);
+		}
+		return res;
+	}
 
 }
