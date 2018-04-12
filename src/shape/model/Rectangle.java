@@ -58,10 +58,6 @@ public class Rectangle extends AbstractShape {
 	@Override
 	public boolean contains(Point p) {
 		Point pos = getPosition();
-		System.out.println(p.getX() >= pos.getX());
-		System.out.println(p.getY() >= pos.getY());
-		System.out.println(pos.getX() + getWidth() >= p.getX());
-		System.out.println(pos.getY() + getHeight() >= p.getY());
 		return ((p.getX() >= pos.getX() && p.getY() >= pos.getY()) && 
 				(pos.getX() + getWidth() >= p.getX() && 
 				 pos.getY() + getHeight() >= p.getY()));

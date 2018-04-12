@@ -7,7 +7,7 @@ public interface IShapeSimple extends Cloneable, IShape {
 	public IShapeSimple getParent();
 	
 	public boolean isInside(Point min, Point max);
-	
+
 	public boolean contains(Point p);
 
 }

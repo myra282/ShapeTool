@@ -1,6 +1,7 @@
 package shape.model;
 
 import GraphicLibrary.Color;
+import GraphicLibrary.IApplication;
 
 public abstract class AbstractShape implements IShapeSimple {
 	
@@ -85,6 +86,7 @@ public abstract class AbstractShape implements IShapeSimple {
 		this.rotationCenter = p;
 	}
 	
+	@Override
 	public boolean isInside(Point min, Point max) {
 		Point p = getPosition();
 		return ((p.getX() >= min.getX() && p.getY() >= min.getY()) && 

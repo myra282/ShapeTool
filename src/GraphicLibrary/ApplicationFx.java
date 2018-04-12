@@ -43,11 +43,6 @@ import Controller.Controller;
 
 public class ApplicationFx extends Application implements IApplication {
 	
-	private static final double BOARD_WIDTH = 1000;
-	private static final double BOARD_HEIGHT = 800;
-	private static final double BAR_MIN_WIDTH = 70;
-	private static final double BAR_MAX_WIDTH = 140;
-	
 	private BorderPane borderPane;
 	private StackPane board;
 	private ScrollPane toolbar;
@@ -310,7 +305,9 @@ public class ApplicationFx extends Application implements IApplication {
 				p2.setX(tmp.getX());
 				p2.setY(tmp.getY());
 				boolean mouseKey = event.getButton().compareTo(MouseButton.PRIMARY) == 0;
-				Controller.getInstance().handleMouseEvent(p1,p2,mouseKey);
+				if (inBoard(event.getSceneX(),event.getSceneY())) {
+					Controller.getInstance().handleMouseEvent(p1,p2,mouseKey);
+				}
 			}
 		});
 	}

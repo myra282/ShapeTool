@@ -4,6 +4,7 @@ import java.util.ListIterator;
 import java.util.Vector;
 
 import GraphicLibrary.Color;
+import GraphicLibrary.IApplication;
 import GraphicLibrary.ApplicationFx;
 import javafx.application.Application;
 import shape.model.IShapeSimple;
@@ -50,6 +51,12 @@ public class Controller {
 		poly.setColor(new Color(30, 30, 200));
 		addTool(rect);
 		addTool(poly);
+	}
+	
+	public boolean isInBoard(IShapeSimple s) {
+		Point min = new Point(0, 0);
+		Point max = new Point(IApplication.BOARD_WIDTH, IApplication.BOARD_HEIGHT);
+		return s.isInside(min, max);
 	}
 	
 	public void dragNDrop(IShapeSimple s, Point p) {
@@ -162,13 +169,16 @@ public class Controller {
 
 	public void handleMouseEvent(Point p1, Point p2, boolean mouseKey) { //mouseKey : true for primary key
 		if (mouseKey) {
-			System.out.println(shapes.size());
-			for (ListIterator<IShapeSimple> i = shapeIterator(); i.hasPrevious();) {
-				System.out.println(i.hasPrevious());
-			    IShapeSimple item = i.previous();
+			for (ListIterator<IShapeSimple> i = shapeIterator(); i.hasNext();) {
+				IShapeSimple item = i.next();
+				
 			    System.out.println(item);
 			    if (item.contains(p1)) { //Move
+			    	Point oldPos = item.getPosition();
 			    	item.setPosition(p2);
+			    	if (!isInBoard(item)) { //if shape exceeds board bounds, rollback
+			    		item.setPosition(oldPos);
+			    	}
 			    	break;
 			    }
 			    else {
