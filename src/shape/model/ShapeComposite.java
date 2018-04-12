@@ -33,13 +33,13 @@ public class ShapeComposite extends AbstractShape {
 	public void add(IShapeSimple s) {
 		((AbstractShape) s).setParent(this);
 		shapes.add(s);
-		computePosition();
+		update();
 	}
 	
 	public IShapeSimple remove(IShapeSimple s) {
 		int id = shapes.indexOf(s);
 		IShapeSimple removed = shapes.remove(id);
-		computePosition();
+		update();
 		return removed;
 	}
 	
@@ -54,6 +54,7 @@ public class ShapeComposite extends AbstractShape {
 		    Point pos = item.getPosition();
 		    item.setPosition(new Point(pos.getX()+diffX, pos.getY()+diffY));
 		}
+		System.out.println("coucou");
 		super.setPosition(p);
 	}
 	
@@ -108,7 +109,7 @@ public class ShapeComposite extends AbstractShape {
 		    }
 		}
 		Point p = new Point(x,y);
-		setPosition(p);
+		super.setPosition(p);
 	}
 	
 	@Override
@@ -141,10 +142,13 @@ public class ShapeComposite extends AbstractShape {
 	
 	@Override
 	public boolean contains(Point p) {
+		System.out.println(p);
 		boolean res = false;
 		for (ListIterator<IShapeSimple> i = shapes.listIterator(); i.hasNext();) {
 		    IShapeSimple item = i.next();
+		    System.out.println(item.getPosition());
 		    res |= item.contains(p);
+		    System.out.println(item.contains(p));
 		}
 		return res;
 	}

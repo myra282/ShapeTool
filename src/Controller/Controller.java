@@ -119,8 +119,8 @@ public class Controller {
 			}
 			addShape(group);
 			System.out.println("Grouped (Yay !)");
-			selected.removeAllElements();
 		}
+		selected.removeAllElements();
 	}
 	
 	public void ungroup(ShapeComposite s) {
@@ -171,8 +171,8 @@ public class Controller {
 		if (mouseKey) {
 			for (ListIterator<IShapeSimple> i = shapeIterator(); i.hasNext();) {
 				IShapeSimple item = i.next();
-				
-			    System.out.println(item);
+				System.out.println("p1 " +p1);
+			   // System.out.println(item);
 			    if (item.contains(p1)) { //Move
 			    	Point oldPos = item.getPosition();
 			    	item.setPosition(p2);
