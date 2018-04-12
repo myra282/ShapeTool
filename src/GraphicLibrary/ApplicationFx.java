@@ -154,6 +154,8 @@ public class ApplicationFx extends Application implements IApplication {
 	private Shape draw(shape.model.Rectangle r, Pane pane) {
 		Shape sh = new Rectangle(r.getPosition().getX(), r.getPosition().getY(), r.getWidth(), r.getHeight());
 		sh.setFill(Color.rgb(r.getColor().getR(), r.getColor().getG(), r.getColor().getB(), r.getColor().getAlpha()));
+		sh.setTranslateX(r.getPosition().getX());
+		sh.setTranslateY(r.getPosition().getY());
 		pane.getChildren().add(sh);
 		return sh;
 	}
@@ -161,6 +163,8 @@ public class ApplicationFx extends Application implements IApplication {
 	private Shape draw(RegularPolygon r, Pane pane) {
 		Shape sh = new Polygon(r.computePoints());
 		sh.setFill(Color.rgb(r.getColor().getR(), r.getColor().getG(), r.getColor().getB(), r.getColor().getAlpha()));
+		sh.setTranslateX(r.getPosition().getX());
+		sh.setTranslateY(r.getPosition().getY());
 		pane.getChildren().add(sh);
 		return sh;
 	}
@@ -230,20 +234,19 @@ public class ApplicationFx extends Application implements IApplication {
 			public void handle(MouseEvent dragEvent) {
 				if (dragEvent.getEventType() == MouseEvent.MOUSE_DRAGGED  && dragEvent.isPrimaryButtonDown()) {
 					sh.setFill(Color.rgb(0, 200, 0));
-					sh.setOnMouseReleased(new EventHandler<MouseEvent>() {
-						@Override
-						public void handle(MouseEvent dropEvent) {
-							if (inBoard(dropEvent.getSceneX(), dropEvent.getSceneY())) {
-								Point p = pointToBoard(dropEvent.getSceneX(), dropEvent.getSceneY());
-								System.out.println(p.getX()+","+p.getY());
-								Controller.getInstance().dragNDrop(s, p);
-							}
-							sh.setFill(c);
-							dropEvent.consume();
-						}
-					});
 				}
 				dragEvent.consume();
+			}
+		});
+		sh.setOnMouseReleased(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent dropEvent) {
+				if (inBoard(dropEvent.getSceneX(), dropEvent.getSceneY())) {
+					Point p = pointToBoard(dropEvent.getSceneX(), dropEvent.getSceneY());
+					Controller.getInstance().dragNDrop(s, p);
+				}
+				sh.setFill(c);
+				dropEvent.consume();
 			}
 		});
 	}
@@ -355,9 +358,9 @@ public class ApplicationFx extends Application implements IApplication {
 					}
 				//
 				if (!draggedEvent.isConsumed()) {
-					System.out.println("�a select ?");
+					System.out.println("ca select ?");
 					if (draggedEvent.getEventType() == MouseEvent.DRAG_DETECTED && draggedEvent.isPrimaryButtonDown()) {
-						System.out.println("�a select !");
+						System.out.println("ca select !");
 						double dragX = draggedEvent.getSceneX();
 						double dragY = draggedEvent.getSceneY();
 						board.setOnMouseReleased(new EventHandler<MouseEvent>() {
