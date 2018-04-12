@@ -191,8 +191,19 @@ public class ApplicationFx extends Application implements IApplication {
                 event.consume();
             }
         });
+        MenuItem ungroupOption = new MenuItem("Ungroup");
+        ungroupOption.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+            	Point p = new Point(sh.getTranslateX(),sh.getTranslateY());
+            	Controller.getInstance().select(p);
+                Controller.getInstance().ungroup();
+                event.consume();
+            }
+        });
         // Add MenuItem to ContextMenu
         contextMenu.getItems().addAll(groupOption);
+        contextMenu.getItems().addAll(ungroupOption);
         sh.setOnContextMenuRequested(new EventHandler<ContextMenuEvent>() {
             @Override
             public void handle(ContextMenuEvent event) {

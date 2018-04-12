@@ -79,9 +79,21 @@ public class Controller {
 		redraw();
 	}
 	
+	public void select(Point p) {
+		selected.removeAllElements();
+		for (ListIterator<IShapeSimple> i = shapeIterator(); i.hasNext();) {
+		    IShapeSimple item = i.next();
+		    System.out.println("yo "+item);
+		    if (item.contains(p)) {
+		    	System.out.println("-> "+item);
+		    	selected.add(item);
+		    	break;
+		    }
+		}
+	}
+	
 	public void select(Point p1, Point p2) {
 		selected.removeAllElements();
-		System.out.println("Bamboozled");
 		double minx, miny, maxx, maxy;
 		if (p1.getX() < p2.getX()) {
 			minx = p1.getX();
@@ -103,7 +115,6 @@ public class Controller {
 		    IShapeSimple item = i.next();
 		    if (item.isInside(new Point(minx, miny), new Point(maxx, maxy))) {
 		    	selected.add(item);
-		    	System.out.println(item+" : "+item.getClass());
 		    }
 		}
 	}
@@ -123,12 +134,17 @@ public class Controller {
 		selected.removeAllElements();
 	}
 	
-	public void ungroup(ShapeComposite s) {
-		rmShape(s);
-		for (ListIterator<IShapeSimple> i = s.getShapes().listIterator(); i.hasNext();) {
-		    IShapeSimple item = i.next();
-		    addShape(item);
-		    i.remove();
+	public void ungroup() {
+		if (selected.size() == 1) {
+			IShapeSimple s = selected.get(0);
+			if (s instanceof ShapeComposite) {
+				rmShape(s);
+				for (ListIterator<IShapeSimple> i = ((ShapeComposite) s).getShapes().listIterator(); i.hasNext();) {
+				    IShapeSimple item = i.next();
+				    addShape(item);
+				    i.remove();
+				}
+			}
 		}
 	}
 	
@@ -171,7 +187,6 @@ public class Controller {
 		if (mouseKey) {
 			for (ListIterator<IShapeSimple> i = shapeIterator(); i.hasNext();) {
 				IShapeSimple item = i.next();
-				System.out.println("p1 " +p1);
 			   // System.out.println(item);
 			    if (item.contains(p1)) { //Move
 			    	Point oldPos = item.getPosition();
