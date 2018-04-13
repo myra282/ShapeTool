@@ -84,7 +84,6 @@ public class Controller {
 		for (ListIterator<IShapeSimple> i = shapeIterator(); i.hasNext();) {
 		    IShapeSimple item = i.next();
 		    if (item.contains(p)) {
-		    	System.out.println("-> "+item);
 		    	selected.add(item);
 		    	break;
 		    }
@@ -188,7 +187,10 @@ public class Controller {
 				IShapeSimple item = i.next();
 			    if (item.contains(p1)) { //Move
 			    	Point oldPos = item.getPosition();
-			    	item.setPosition(p2);
+			    	double stepX = p1.getX() - oldPos.getX();
+			    	double stepY = p1.getY() - oldPos.getY();
+			    	Point newPos = new Point(p2.getX()-stepX, p2.getY()-stepY);
+			    	item.setPosition(newPos);
 			    	if (!isInBoard(item)) { //if shape exceeds board bounds, rollback
 			    		item.setPosition(oldPos);
 			    	}
