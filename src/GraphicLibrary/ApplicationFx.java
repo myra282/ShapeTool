@@ -195,7 +195,8 @@ public class ApplicationFx extends Application implements IApplication {
         ungroupOption.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-            	Point p = new Point(sh.getTranslateX(),sh.getTranslateY());
+            	Point p = new Point(sh.getTranslateX()+sh.getLayoutBounds().getWidth()/2,
+            						sh.getTranslateY() + sh.getLayoutBounds().getHeight()/2);
             	Controller.getInstance().select(p);
                 Controller.getInstance().ungroup();
                 event.consume();

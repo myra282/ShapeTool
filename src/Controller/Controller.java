@@ -83,7 +83,6 @@ public class Controller {
 		selected.removeAllElements();
 		for (ListIterator<IShapeSimple> i = shapeIterator(); i.hasNext();) {
 		    IShapeSimple item = i.next();
-		    System.out.println("yo "+item);
 		    if (item.contains(p)) {
 		    	System.out.println("-> "+item);
 		    	selected.add(item);
@@ -187,7 +186,6 @@ public class Controller {
 		if (mouseKey) {
 			for (ListIterator<IShapeSimple> i = shapeIterator(); i.hasNext();) {
 				IShapeSimple item = i.next();
-			   // System.out.println(item);
 			    if (item.contains(p1)) { //Move
 			    	Point oldPos = item.getPosition();
 			    	item.setPosition(p2);
