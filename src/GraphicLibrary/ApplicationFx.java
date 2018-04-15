@@ -8,11 +8,9 @@ import shape.model.RegularPolygon;
 import shape.model.ShapeComposite;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
@@ -23,11 +21,8 @@ import javafx.scene.control.Separator;
 import javafx.scene.control.ToolBar;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.ContextMenuEvent;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -130,16 +125,16 @@ public class ApplicationFx extends Application implements IApplication {
 		return p;
 	}
 	
-	private Point pointFromBoard(Point pos) {
+	/*private Point pointFromBoard(Point pos) {
 		Bounds b = board.getBoundsInLocal();
 		Point p = new Point(pos.getX() - b.getMinX(), pos.getY() - b.getMinY());
 		return p;
-	}
+	}*/
 	
-	private boolean inTrash(double x, double y) {
+	public boolean inTrash(Point p) {
 		Bounds b = btnTrash.localToScene(btnTrash.getBoundsInLocal());
-		if ((x > b.getMinX() && x < b.getMinX() + btnTrash.getWidth())
-		&& (y > b.getMinY() && y < b.getMinY() + btnTrash.getHeight())) {
+		if ((p.getX() > b.getMinX() && p.getX() < b.getMinX() + btnTrash.getWidth())
+		&& (p.getY() > b.getMinY() && p.getY() < b.getMinY() + btnTrash.getHeight())) {
 			return true;
 		}
 		else {
@@ -274,7 +269,8 @@ public class ApplicationFx extends Application implements IApplication {
 			@Override
 			public void handle(MouseEvent dropEvent) {
 				if (inBoard(dropEvent.getSceneX(), dropEvent.getSceneY())) {
-					Point p = pointToBoard(dropEvent.getSceneX(), dropEvent.getSceneY());
+					Point p = pointToBoard(dropEvent.getSceneX() - sh.getLayoutBounds().getWidth()/2, 
+										   dropEvent.getSceneY() - sh.getLayoutBounds().getHeight()/2);
 					Controller.getInstance().dragNDrop(s, p);
 				}
 				sh.setFill(c);

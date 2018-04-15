@@ -14,6 +14,8 @@ public interface IApplication {
 	
 	public void addTool(IShapeSimple s);
 	
+	public boolean inTrash(Point p);
+	
 	public void clear();
 	
 	public void begin();

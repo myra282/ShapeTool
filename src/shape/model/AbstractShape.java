@@ -1,7 +1,6 @@
 package shape.model;
 
 import GraphicLibrary.Color;
-import GraphicLibrary.IApplication;
 
 public abstract class AbstractShape implements IShapeSimple {
 	
