@@ -17,6 +17,18 @@ public class ShapeComposite extends AbstractShape {
 	}
 	
 	@Override
+	public IShapeSimple clone() {
+		IShapeSimple s = null;
+		s = (IShapeSimple) super.clone();
+		((ShapeComposite) s).shapes = new Vector<IShapeSimple>();
+		for (ListIterator<IShapeSimple> i = iterator(); i.hasNext();) {
+		    IShapeSimple item = i.next();
+		    ((ShapeComposite) s).add(item.clone());
+		}
+		return s;
+	}
+	
+	@Override
 	public double getWidth() {
 		return width;
 	}

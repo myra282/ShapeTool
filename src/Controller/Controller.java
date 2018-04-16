@@ -45,12 +45,17 @@ public class Controller {
 	
 	public void begin() {
 		view = ApplicationFx.getInstance();
-		shape.model.Rectangle rect = new Rectangle(new Point(0, 0), 30, 20);
+		shape.model.Rectangle rect = new Rectangle(new Point(30, 0), 30, 20);
 		rect.setColor(new Color(200, 30, 30));
-		RegularPolygon poly = new RegularPolygon(new Point(0, 30), 5, 20);
+		RegularPolygon poly = new RegularPolygon(new Point(30, 30), 5, 20);
 		poly.setColor(new Color(30, 30, 200));
 		addTool(rect);
 		addTool(poly);
+		ShapeComposite group = new ShapeComposite();
+		group.add(rect.clone());
+		group.add(poly.clone());
+		group.setPosition(new Point(30, 80));
+		addTool(group);
 	}
 	
 	public boolean isInBoard(IShapeSimple s) {
@@ -246,16 +251,16 @@ public class Controller {
 			IShapeSimple item = getShapeFromPoint(p1);
 			if (item != null) {
 				IShapeSimple newTool = item.clone();
-				if (newTool.getWidth() > IApplication.BAR_MAX_WIDTH) {
-					newTool.scale(IApplication.BAR_MAX_WIDTH / newTool.getWidth());
-				}
 				Point oldPos = newTool.getPosition();
 		    	double stepX = p1.getX() - oldPos.getX();
 		    	double stepY = p1.getY() - oldPos.getY();
 		    	Point newPos = new Point(p2.getX()-stepX, p2.getY()-stepY);
+		    	if (newTool.getWidth() > IApplication.BAR_MAX_WIDTH) {
+					newTool.scale(0.8 * IApplication.BAR_MAX_WIDTH / newTool.getWidth());
+					newPos.setX(0);
+				}
 		    	newTool.setPosition(newPos);
 		    	if (isInToolbar(newTool)) {
-		    		System.out.println("tool added");
 		    		addTool(newTool);
 		    	}
 			}

@@ -178,9 +178,9 @@ public class ApplicationFx extends Application implements IApplication {
 	}
 	
 	private void draw(ShapeComposite s, Pane pane) {
-		for (Iterator<IShapeSimple> i = s.getShapes().iterator(); i.hasNext();) {
+		for (Iterator<IShapeSimple> i = s.iterator(); i.hasNext();) {
 		    IShapeSimple item = i.next();
-		    if (item instanceof Rectangle) {
+		    if (item instanceof shape.model.Rectangle) {
 		    	draw((shape.model.Rectangle) item, pane);
 		    }
 		    else if (item instanceof RegularPolygon) {
@@ -255,15 +255,12 @@ public class ApplicationFx extends Application implements IApplication {
 	public void addTool(IShapeSimple s) {
 		if (s instanceof shape.model.Rectangle) {
 			draw((shape.model.Rectangle) s,(StackPane) toolbar.getContent());
-			//dragNDrop(s);
 		}
 		else if (s instanceof RegularPolygon) {
 			draw((RegularPolygon) s,(StackPane) toolbar.getContent());
-			//dragNDrop(s);
 		}
 		else if (s instanceof ShapeComposite) {
 			draw((ShapeComposite) s,(StackPane) toolbar.getContent());
-			//dragNDrop(s);
 		}
 	}
 	
