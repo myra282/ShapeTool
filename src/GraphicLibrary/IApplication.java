@@ -1,7 +1,6 @@
 package GraphicLibrary;
 
 import shape.model.IShapeSimple;
-import shape.model.Point;
 import shape.model.Rectangle;
 import shape.model.RegularPolygon;
 import shape.model.ShapeComposite;
@@ -13,11 +12,7 @@ public interface IApplication {
 	public static final double BAR_MIN_WIDTH = 70;
 	public static final double BAR_MAX_WIDTH = 140;
 	
-	//public void draw(IShape s);
-	
 	public void addTool(IShapeSimple s);
-	
-	public boolean inTrash(Point p);
 	
 	public void clear();
 	

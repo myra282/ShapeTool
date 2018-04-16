@@ -131,7 +131,7 @@ public class ApplicationFx extends Application implements IApplication {
 		return p;
 	}*/
 	
-	public boolean inTrash(Point p) {
+	private boolean inTrash(Point p) {
 		Bounds b = btnTrash.localToScene(btnTrash.getBoundsInLocal());
 		if ((p.getX() > b.getMinX() && p.getX() < b.getMinX() + btnTrash.getWidth())
 		&& (p.getY() > b.getMinY() && p.getY() < b.getMinY() + btnTrash.getHeight())) {
@@ -142,8 +142,8 @@ public class ApplicationFx extends Application implements IApplication {
 		}
 	}
 	
-	public boolean inToolbar(Point p) {
-		Bounds b = toolbar.localToScene(toolbar.getBoundsInLocal());
+	private boolean inToolbar(Point p) {
+		Bounds b = toolbar.getContent().localToScene(toolbar.getContent().getBoundsInLocal());
 		if ((p.getX() > b.getMinX() && p.getX() < b.getMinX() + toolbar.getWidth())
 		&& (p.getY() > b.getMinY() && p.getY() < b.getMinY() + toolbar.getHeight())) {
 			return true;
@@ -151,6 +151,12 @@ public class ApplicationFx extends Application implements IApplication {
 		else {
 			return false;
 		}
+	}
+	
+	private Point pointToToolbar(double x, double y) {
+		Bounds b = toolbar.getContent().localToScene(toolbar.getContent().getBoundsInLocal());
+		Point p = new Point(x - b.getMinX(), y - b.getMinY());
+		return p;
 	}
 	
 	private Shape draw(shape.model.Rectangle r, Pane pane) {
@@ -249,11 +255,11 @@ public class ApplicationFx extends Application implements IApplication {
 	public void addTool(IShapeSimple s) {
 		if (s instanceof shape.model.Rectangle) {
 			draw((shape.model.Rectangle) s,(StackPane) toolbar.getContent());
-			dragNDrop(s);
+			//dragNDrop(s);
 		}
 		else if (s instanceof RegularPolygon) {
 			draw((RegularPolygon) s,(StackPane) toolbar.getContent());
-			dragNDrop(s);
+			//dragNDrop(s);
 		}
 		else if (s instanceof ShapeComposite) {
 			draw((ShapeComposite) s,(StackPane) toolbar.getContent());
@@ -272,29 +278,31 @@ public class ApplicationFx extends Application implements IApplication {
 		else {
 			sh = null;
 		}
-		Color c = (Color) sh.getFill();
-		sh.setOnMouseDragged(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent dragEvent) {
-				if (dragEvent.getEventType() == MouseEvent.MOUSE_DRAGGED  && dragEvent.isPrimaryButtonDown()) {
-					sh.setFill(Color.rgb(0, 200, 0));
+		if (sh != null) {
+			Color c = (Color) sh.getFill();
+			sh.setOnMouseDragged(new EventHandler<MouseEvent>() {
+				@Override
+				public void handle(MouseEvent dragEvent) {
+					if (dragEvent.getEventType() == MouseEvent.MOUSE_DRAGGED  && dragEvent.isPrimaryButtonDown()) {
+						sh.setFill(Color.rgb(0, 200, 0));
+					}
+					dragEvent.consume();
 				}
-				dragEvent.consume();
-			}
-		});
-		sh.setOnMouseReleased(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent dropEvent) {
-				Point dropped = new Point(dropEvent.getSceneX(), dropEvent.getSceneY());
-				if (inBoard(dropped)) {
-					Point p = pointToBoard(dropEvent.getSceneX() - sh.getLayoutBounds().getWidth()/2, 
-										   dropEvent.getSceneY() - sh.getLayoutBounds().getHeight()/2);
-					Controller.getInstance().dragNDrop(s, p);
+			});
+			sh.setOnMouseReleased(new EventHandler<MouseEvent>() {
+				@Override
+				public void handle(MouseEvent dropEvent) {
+					Point dropped = new Point(dropEvent.getSceneX(), dropEvent.getSceneY());
+					if (inBoard(dropped)) {
+						Point p = pointToBoard(dropEvent.getSceneX() - sh.getLayoutBounds().getWidth()/2, 
+											   dropEvent.getSceneY() - sh.getLayoutBounds().getHeight()/2);
+						Controller.getInstance().dragNDrop(s, p);
+					}
+					sh.setFill(c);
+					dropEvent.consume();
 				}
-				sh.setFill(c);
-				dropEvent.consume();
-			}
-		});
+			});
+		}
 	}
 	
 	public void dragNDrop(IShapeSimple s) {		
@@ -309,11 +317,16 @@ public class ApplicationFx extends Application implements IApplication {
 	@Override
 	public void clear() {
 		board.getChildren().clear();
+		((StackPane) toolbar.getContent()).getChildren().clear();
 	}
 	
 	public void addEvents() {
+		addBoardEvents();
+		addToolbarEvents();
+	}
+	
+	private void addBoardEvents() {
 		Point p1 = new Point(-1,-1);
-		Point p2 = new Point(0,0);
 		board.setOnMouseDragged(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
@@ -327,19 +340,50 @@ public class ApplicationFx extends Application implements IApplication {
 		board.setOnMouseReleased(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
-				Point tmp = pointToBoard(event.getSceneX(), event.getSceneY());
-				p2.setX(tmp.getX());
-				p2.setY(tmp.getY());
 				boolean mouseKey = event.getButton().compareTo(MouseButton.PRIMARY) == 0;
 				Point dropped = new Point(event.getSceneX(),event.getSceneY());
 				if (inBoard(dropped)) {
-					Controller.getInstance().handleMouseEvent(p1,p2,mouseKey);
+					Point p2 = pointToBoard(event.getSceneX(), event.getSceneY());
+					Controller.getInstance().handleMouseEvent(p1, p2, mouseKey);
 				}
 				else if (inTrash(dropped)) {
-					Controller.getInstance().handleTrashEvent(p1,p2,mouseKey);
+					Controller.getInstance().handleTrashEvent(p1, mouseKey);
 				}
 				else if (inToolbar(dropped)) {
-					Controller.getInstance().handleNewToolEvent(p1, mouseKey);
+					Point p2 = pointToToolbar(event.getSceneX(), event.getSceneY());
+					Controller.getInstance().handleNewToolEvent(p1, p2, mouseKey);
+				}
+			}
+		});
+	}
+	
+	private void addToolbarEvents() {
+		Point p1 = new Point(-1,-1);
+		toolbar.getContent().setOnMouseDragged(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				if (p1.equals(new Point(-1,-1))) {
+					Point tmp = pointToToolbar(event.getSceneX(), event.getSceneY());
+					p1.setX(tmp.getX());
+					p1.setY(tmp.getY());
+				}
+			}
+		});
+		toolbar.getContent().setOnMouseReleased(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				boolean mouseKey = event.getButton().compareTo(MouseButton.PRIMARY) == 0;
+				Point dropped = new Point(event.getSceneX(),event.getSceneY());
+				if (inToolbar(dropped)) {
+					Point p2 = pointToToolbar(event.getSceneX(), event.getSceneY());
+					Controller.getInstance().handleMouseToolEvent(p1, p2, mouseKey);
+				}
+				else if (inTrash(dropped)) {
+					Controller.getInstance().handleTrashToolEvent(p1, mouseKey);
+				}
+				else if (inBoard(dropped)) {
+					Point p2 = pointToBoard(event.getSceneX(), event.getSceneY());
+					Controller.getInstance().handleDragToolEvent(p1, p2, mouseKey);
 				}
 			}
 		});
@@ -357,6 +401,7 @@ public class ApplicationFx extends Application implements IApplication {
 		toolbar.setHbarPolicy(ScrollBarPolicy.ALWAYS);
 		toolbar.setVbarPolicy(ScrollBarPolicy.ALWAYS);
 		toolbar.setFitToWidth(true);
+		((StackPane) toolbar.getContent()).setAlignment(Pos.TOP_LEFT);
 		borderPane.setTop(menu);
 		borderPane.setLeft(toolbar);
 		borderPane.setCenter(board);

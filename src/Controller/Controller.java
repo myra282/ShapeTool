@@ -59,15 +59,16 @@ public class Controller {
 		return s.isInside(min, max);
 	}
 	
+	public boolean isInToolbar(IShapeSimple s) {
+		Point min = new Point(0, 0);
+		Point max = new Point(IApplication.BAR_MAX_WIDTH, IApplication.BOARD_HEIGHT);
+		return s.isInside(min, max);
+	}
+	
 	public void dragNDrop(IShapeSimple s, Point p) {
 		IShapeSimple s2 = s.clone();
 		s2.setPosition(p);
 		addShape(s2);
-		redraw();
-	}
-	
-	public void erase(IShapeSimple s) {
-		rmShape(s);
 		redraw();
 	}
 	
@@ -144,13 +145,12 @@ public class Controller {
 		}
 	}
 	
-	public void addTool(IShapeSimple s) {
-		tools.add(s);
-		view.addTool(s);
-	}
-	
 	public void redraw() {
 		view.clear();
+		for (ListIterator<IShapeSimple> i = toolsIterator(); i.hasNext();) {
+		    IShapeSimple item = i.next();
+		    view.addTool(item);
+		}
 		for (ListIterator<IShapeSimple> i = shapeIterator(); i.hasNext();) {
 		    IShapeSimple item = i.next();
 		    if (item instanceof Rectangle) {
@@ -170,16 +170,25 @@ public class Controller {
 		return shapes.listIterator();
 	}
 	
-	public ListIterator<IShapeSimple> toolsIterator() {
-		return tools.listIterator();
-	}
-	
 	public void addShape(IShapeSimple s) {
 		shapes.add(s);
 	}
 
 	public void rmShape(IShapeSimple s) {
 		shapes.remove(s);
+	}
+	
+	public ListIterator<IShapeSimple> toolsIterator() {
+		return tools.listIterator();
+	}
+	
+	public void addTool(IShapeSimple s) {
+		tools.add(s);
+		view.addTool(s);
+	}
+	
+	public void rmTool(IShapeSimple s) {
+		tools.remove(s);
 	}
 	
 	public IShapeSimple getShapeFromPoint(Point p) {
@@ -192,17 +201,14 @@ public class Controller {
 		return null;
 	}
 	
-	public double getNewToolY() {
-		double y = 0;
+	public IShapeSimple getToolFromPoint(Point p) {
 		for (ListIterator<IShapeSimple> i = toolsIterator(); i.hasNext();) {
 			IShapeSimple item = i.next();
-			double tmp = item.getPosition().getY() + item.getHeight();
-		    if (tmp > y) { //Move
-	    		y = tmp;
-		    }
+			if (item.contains(p)) {
+				return item;
+			}
 		}
-		y += 5;
-		return y;
+		return null;
 	}
 
 	public void handleMouseEvent(Point p1, Point p2, boolean mouseKey) { //mouseKey : true for primary key
@@ -225,17 +231,17 @@ public class Controller {
 		}
 	}
 	
-	public void handleTrashEvent(Point p1, Point p2, boolean mouseKey) { //mouseKey : true for primary key
+	public void handleTrashEvent(Point p1, boolean mouseKey) { //mouseKey : true for primary key
 		if (mouseKey) {
 			IShapeSimple item = getShapeFromPoint(p1);
 			if (item != null) {
-	    		erase(item);
+	    		rmShape(item);
 			}
 			redraw();
 		}
 	}
 	
-	public void handleNewToolEvent(Point p1, boolean mouseKey) { //mouseKey : true for primary key
+	public void handleNewToolEvent(Point p1, Point p2, boolean mouseKey) { //mouseKey : true for primary key
 		if (mouseKey) {
 			IShapeSimple item = getShapeFromPoint(p1);
 			if (item != null) {
@@ -243,8 +249,60 @@ public class Controller {
 				if (newTool.getWidth() > IApplication.BAR_MAX_WIDTH) {
 					newTool.scale(IApplication.BAR_MAX_WIDTH / newTool.getWidth());
 				}
-				newTool.setPosition(new Point(0, getNewToolY()));
-	    		addTool(newTool);
+				Point oldPos = newTool.getPosition();
+		    	double stepX = p1.getX() - oldPos.getX();
+		    	double stepY = p1.getY() - oldPos.getY();
+		    	Point newPos = new Point(p2.getX()-stepX, p2.getY()-stepY);
+		    	newTool.setPosition(newPos);
+		    	if (isInToolbar(newTool)) {
+		    		System.out.println("tool added");
+		    		addTool(newTool);
+		    	}
+			}
+			redraw();
+		}
+	}
+
+	public void handleMouseToolEvent(Point p1, Point p2, boolean mouseKey) {
+		if (mouseKey) {
+			IShapeSimple item = getToolFromPoint(p1);
+			if (item != null) {
+				Point oldPos = item.getPosition();
+		    	double stepX = p1.getX() - oldPos.getX();
+		    	double stepY = p1.getY() - oldPos.getY();
+		    	Point newPos = new Point(p2.getX()-stepX, p2.getY()-stepY);
+		    	item.setPosition(newPos);
+		    	if (!isInToolbar(item)) { //if shape exceeds toolbar bounds, rollback
+		    		item.setPosition(oldPos);
+		    	}
+			}
+			redraw();
+		}
+	}
+
+	public void handleTrashToolEvent(Point p1, boolean mouseKey) {
+		if (mouseKey) {
+			IShapeSimple item = getToolFromPoint(p1);
+			if (item != null) {
+	    		rmTool(item);
+			}
+			redraw();
+		}
+	}
+
+	public void handleDragToolEvent(Point p1, Point p2, boolean mouseKey) {
+		if (mouseKey) {
+			IShapeSimple item = getToolFromPoint(p1);
+			if (item != null) {
+				IShapeSimple shape = item.clone();
+				Point oldPos = shape.getPosition();
+		    	double stepX = p1.getX() - oldPos.getX();
+		    	double stepY = p1.getY() - oldPos.getY();
+		    	Point newPos = new Point(p2.getX()-stepX, p2.getY()-stepY);
+		    	shape.setPosition(newPos);
+		    	if (isInBoard(shape)) {
+		    		addShape(shape);
+		    	}
 			}
 			redraw();
 		}
