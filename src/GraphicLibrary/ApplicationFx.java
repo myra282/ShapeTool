@@ -142,6 +142,17 @@ public class ApplicationFx extends Application implements IApplication {
 		}
 	}
 	
+	public boolean inToolbar(Point p) {
+		Bounds b = toolbar.localToScene(toolbar.getBoundsInLocal());
+		if ((p.getX() > b.getMinX() && p.getX() < b.getMinX() + toolbar.getWidth())
+		&& (p.getY() > b.getMinY() && p.getY() < b.getMinY() + toolbar.getHeight())) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	
 	private Shape draw(shape.model.Rectangle r, Pane pane) {
 		Shape sh = new Rectangle(r.getPosition().getX(), r.getPosition().getY(), r.getWidth(), r.getHeight());
 		sh.setFill(Color.rgb(r.getColor().getR(), r.getColor().getG(), r.getColor().getB(), r.getColor().getAlpha()));
@@ -238,12 +249,15 @@ public class ApplicationFx extends Application implements IApplication {
 	public void addTool(IShapeSimple s) {
 		if (s instanceof shape.model.Rectangle) {
 			draw((shape.model.Rectangle) s,(StackPane) toolbar.getContent());
+			dragNDrop(s);
 		}
 		else if (s instanceof RegularPolygon) {
 			draw((RegularPolygon) s,(StackPane) toolbar.getContent());
+			dragNDrop(s);
 		}
 		else if (s instanceof ShapeComposite) {
 			draw((ShapeComposite) s,(StackPane) toolbar.getContent());
+			//dragNDrop(s);
 		}
 	}
 	
@@ -252,8 +266,11 @@ public class ApplicationFx extends Application implements IApplication {
 		if (s instanceof shape.model.Rectangle) {
 			sh = draw((shape.model.Rectangle) s, pane);
 		}
-		else {
+		else if (s instanceof RegularPolygon) {
 			sh = draw((RegularPolygon) s, pane);
+		}
+		else {
+			sh = null;
 		}
 		Color c = (Color) sh.getFill();
 		sh.setOnMouseDragged(new EventHandler<MouseEvent>() {
@@ -320,6 +337,9 @@ public class ApplicationFx extends Application implements IApplication {
 				}
 				else if (inTrash(dropped)) {
 					Controller.getInstance().handleTrashEvent(p1,p2,mouseKey);
+				}
+				else if (inToolbar(dropped)) {
+					Controller.getInstance().handleNewToolEvent(p1, mouseKey);
 				}
 			}
 		});

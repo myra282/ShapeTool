@@ -2,6 +2,9 @@ package GraphicLibrary;
 
 import shape.model.IShapeSimple;
 import shape.model.Point;
+import shape.model.Rectangle;
+import shape.model.RegularPolygon;
+import shape.model.ShapeComposite;
 
 public interface IApplication {
 	
@@ -19,5 +22,13 @@ public interface IApplication {
 	public void clear();
 	
 	public void begin();
+
+	public void draw(Rectangle item);
+
+	public void draw(RegularPolygon item);
+
+	public void draw(ShapeComposite item);
+
+	public void addEvents();
 
 }

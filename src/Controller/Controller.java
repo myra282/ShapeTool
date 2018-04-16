@@ -19,7 +19,7 @@ public class Controller {
 	private Vector<IShapeSimple> shapes;
 	private Vector<IShapeSimple> selected;
 	
-	private ApplicationFx view;
+	private IApplication view;
 	private static Controller controller = new Controller();
 	
 	private Controller() {
@@ -147,7 +147,6 @@ public class Controller {
 	public void addTool(IShapeSimple s) {
 		tools.add(s);
 		view.addTool(s);
-		view.dragNDrop(s);
 	}
 	
 	public void redraw() {
@@ -171,6 +170,10 @@ public class Controller {
 		return shapes.listIterator();
 	}
 	
+	public ListIterator<IShapeSimple> toolsIterator() {
+		return tools.listIterator();
+	}
+	
 	public void addShape(IShapeSimple s) {
 		shapes.add(s);
 	}
@@ -187,6 +190,19 @@ public class Controller {
 		    }
 		}
 		return null;
+	}
+	
+	public double getNewToolY() {
+		double y = 0;
+		for (ListIterator<IShapeSimple> i = toolsIterator(); i.hasNext();) {
+			IShapeSimple item = i.next();
+			double tmp = item.getPosition().getY() + item.getHeight();
+		    if (tmp > y) { //Move
+	    		y = tmp;
+		    }
+		}
+		y += 5;
+		return y;
 	}
 
 	public void handleMouseEvent(Point p1, Point p2, boolean mouseKey) { //mouseKey : true for primary key
@@ -213,7 +229,22 @@ public class Controller {
 		if (mouseKey) {
 			IShapeSimple item = getShapeFromPoint(p1);
 			if (item != null) {
-	    		this.erase(item);
+	    		erase(item);
+			}
+			redraw();
+		}
+	}
+	
+	public void handleNewToolEvent(Point p1, boolean mouseKey) { //mouseKey : true for primary key
+		if (mouseKey) {
+			IShapeSimple item = getShapeFromPoint(p1);
+			if (item != null) {
+				IShapeSimple newTool = item.clone();
+				if (newTool.getWidth() > IApplication.BAR_MAX_WIDTH) {
+					newTool.scale(IApplication.BAR_MAX_WIDTH / newTool.getWidth());
+				}
+				newTool.setPosition(new Point(0, getNewToolY()));
+	    		addTool(newTool);
 			}
 			redraw();
 		}

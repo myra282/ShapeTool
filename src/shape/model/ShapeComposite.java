@@ -132,7 +132,12 @@ public class ShapeComposite extends AbstractShape {
 		for (ListIterator<IShapeSimple> i = shapes.listIterator(); i.hasNext();) {
 		    IShapeSimple item = i.next();
 		    item.scale(ratio);
+		    Point pos = item.getPosition();
+		    double diffX = (pos.getX() - getPosition().getX()) * ratio;
+		    double diffY = (pos.getY() - getPosition().getY()) * ratio;
+		    item.setPosition(new Point(getPosition().getX() + diffX, getPosition().getY() + diffY));
 		}
+		update();
 	}
 
 	public ListIterator<IShapeSimple> iterator() {
