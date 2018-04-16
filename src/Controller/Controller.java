@@ -118,7 +118,6 @@ public class Controller {
 	}
 	
 	public void group() {
-		System.out.println(selected.size());
 		if (selected.size() > 1) {
 			ShapeComposite group = new ShapeComposite();
 			for (ListIterator<IShapeSimple> i = selected.listIterator(); i.hasNext();) {
@@ -127,7 +126,6 @@ public class Controller {
 			    group.add(item);
 			}
 			addShape(group);
-			System.out.println("Grouped (Yay !)");
 		}
 		selected.removeAllElements();
 	}
@@ -180,31 +178,42 @@ public class Controller {
 	public void rmShape(IShapeSimple s) {
 		shapes.remove(s);
 	}
+	
+	public IShapeSimple getShapeFromPoint(Point p) {
+		for (ListIterator<IShapeSimple> i = shapeIterator(); i.hasNext();) {
+			IShapeSimple item = i.next();
+		    if (item.contains(p)) { //Move
+	    		return item;
+		    }
+		}
+		return null;
+	}
 
 	public void handleMouseEvent(Point p1, Point p2, boolean mouseKey) { //mouseKey : true for primary key
 		if (mouseKey) {
-			for (ListIterator<IShapeSimple> i = shapeIterator(); i.hasNext();) {
-				IShapeSimple item = i.next();
-			    if (item.contains(p1)) { //Move
-			    	if (view.inTrash(p1)) {
-			    		System.out.println("erased !");
-			    		this.erase(item);
-			    	}
-			    	else {
-			    		Point oldPos = item.getPosition();
-				    	double stepX = p1.getX() - oldPos.getX();
-				    	double stepY = p1.getY() - oldPos.getY();
-				    	Point newPos = new Point(p2.getX()-stepX, p2.getY()-stepY);
-				    	item.setPosition(newPos);
-				    	if (!isInBoard(item)) { //if shape exceeds board bounds, rollback
-				    		item.setPosition(oldPos);
-				    	}
-			    	}
-			    	break;
-			    }
-			    else {
-			    	select(p1, p2);
-			    }
+			IShapeSimple item = getShapeFromPoint(p1);
+			if (item != null) {
+				Point oldPos = item.getPosition();
+		    	double stepX = p1.getX() - oldPos.getX();
+		    	double stepY = p1.getY() - oldPos.getY();
+		    	Point newPos = new Point(p2.getX()-stepX, p2.getY()-stepY);
+		    	item.setPosition(newPos);
+		    	if (!isInBoard(item)) { //if shape exceeds board bounds, rollback
+		    		item.setPosition(oldPos);
+		    	}
+			}
+			else {
+				select(p1, p2);
+			}
+			redraw();
+		}
+	}
+	
+	public void handleTrashEvent(Point p1, Point p2, boolean mouseKey) { //mouseKey : true for primary key
+		if (mouseKey) {
+			IShapeSimple item = getShapeFromPoint(p1);
+			if (item != null) {
+	    		this.erase(item);
 			}
 			redraw();
 		}

@@ -108,10 +108,10 @@ public class ApplicationFx extends Application implements IApplication {
 		return instance;
 	}
 	
-	private boolean inBoard(double x, double y) {
+	private boolean inBoard(Point p) {
 		Bounds b = board.localToScene(board.getBoundsInLocal());
-		if ((x > b.getMinX() && x < b.getMinX() + board.getWidth())
-		&& (y > b.getMinY() && y < b.getMinY() + board.getHeight())) {
+		if ((p.getX() > b.getMinX() && p.getX() < b.getMinX() + board.getWidth())
+		&& (p.getY() > b.getMinY() && p.getY() < b.getMinY() + board.getHeight())) {
 			return true;
 		}
 		else {
@@ -268,7 +268,8 @@ public class ApplicationFx extends Application implements IApplication {
 		sh.setOnMouseReleased(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent dropEvent) {
-				if (inBoard(dropEvent.getSceneX(), dropEvent.getSceneY())) {
+				Point dropped = new Point(dropEvent.getSceneX(), dropEvent.getSceneY());
+				if (inBoard(dropped)) {
 					Point p = pointToBoard(dropEvent.getSceneX() - sh.getLayoutBounds().getWidth()/2, 
 										   dropEvent.getSceneY() - sh.getLayoutBounds().getHeight()/2);
 					Controller.getInstance().dragNDrop(s, p);
@@ -313,8 +314,12 @@ public class ApplicationFx extends Application implements IApplication {
 				p2.setX(tmp.getX());
 				p2.setY(tmp.getY());
 				boolean mouseKey = event.getButton().compareTo(MouseButton.PRIMARY) == 0;
-				if (inBoard(event.getSceneX(),event.getSceneY())) {
+				Point dropped = new Point(event.getSceneX(),event.getSceneY());
+				if (inBoard(dropped)) {
 					Controller.getInstance().handleMouseEvent(p1,p2,mouseKey);
+				}
+				else if (inTrash(dropped)) {
+					Controller.getInstance().handleTrashEvent(p1,p2,mouseKey);
 				}
 			}
 		});
