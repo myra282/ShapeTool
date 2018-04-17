@@ -1,6 +1,6 @@
 package shape.model;
 
-public class Point implements Cloneable {
+public class Point {
 	
 	private double x;
 	private double y;
@@ -8,15 +8,6 @@ public class Point implements Cloneable {
 	public Point(double x, double y) {
 		this.x = x;
 		this.y = y;
-	}
-	
-	@Override
-	public Point clone() {
-		try {
-			return (Point) super.clone();
-		} catch (CloneNotSupportedException e) {}
-		
-		return null;
 	}
 
 	public double getX() {

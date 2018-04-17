@@ -3,6 +3,8 @@ package shape.model;
 import java.util.ListIterator;
 import java.util.Vector;
 
+import GraphicLibrary.Color;
+
 public class ShapeComposite extends AbstractShape {
 	
 	private double width;
@@ -19,7 +21,7 @@ public class ShapeComposite extends AbstractShape {
 	@Override
 	public IShapeSimple clone() {
 		IShapeSimple s = null;
-		s = (IShapeSimple) super.clone();
+		s = (IShapeSimple) (AbstractShape) super.clone();
 		((ShapeComposite) s).shapes = new Vector<IShapeSimple>();
 		for (ListIterator<IShapeSimple> i = iterator(); i.hasNext();) {
 		    IShapeSimple item = i.next();
@@ -67,6 +69,21 @@ public class ShapeComposite extends AbstractShape {
 		    item.setPosition(new Point(pos.getX()+diffX, pos.getY()+diffY));
 		}
 		super.setPosition(p);
+	}
+	
+	@Override
+	public void setColor(Color c) {
+		// update each shape color
+		for (ListIterator<IShapeSimple> i = shapes.listIterator(); i.hasNext();) {
+		    IShapeSimple item = i.next();
+		    if (c.equals(getColor())) {
+		    	item.getColor().setAlpha(c.getAlpha());
+		    }
+		    else {
+		    	item.setColor(c);
+		    }
+		}
+		super.setColor(c);
 	}
 	
 	private void computeWidth() {

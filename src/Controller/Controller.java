@@ -159,7 +159,7 @@ public class Controller {
 		    else if (item instanceof RegularPolygon) {
 		    	view.draw((RegularPolygon) item);
 		    }
-		    if (item instanceof ShapeComposite) {
+		    else if (item instanceof ShapeComposite) {
 		    	view.draw((ShapeComposite) item);
 		    }
 		}
@@ -212,7 +212,7 @@ public class Controller {
 	}
 
 	public void handleMouseEvent(Point p1, Point p2, boolean mouseKey) { //mouseKey : true for primary key
-		if (mouseKey) {
+		if (mouseKey && p1 != null) {
 			IShapeSimple item = getShapeFromPoint(p1);
 			if (item != null) {
 				Point oldPos = item.getPosition();
@@ -220,7 +220,6 @@ public class Controller {
 		    	double stepY = p1.getY() - oldPos.getY();
 		    	Point newPos = new Point(p2.getX()-stepX, p2.getY()-stepY);
 		    	item.setPosition(newPos);
-		    	System.out.println("oldPos, newPos : "+oldPos+" , "+newPos);
 		    	if (!isInBoard(item)) { //if shape exceeds board bounds, rollback
 		    		item.setPosition(oldPos);
 		    	}
@@ -233,7 +232,7 @@ public class Controller {
 	}
 	
 	public void handleTrashEvent(Point p1, boolean mouseKey) { //mouseKey : true for primary key
-		if (mouseKey) {
+		if (mouseKey && p1 != null) {
 			IShapeSimple item = getShapeFromPoint(p1);
 			if (item != null) {
 	    		rmShape(item);
@@ -243,7 +242,7 @@ public class Controller {
 	}
 	
 	public void handleNewToolEvent(Point p1, Point p2, boolean mouseKey) { //mouseKey : true for primary key
-		if (mouseKey) {
+		if (mouseKey && p1 != null) {
 			IShapeSimple item = getShapeFromPoint(p1);
 			if (item != null) {
 				IShapeSimple newTool = item.clone();
@@ -265,7 +264,7 @@ public class Controller {
 	}
 
 	public void handleMouseToolEvent(Point p1, Point p2, boolean mouseKey) {
-		if (mouseKey) {
+		if (mouseKey && p1 != null) {
 			IShapeSimple item = getToolFromPoint(p1);
 			if (item != null) {
 				Point oldPos = item.getPosition();
@@ -282,7 +281,7 @@ public class Controller {
 	}
 
 	public void handleTrashToolEvent(Point p1, boolean mouseKey) {
-		if (mouseKey) {
+		if (mouseKey && p1 != null) {
 			IShapeSimple item = getToolFromPoint(p1);
 			if (item != null) {
 	    		rmTool(item);
@@ -292,7 +291,7 @@ public class Controller {
 	}
 
 	public void handleDragToolEvent(Point p1, Point p2, boolean mouseKey) {
-		if (mouseKey) {
+		if (mouseKey && p1 != null) {
 			IShapeSimple item = getToolFromPoint(p1);
 			if (item != null) {
 				IShapeSimple shape = item.clone();

@@ -61,5 +61,27 @@ public class Color implements Cloneable {
 	public void setAlpha(double alpha) {
 		this.alpha = alpha;
 	}
+	
+	@Override
+	public boolean equals(Object other){
+	    if (other == null) {
+	    	return false;
+	    }
+	    else if (other == this) {
+	    	return true;
+	    }
+	    else if (!(other instanceof Color)) {
+	    	return false;
+	    }
+	    else {
+	    	Color otherColor = (Color) other;
+	    	if ((r == otherColor.r) && (g == otherColor.g) && (b == otherColor.b)) {
+	    		return true;
+	    	}
+	    	else {
+	    		return false;
+	    	}
+	    }
+	}
 
 }
