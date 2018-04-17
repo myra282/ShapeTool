@@ -1,4 +1,4 @@
-package GraphicLibrary;
+package shape.graphicapplication;
 
 public class Color implements Cloneable {
 	

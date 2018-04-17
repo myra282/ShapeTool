@@ -1,12 +1,12 @@
-package Controller;
+package shape.control;
 
 import java.util.ListIterator;
 import java.util.Vector;
 
-import GraphicLibrary.Color;
-import GraphicLibrary.IApplication;
-import GraphicLibrary.ApplicationFx;
 import javafx.application.Application;
+import shape.graphicapplication.ApplicationFx;
+import shape.graphicapplication.Color;
+import shape.graphicapplication.IApplication;
 import shape.model.IShapeSimple;
 import shape.model.Point;
 import shape.model.Rectangle;

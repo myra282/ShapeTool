@@ -1,4 +1,4 @@
-import Controller.Controller;
+import shape.control.Controller;
 
 public class Main {
 

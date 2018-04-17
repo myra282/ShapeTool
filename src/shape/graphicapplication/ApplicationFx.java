@@ -1,7 +1,8 @@
-package GraphicLibrary;
+package shape.graphicapplication;
 
 import javafx.scene.shape.Shape;
 import javafx.stage.Stage;
+import shape.control.Controller;
 import shape.model.IShapeSimple;
 import shape.model.Point;
 import shape.model.RegularPolygon;
@@ -33,8 +34,6 @@ import javafx.scene.shape.Rectangle;
 
 import java.util.Iterator;
 import java.util.ListIterator;
-
-import Controller.Controller;
 
 public class ApplicationFx extends Application implements IApplication {
 	
@@ -367,7 +366,7 @@ public class ApplicationFx extends Application implements IApplication {
 						IShapeSimple s = Controller.getInstance().getShapeFromPoint(eventPoint);
 						if (s != null) {
 							shadow = s.clone();
-							GraphicLibrary.Color c = shadow.getColor().clone();
+							shape.graphicapplication.Color c = shadow.getColor().clone();
 							c.setAlpha(0.1);
 							shadow.setColor(c);
 							gap = new Point(eventPoint.getX() - s.getPosition().getX(), 
@@ -427,7 +426,7 @@ public class ApplicationFx extends Application implements IApplication {
 						IShapeSimple s = Controller.getInstance().getToolFromPoint(eventPoint);
 						if (s != null) {
 							shadow = s.clone();
-							GraphicLibrary.Color c = shadow.getColor().clone();
+							shape.graphicapplication.Color c = shadow.getColor().clone();
 							c.setAlpha(0.1);
 							shadow.setColor(c);
 							gap = new Point(eventPoint.getX() - s.getPosition().getX(), 

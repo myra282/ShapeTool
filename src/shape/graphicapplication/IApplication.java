@@ -1,4 +1,4 @@
-package GraphicLibrary;
+package shape.graphicapplication;
 
 import shape.model.IShapeSimple;
 import shape.model.Rectangle;

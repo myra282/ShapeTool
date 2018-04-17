@@ -1,6 +1,6 @@
 package shape.model;
 
-import GraphicLibrary.Color;
+import shape.graphicapplication.Color;
 
 public interface IShape {
 	

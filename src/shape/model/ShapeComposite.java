@@ -3,7 +3,7 @@ package shape.model;
 import java.util.ListIterator;
 import java.util.Vector;
 
-import GraphicLibrary.Color;
+import shape.graphicapplication.Color;
 
 public class ShapeComposite extends AbstractShape {
 	

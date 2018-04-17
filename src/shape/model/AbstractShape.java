@@ -1,6 +1,6 @@
 package shape.model;
 
-import GraphicLibrary.Color;
+import shape.graphicapplication.Color;
 
 public abstract class AbstractShape implements IShapeSimple {
 	
