@@ -51,11 +51,6 @@ public class Controller {
 		poly.setColor(new Color(30, 30, 200));
 		addTool(rect);
 		addTool(poly);
-		ShapeComposite group = new ShapeComposite();
-		group.add(rect.clone());
-		group.add(poly.clone());
-		group.setPosition(new Point(30, 80));
-		addTool(group);
 	}
 	
 	public boolean isInBoard(IShapeSimple s) {
@@ -225,6 +220,7 @@ public class Controller {
 		    	double stepY = p1.getY() - oldPos.getY();
 		    	Point newPos = new Point(p2.getX()-stepX, p2.getY()-stepY);
 		    	item.setPosition(newPos);
+		    	System.out.println("oldPos, newPos : "+oldPos+" , "+newPos);
 		    	if (!isInBoard(item)) { //if shape exceeds board bounds, rollback
 		    		item.setPosition(oldPos);
 		    	}

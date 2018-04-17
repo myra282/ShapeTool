@@ -29,7 +29,12 @@ public abstract class AbstractShape implements IShapeSimple {
 	@Override
 	public IShapeSimple clone() {
 		try {
-			return (IShapeSimple) super.clone();
+			IShapeSimple s = (IShapeSimple) super.clone();
+			((AbstractShape) s).parent = null;
+			((AbstractShape) s).position = position.clone();
+			((AbstractShape) s).rotationCenter = rotationCenter.clone();
+			((AbstractShape) s).color = color.clone();
+			return s;
 		} catch (CloneNotSupportedException e) {}
 		
 		return null;

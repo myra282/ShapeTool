@@ -1,6 +1,6 @@
 package GraphicLibrary;
 
-public class Color {
+public class Color implements Cloneable {
 	
 	private int r;
 	private int g;
@@ -19,6 +19,15 @@ public class Color {
 		this.g = g;
 		this.b = b;
 		this.alpha = 1;
+	}
+	
+	@Override
+	public Color clone() {
+		try {
+			return (Color) super.clone();
+		} catch (CloneNotSupportedException e) {}
+		
+		return null;
 	}
 
 	public int getR() {

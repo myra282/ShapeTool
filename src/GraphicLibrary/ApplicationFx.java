@@ -46,6 +46,8 @@ public class ApplicationFx extends Application implements IApplication {
 	private Button btnSave, btnLoad, btnUndo, btnRedo, btnTrash;
 	private Stage pStage;
 	
+	IShapeSimple shadow;
+	
 	private static ApplicationFx instance = null;
 	
 	public ApplicationFx() throws Exception {
@@ -99,6 +101,9 @@ public class ApplicationFx extends Application implements IApplication {
 						event.consume();
 					}
 				});
+				
+				shadow = null;
+				
 				instance = this;
 			}
 		}
@@ -179,6 +184,7 @@ public class ApplicationFx extends Application implements IApplication {
 	
 	private void draw(ShapeComposite s, Pane pane) {
 		for (Iterator<IShapeSimple> i = s.iterator(); i.hasNext();) {
+			Shape sh = null;
 		    IShapeSimple item = i.next();
 		    if (item instanceof shape.model.Rectangle) {
 		    	draw((shape.model.Rectangle) item, pane);
@@ -186,7 +192,7 @@ public class ApplicationFx extends Application implements IApplication {
 		    else if (item instanceof RegularPolygon) {
 		    	draw((RegularPolygon) item, pane);
 		    }
-		    if (item instanceof ShapeComposite) {
+		    else if (item instanceof ShapeComposite) {
 		    	draw((ShapeComposite) item, pane);
 		    }
 		}
@@ -324,13 +330,39 @@ public class ApplicationFx extends Application implements IApplication {
 	
 	private void addBoardEvents() {
 		Point p1 = new Point(-1,-1);
+		Point diff = new Point(-1, -1);
 		board.setOnMouseDragged(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
+				Point tmp = pointToBoard(event.getSceneX(), event.getSceneY());
 				if (p1.equals(new Point(-1,-1))) {
-					Point tmp = pointToBoard(event.getSceneX(), event.getSceneY());
 					p1.setX(tmp.getX());
 					p1.setY(tmp.getY());
+					if (shadow == null) {
+						IShapeSimple s = Controller.getInstance().getShapeFromPoint(p1);
+						if (s != null) {
+							shadow = s.clone();
+							shadow.getColor().setAlpha(0.1);
+							diff.setX(p1.getX() - s.getPosition().getX());
+							diff.setY(p1.getY() - s.getPosition().getY());
+							System.out.println("coucou");
+						}
+					}
+				}
+				if (shadow != null) {
+					Controller.getInstance().redraw();
+					System.out.println("diff : "+diff);
+					shadow.getPosition().setX(tmp.getX() - diff.getX());
+					shadow.getPosition().setY(tmp.getY() - diff.getY());
+					if (shadow instanceof shape.model.Rectangle) {
+				    	draw((shape.model.Rectangle) shadow);
+				    }
+				    else if (shadow instanceof RegularPolygon) {
+				    	draw((RegularPolygon) shadow);
+				    }
+				    if (shadow instanceof ShapeComposite) {
+				    	draw((ShapeComposite) shadow);
+				    }
 				}
 			}
 		});
@@ -350,6 +382,7 @@ public class ApplicationFx extends Application implements IApplication {
 					Point p2 = pointToToolbar(event.getSceneX(), event.getSceneY());
 					Controller.getInstance().handleNewToolEvent(p1, p2, mouseKey);
 				}
+				shadow = null;
 			}
 		});
 	}
