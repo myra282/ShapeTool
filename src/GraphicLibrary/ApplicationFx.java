@@ -324,6 +324,33 @@ public class ApplicationFx extends Application implements IApplication {
 		((StackPane) toolbar.getContent()).getChildren().clear();
 	}
 	
+	private void selectionZone(Point p1, Point p2) {
+		double minx, miny, maxx, maxy;
+		if (p1.getX() < p2.getX()) {
+			minx = p1.getX();
+			maxx = p2.getX();
+		}
+		else {
+			minx = p2.getX();
+			maxx = p1.getX();
+		}
+		if (p1.getY() < p2.getY()) {
+			miny = p1.getY();
+			maxy = p2.getY();
+		}
+		else {
+			miny = p2.getY();
+			maxy = p1.getY();
+		}
+		Rectangle selectionZone = new Rectangle(minx, miny, maxx - minx, maxy - miny);
+		selectionZone.getStrokeDashArray().add(5.0);
+		selectionZone.setTranslateX(minx);
+		selectionZone.setTranslateY(miny);
+		selectionZone.setStroke(Color.DARKGREY);
+		selectionZone.setFill(Color.TRANSPARENT);
+		board.getChildren().add(selectionZone);
+	}
+	
 	public void addEvents() {
 		addBoardEvents();
 		addToolbarEvents();
@@ -348,8 +375,8 @@ public class ApplicationFx extends Application implements IApplication {
 						}
 					}
 				}
+				Controller.getInstance().redraw();
 				if (shadow != null && inBoard(new Point(event.getSceneX(), event.getSceneY()))) {
-					Controller.getInstance().redraw();
 					shadow.setPosition(new Point(tmp.getX() - gap.getX(), tmp.getY() - gap.getY()));
 					if (shadow instanceof shape.model.Rectangle) {
 				    	draw((shape.model.Rectangle) shadow);
@@ -360,6 +387,9 @@ public class ApplicationFx extends Application implements IApplication {
 				    else if (shadow instanceof ShapeComposite) {
 				    	draw((ShapeComposite) shadow, board);
 				    }
+				}
+				else if (shadow == null) {
+					selectionZone(eventPoint, tmp);
 				}
 			}
 		});
