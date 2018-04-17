@@ -186,7 +186,6 @@ public class ApplicationFx extends Application implements IApplication {
 	
 	private void draw(ShapeComposite s, Pane pane) {
 		for (Iterator<IShapeSimple> i = s.iterator(); i.hasNext();) {
-			Shape sh = null;
 		    IShapeSimple item = i.next();
 		    if (item instanceof shape.model.Rectangle) {
 		    	draw((shape.model.Rectangle) item, pane);
@@ -388,14 +387,36 @@ public class ApplicationFx extends Application implements IApplication {
 	}
 	
 	private void addToolbarEvents() {
-		Point p1 = new Point(-1,-1);
 		toolbar.getContent().setOnMouseDragged(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
-				if (p1.equals(new Point(-1,-1))) {
-					Point tmp = pointToToolbar(event.getSceneX(), event.getSceneY());
-					p1.setX(tmp.getX());
-					p1.setY(tmp.getY());
+				Point tmp = pointToToolbar(event.getSceneX(), event.getSceneY());
+				if (eventPoint == null) {
+					eventPoint = new Point(tmp.getX(), tmp.getY());
+					if (shadow == null) {
+						IShapeSimple s = Controller.getInstance().getToolFromPoint(eventPoint);
+						if (s != null) {
+							shadow = s.clone();
+							GraphicLibrary.Color c = shadow.getColor().clone();
+							c.setAlpha(0.1);
+							shadow.setColor(c);
+							gap = new Point(eventPoint.getX() - s.getPosition().getX(), 
+											eventPoint.getY() - s.getPosition().getY());
+						}
+					}
+				}
+				if (shadow != null && inToolbar(new Point(event.getSceneX(), event.getSceneY()))) {
+					Controller.getInstance().redraw();
+					shadow.setPosition(new Point(tmp.getX() - gap.getX(), tmp.getY() - gap.getY()));
+					if (shadow instanceof shape.model.Rectangle) {
+				    	addTool((shape.model.Rectangle) shadow);
+				    }
+				    else if (shadow instanceof RegularPolygon) {
+				    	addTool((RegularPolygon) shadow);
+				    }
+				    else if (shadow instanceof ShapeComposite) {
+				    	addTool((ShapeComposite) shadow);
+				    }
 				}
 			}
 		});
@@ -406,15 +427,18 @@ public class ApplicationFx extends Application implements IApplication {
 				Point dropped = new Point(event.getSceneX(),event.getSceneY());
 				if (inToolbar(dropped)) {
 					Point p2 = pointToToolbar(event.getSceneX(), event.getSceneY());
-					Controller.getInstance().handleMouseToolEvent(p1, p2, mouseKey);
+					Controller.getInstance().handleMouseToolEvent(eventPoint, p2, mouseKey);
 				}
 				else if (inTrash(dropped)) {
-					Controller.getInstance().handleTrashToolEvent(p1, mouseKey);
+					Controller.getInstance().handleTrashToolEvent(eventPoint, mouseKey);
 				}
 				else if (inBoard(dropped)) {
 					Point p2 = pointToBoard(event.getSceneX(), event.getSceneY());
-					Controller.getInstance().handleDragToolEvent(p1, p2, mouseKey);
+					Controller.getInstance().handleDragToolEvent(eventPoint, p2, mouseKey);
 				}
+				shadow = null;
+				eventPoint = null;
+				gap = null;
 			}
 		});
 	}
