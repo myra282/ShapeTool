@@ -82,6 +82,17 @@ public class ApplicationFx extends Application implements IApplication {
 				imUndo.setFitWidth(20);
 				imUndo.setPreserveRatio(true);
 				btnUndo.setGraphic(imUndo);
+				btnUndo.setOnAction(new EventHandler<ActionEvent>() {
+
+					@Override
+					public void handle(ActionEvent event) {
+						//Controller.getInstance().undo(); a creer
+						System.out.println("undo !");
+						event.consume();
+						
+					}
+					
+				});
 				
 				btnRedo = new Button("Redo");
 				ImageView imRedo = new ImageView(ApplicationFx.class.getResource("/"+"redo.png").toString());
@@ -165,39 +176,6 @@ public class ApplicationFx extends Application implements IApplication {
 		return p;
 	}
 	
-	private Shape draw(shape.model.Rectangle r, Pane pane) {
-		Shape sh = new Rectangle(r.getPosition().getX(), r.getPosition().getY(), r.getWidth(), r.getHeight());
-		sh.setFill(Color.rgb(r.getColor().getR(), r.getColor().getG(), r.getColor().getB(), r.getColor().getAlpha()));
-		sh.setTranslateX(r.getPosition().getX());
-		sh.setTranslateY(r.getPosition().getY());
-		pane.getChildren().add(sh);
-		return sh;
-	}
-	
-	private Shape draw(RegularPolygon r, Pane pane) {
-		Shape sh = new Polygon(r.computePoints());
-		sh.setFill(Color.rgb(r.getColor().getR(), r.getColor().getG(), r.getColor().getB(), r.getColor().getAlpha()));
-		sh.setTranslateX(r.getPosition().getX());
-		sh.setTranslateY(r.getPosition().getY());
-		pane.getChildren().add(sh);
-		return sh;
-	}
-	
-	private void draw(ShapeComposite s, Pane pane) {
-		for (Iterator<IShapeSimple> i = s.iterator(); i.hasNext();) {
-		    IShapeSimple item = i.next();
-		    if (item instanceof shape.model.Rectangle) {
-		    	draw((shape.model.Rectangle) item, pane);
-		    }
-		    else if (item instanceof RegularPolygon) {
-		    	draw((RegularPolygon) item, pane);
-		    }
-		    else if (item instanceof ShapeComposite) {
-		    	draw((ShapeComposite) item, pane);
-		    }
-		}
-	}
-	
 	private void addMenu(Shape sh) {
 		// Context Menu
 		ContextMenu contextMenu = new ContextMenu();
@@ -232,6 +210,39 @@ public class ApplicationFx extends Application implements IApplication {
         });
 	}
 	
+	private Shape draw(shape.model.Rectangle r, Pane pane) {
+		Shape sh = new Rectangle(r.getPosition().getX(), r.getPosition().getY(), r.getWidth(), r.getHeight());
+		sh.setFill(Color.rgb(r.getColor().getR(), r.getColor().getG(), r.getColor().getB(), r.getColor().getAlpha()));
+		sh.setTranslateX(r.getPosition().getX());
+		sh.setTranslateY(r.getPosition().getY());
+		pane.getChildren().add(sh);
+		return sh;
+	}
+	
+	private Shape draw(RegularPolygon r, Pane pane) {
+		Shape sh = new Polygon(r.computePoints());
+		sh.setFill(Color.rgb(r.getColor().getR(), r.getColor().getG(), r.getColor().getB(), r.getColor().getAlpha()));
+		sh.setTranslateX(r.getPosition().getX());
+		sh.setTranslateY(r.getPosition().getY());
+		pane.getChildren().add(sh);
+		return sh;
+	}
+	
+	private void draw(ShapeComposite s, Pane pane) {
+		for (Iterator<IShapeSimple> i = s.iterator(); i.hasNext();) {
+		    IShapeSimple item = i.next();
+		    if (item instanceof shape.model.Rectangle) {
+		    	draw((shape.model.Rectangle) item, pane);
+		    }
+		    else if (item instanceof RegularPolygon) {
+		    	draw((RegularPolygon) item, pane);
+		    }
+		    else if (item instanceof ShapeComposite) {
+		    	draw((ShapeComposite) item, pane);
+		    }
+		}
+	}
+	
 	public void draw(shape.model.Rectangle s) {
 		Shape sh = draw(s,board);
 		addMenu(sh);
@@ -254,19 +265,6 @@ public class ApplicationFx extends Application implements IApplication {
 		    if (item instanceof ShapeComposite) {
 		    	draw((ShapeComposite) item);
 		    }
-		}
-	}
-	
-	@Override
-	public void addTool(IShapeSimple s) {
-		if (s instanceof shape.model.Rectangle) {
-			draw((shape.model.Rectangle) s,(StackPane) toolbar.getContent());
-		}
-		else if (s instanceof RegularPolygon) {
-			draw((RegularPolygon) s,(StackPane) toolbar.getContent());
-		}
-		else if (s instanceof ShapeComposite) {
-			draw((ShapeComposite) s,(StackPane) toolbar.getContent());
 		}
 	}
 	
@@ -349,6 +347,20 @@ public class ApplicationFx extends Application implements IApplication {
 		selectionZone.setFill(Color.TRANSPARENT);
 		board.getChildren().add(selectionZone);
 	}
+	
+	@Override
+	public void addTool(IShapeSimple s) {
+		if (s instanceof shape.model.Rectangle) {
+			draw((shape.model.Rectangle) s,(StackPane) toolbar.getContent());
+		}
+		else if (s instanceof RegularPolygon) {
+			draw((RegularPolygon) s,(StackPane) toolbar.getContent());
+		}
+		else if (s instanceof ShapeComposite) {
+			draw((ShapeComposite) s,(StackPane) toolbar.getContent());
+		}
+	}
+	
 	
 	public void addEvents() {
 		addBoardEvents();
@@ -515,10 +527,6 @@ public class ApplicationFx extends Application implements IApplication {
 	public void begin() {
 		Application.launch(ApplicationFx.class);
 	}
-
-		
-
-
 
 	
 

@@ -19,6 +19,7 @@ public class Controller {
 	private Vector<IShapeSimple> shapes;
 	private Vector<IShapeSimple> selected;
 	
+	
 	private IApplication view;
 	private static Controller controller = new Controller();
 	
@@ -26,6 +27,7 @@ public class Controller {
 		tools = new Vector<IShapeSimple>();
 		shapes = new Vector<IShapeSimple>();
 		selected = new Vector<IShapeSimple>();
+		
 		Thread t1 = new Thread() {
             @Override
             public void run() {
@@ -45,9 +47,9 @@ public class Controller {
 	
 	public void begin() {
 		view = ApplicationFx.getInstance();
-		shape.model.Rectangle rect = new Rectangle(new Point(30, 0), 30, 20);
+		shape.model.Rectangle rect = new Rectangle(new Point(30, 5), 60, 40);
 		rect.setColor(new Color(200, 30, 30));
-		RegularPolygon poly = new RegularPolygon(new Point(30, 30), 5, 20);
+		RegularPolygon poly = new RegularPolygon(new Point(30, 60), 5, 40);
 		poly.setColor(new Color(30, 30, 200));
 		addTool(rect);
 		addTool(poly);
