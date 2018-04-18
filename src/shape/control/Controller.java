@@ -19,7 +19,7 @@ public class Controller {
 	private Vector<IShapeSimple> shapes;
 	private Vector<IShapeSimple> selected;
 	
-	
+	private ActionJournal journal;
 	private IApplication view;
 	private static Controller controller = new Controller();
 	

@@ -18,6 +18,9 @@ public class CommandMove implements ICommand {
 	@Override
 	public void execute() {
 		shape.setPosition(newPos);
+    	if (!Controller.getInstance().isInBoard(shape)) { //if shape exceeds board bounds, rollback
+    		shape.setPosition(oldPos);
+    	}
 	}
 
 	@Override
