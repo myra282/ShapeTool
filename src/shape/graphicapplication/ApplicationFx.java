@@ -115,6 +115,7 @@ public class ApplicationFx extends Application implements IApplication {
 					@Override
 					public void handle(ActionEvent event) {
 						Controller.getInstance().eraseAll();
+						updateUI();
 						event.consume();
 					}
 				});

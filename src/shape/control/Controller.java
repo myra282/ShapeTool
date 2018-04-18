@@ -17,7 +17,7 @@ public class Controller {
 	
 	private Vector<IShape> tools;
 	private Vector<IShape> shapes;
-	private Vector<IShape> selected;
+	private Vector<Integer> selected;
 	
 	private ActionJournal journal;
 	private IApplication view;
@@ -26,7 +26,7 @@ public class Controller {
 	private Controller() {
 		tools = new Vector<IShape>();
 		shapes = new Vector<IShape>();
-		selected = new Vector<IShape>();
+		selected = new Vector<Integer>();
 		journal = new ActionJournal();
 		
 		Thread t1 = new Thread() {
@@ -87,18 +87,10 @@ public class Controller {
 		return s.isInside(min, max);
 	}
 	
-	public void dragNDrop(IShape s, Point p) {
-		IShape s2 = s.clone();
-		s2.setPosition(p);
-		addShape(s2);
-		redraw();
-	}
-	
 	public void eraseAll() {
-		for (ListIterator<IShape> i = shapeIterator(); i.hasNext();) {
-			i.next();
-		    i.remove();
-		}
+		ICommand cmd = new CommandRemoveAll(shapes);
+		cmd.execute();
+    	journal.add(cmd);
 		redraw();
 	}
 	
@@ -107,7 +99,7 @@ public class Controller {
 		for (ListIterator<IShape> i = shapeIterator(); i.hasNext();) {
 		    IShape item = i.next();
 		    if (item.contains(p)) {
-		    	selected.add(item);
+		    	selected.add(shapes.indexOf(item));
 		    	break;
 		    }
 		}
@@ -135,35 +127,29 @@ public class Controller {
 		for (ListIterator<IShape> i = shapeIterator(); i.hasNext();) {
 		    IShape item = i.next();
 		    if (item.isInside(new Point(minx, miny), new Point(maxx, maxy))) {
-		    	selected.add(item);
+		    	selected.add(shapes.indexOf(item));
 		    }
 		}
 	}
 	
 	public void group() {
 		if (selected.size() > 1) {
-			ShapeComposite group = new ShapeComposite();
-			for (ListIterator<IShape> i = selected.listIterator(); i.hasNext();) {
-			    IShape item = i.next();
-			    rmShape(item);
-			    group.add(item);
-			}
-			addShape(group);
+			ICommand cmd = new CommandGroup(shapes, selected);
+			cmd.execute();
+	    	journal.add(cmd);
+			selected.removeAllElements();
+			redraw();
 		}
-		selected.removeAllElements();
 	}
 	
 	public void ungroup() {
-		if (selected.size() == 1) {
-			IShape s = selected.get(0);
-			if (s instanceof ShapeComposite) {
-				rmShape(s);
-				for (ListIterator<IShape> i = ((ShapeComposite) s).getShapes().listIterator(); i.hasNext();) {
-				    IShape item = i.next();
-				    addShape(item);
-				    i.remove();
-				}
-			}
+		IShape s = shapes.get(selected.get(0));
+		if (selected.size() == 1 && s instanceof ShapeComposite) {
+			ICommand cmd = new CommandUngroup(shapes, (ShapeComposite) s);
+			cmd.execute();
+	    	journal.add(cmd);
+			selected.removeAllElements();
+			redraw();
 		}
 	}
 	
@@ -182,14 +168,6 @@ public class Controller {
 	
 	public ListIterator<IShape> shapeIterator() {
 		return shapes.listIterator();
-	}
-	
-	public void addShape(IShape s) {
-		shapes.add(s);
-	}
-
-	public void rmShape(IShape s) {
-		shapes.remove(s);
 	}
 	
 	public ListIterator<IShape> toolsIterator() {
