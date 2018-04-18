@@ -41,10 +41,6 @@ public abstract class AbstractShape implements IShape {
 		
 		return null;
 	}
-	
-	public void attributeEditorCreate() {
-		
-	}
 
 	void update() {
 		Point pos = getPosition();

@@ -9,7 +9,7 @@ public interface IApplication {
 	public static final double BAR_MIN_WIDTH = 70;
 	public static final double BAR_MAX_WIDTH = 140;
 	
-	public static final double ROUNDED_VALUE = 45;
+	public static final double ROUNDED_VALUE = 30;
 	
 	public void addTool(IShape s);
 	

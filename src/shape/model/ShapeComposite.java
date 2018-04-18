@@ -154,11 +154,6 @@ public class ShapeComposite extends AbstractShape {
 	}
 
 	@Override
-	public void attributeEditorCreate() {
-		
-	}
-
-	@Override
 	public void scale(double ratio) {
 		for (ListIterator<IShape> i = shapes.listIterator(); i.hasNext();) {
 		    IShape item = i.next();

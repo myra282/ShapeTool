@@ -153,6 +153,14 @@ public class Controller {
 		}
 	}
 	
+	public void roundCorners(Rectangle r) {
+		System.out.println(r.getRounded());
+		ICommand cmd = new CommandRoundCorners(r);
+		cmd.execute();
+    	journal.add(cmd);
+    	redraw();
+	}
+	
 	public void redraw() {
 		view.clear();
 		for (ListIterator<IShape> i = toolsIterator(); i.hasNext();) {

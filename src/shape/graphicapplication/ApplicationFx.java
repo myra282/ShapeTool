@@ -2,6 +2,7 @@ package shape.graphicapplication;
 
 import javafx.scene.shape.Shape;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 import shape.control.Controller;
 import shape.model.IShape;
 import shape.model.Point;
@@ -15,17 +16,24 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.Separator;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.ToolBar;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -35,6 +43,9 @@ import javafx.scene.shape.Rectangle;
 
 import java.util.Iterator;
 import java.util.ListIterator;
+import java.util.Optional;
+import java.util.function.UnaryOperator;
+import java.util.regex.Pattern;
 
 public class ApplicationFx extends Application implements IApplication {
 	
@@ -177,7 +188,7 @@ public class ApplicationFx extends Application implements IApplication {
 		return p;
 	}
 	
-	private void addMenu(Shape sh) {
+	private void addMenu(Shape sh, IShape s) {
 		// Context Menu
 		ContextMenu contextMenu = new ContextMenu();
         MenuItem groupOption = new MenuItem("Group");
@@ -185,9 +196,11 @@ public class ApplicationFx extends Application implements IApplication {
             @Override
             public void handle(ActionEvent event) {
                 Controller.getInstance().group();
+                updateUI();
                 event.consume();
             }
         });
+        contextMenu.getItems().add(groupOption);
         MenuItem ungroupOption = new MenuItem("Ungroup");
         ungroupOption.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -196,12 +209,89 @@ public class ApplicationFx extends Application implements IApplication {
             						sh.getTranslateY() + sh.getLayoutBounds().getHeight()/2);
             	Controller.getInstance().select(p);
                 Controller.getInstance().ungroup();
+                updateUI();
                 event.consume();
             }
         });
+        contextMenu.getItems().add(ungroupOption);
+        if (s instanceof shape.model.Rectangle) {
+	        MenuItem roundedOption = new MenuItem("Rounded");
+	        roundedOption.setOnAction(new EventHandler<ActionEvent>() {
+	            @Override public void handle(ActionEvent e) {
+	            	Controller.getInstance().roundCorners((shape.model.Rectangle) s);
+	            	updateUI();
+	            }
+	        });
+	        contextMenu.getItems().add(roundedOption);
+		}
+        if (!(s instanceof ShapeComposite)) {
+        	String name1, name2;
+        	if (s instanceof shape.model.Rectangle) {
+        		name1 = "Width : ";
+        		name2 = "Height : ";
+        	}
+        	else {
+        		name1 = "Edges : ";
+        		name2 = "Width : ";
+        	}
+	        MenuItem attrOption = new MenuItem("Attributes");
+	        attrOption.setOnAction(new EventHandler<ActionEvent>() {
+	            @Override
+	            public void handle(ActionEvent event) {
+	            	// Text formatter
+	            	Pattern validEditingState = Pattern.compile("-?(([1-9][0-9]*)|0)?(\\.[0-9]*)?");
+	            	UnaryOperator<TextFormatter.Change> filter = c -> {
+	            	    String text = c.getControlNewText();
+	            	    if (validEditingState.matcher(text).matches()) {
+	            	        return c ;
+	            	    } else {
+	            	        return null ;
+	            	    }
+	            	};
+	            	StringConverter<Double> converter = new StringConverter<Double>() {
+	            	    @Override
+	            	    public Double fromString(String s) {
+	            	        if (s.isEmpty() || "-".equals(s) || ".".equals(s) || "-.".equals(s)) {
+	            	            return 0.0 ;
+	            	        } else {
+	            	            return Double.valueOf(s);
+	            	        }
+	            	    }
+	            	    @Override
+	            	    public String toString(Double d) {
+	            	        return d.toString();
+	            	    }
+	            	};
+	            	TextFormatter<Double> textFormatter1 = new TextFormatter<>(converter, 0.0, filter);
+	            	TextFormatter<Double> textFormatter2 = new TextFormatter<>(converter, 0.0, filter);
+	            	// Dialog
+	            	TextInputDialog dialog = new TextInputDialog();
+	        		dialog.setTitle("Attributes Editor");
+	        		dialog.setHeaderText("Here you can modify the shape attributes");
+	        		Label label1 = new Label(name1);
+	    			Label label2 = new Label(name2);
+	    			TextField text1 = new TextField();
+	    			TextField text2 = new TextField();
+	    			text1.setTextFormatter(textFormatter1);
+	    			text2.setTextFormatter(textFormatter2);
+	    			GridPane grid = new GridPane();
+	    			grid.add(label1, 1, 1);
+	    			grid.add(text1, 2, 1);
+	    			grid.add(label2, 1, 2);
+	    			grid.add(text2, 2, 2);
+	    			dialog.getDialogPane().setContent(grid);
+	        		Optional<String> result = dialog.showAndWait();
+	        		String entered = "none.";
+	        		if (result.isPresent()) {
+	        		    entered = result.get();
+	        		}
+	                updateUI();
+	                event.consume();
+	            }
+	        });
+	        contextMenu.getItems().add(attrOption);
+        }
         // Add MenuItem to ContextMenu
-        contextMenu.getItems().addAll(groupOption);
-        contextMenu.getItems().addAll(ungroupOption);
         sh.setOnContextMenuRequested(new EventHandler<ContextMenuEvent>() {
             @Override
             public void handle(ContextMenuEvent event) {
@@ -238,11 +328,11 @@ public class ApplicationFx extends Application implements IApplication {
 		    IShape item = i.next();
 		    if (item instanceof shape.model.Rectangle) {
 		    	Shape sh = draw((shape.model.Rectangle) item, pane);
-		    	addMenu(sh);
+		    	addMenu(sh, s);
 		    }
 		    else if (item instanceof RegularPolygon) {
 		    	Shape sh = draw((RegularPolygon) item, pane);
-		    	addMenu(sh);
+		    	addMenu(sh, s);
 		    }
 		    else if (item instanceof ShapeComposite) {
 		    	draw((ShapeComposite) item, pane);
@@ -252,10 +342,10 @@ public class ApplicationFx extends Application implements IApplication {
 	
 	public void draw(IShape s) {
 		if (s instanceof shape.model.Rectangle) {
-			addMenu(draw((shape.model.Rectangle) s, board));
+			addMenu(draw((shape.model.Rectangle) s, board), s);
 	    }
 	    else if (s instanceof RegularPolygon) {
-	    	addMenu(draw((RegularPolygon) s, board));
+	    	addMenu(draw((RegularPolygon) s, board), s);
 	    }
 	    else if (s instanceof ShapeComposite) {
 	    	draw((ShapeComposite) s, board);

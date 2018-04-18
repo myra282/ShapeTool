@@ -45,11 +45,6 @@ public class Rectangle extends AbstractShape {
 	}
 
 	@Override
-	public void attributeEditorCreate() {
-		
-	}
-
-	@Override
 	public void scale(double ratio) {
 		setWidth(width*ratio);
 		setHeight(height*ratio);

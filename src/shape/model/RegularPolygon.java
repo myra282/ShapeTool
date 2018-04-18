@@ -30,11 +30,6 @@ public class RegularPolygon extends AbstractShape {
 	}
 
 	@Override
-	public void attributeEditorCreate() {
-		
-	}
-
-	@Override
 	public double getWidth() {
 		return 2 * radius;
 	}
