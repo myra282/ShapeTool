@@ -1,9 +1,6 @@
 package shape.graphicapplication;
 
 import shape.model.IShape;
-import shape.model.Rectangle;
-import shape.model.RegularPolygon;
-import shape.model.ShapeComposite;
 
 public interface IApplication {
 	
@@ -16,17 +13,11 @@ public interface IApplication {
 	
 	public void addTool(IShape s);
 	
+	public void draw(IShape s);
+	
 	public void clear();
 	
 	public void begin();
-
-	/*public void draw(Rectangle item);
-
-	public void draw(RegularPolygon item);
-
-	public void draw(ShapeComposite item);*/
-	
-	public void draw(IShape s);
 
 	public void addEvents();
 

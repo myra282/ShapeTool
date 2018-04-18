@@ -84,15 +84,12 @@ public class ApplicationFx extends Application implements IApplication {
 				imUndo.setPreserveRatio(true);
 				btnUndo.setGraphic(imUndo);
 				btnUndo.setOnAction(new EventHandler<ActionEvent>() {
-
 					@Override
 					public void handle(ActionEvent event) {
-						//Controller.getInstance().undo(); a creer
-						System.out.println("undo !");
+						Controller.getInstance().undo();
+						updateUI();
 						event.consume();
-						
 					}
-					
 				});
 				
 				btnRedo = new Button("Redo");
@@ -100,6 +97,14 @@ public class ApplicationFx extends Application implements IApplication {
 				imRedo.setFitWidth(20);
 				imRedo.setPreserveRatio(true);
 				btnRedo.setGraphic(imRedo);
+				btnRedo.setOnAction(new EventHandler<ActionEvent>() {
+					@Override
+					public void handle(ActionEvent event) {
+						Controller.getInstance().redo();
+						updateUI();
+						event.consume();
+					}
+				});
 				
 				btnTrash = new Button("");
 				ImageView imTrash = new ImageView(ApplicationFx.class.getResource("/"+"trash.png").toString());
@@ -268,6 +273,11 @@ public class ApplicationFx extends Application implements IApplication {
 		}
 	}
 	
+	private void updateUI() {
+		btnUndo.setDisable(!Controller.getInstance().canUndo());
+		btnRedo.setDisable(!Controller.getInstance().canRedo());
+	}
+	
 	private void selectionZone(Point p1, Point p2) {
 		double minx, miny, maxx, maxy;
 		if (p1.getX() < p2.getX()) {
@@ -369,6 +379,7 @@ public class ApplicationFx extends Application implements IApplication {
 					Point p2 = pointToToolbar(event.getSceneX(), event.getSceneY());
 					Controller.getInstance().handleNewToolEvent(eventPoint, p2, mouseKey);
 				}
+				updateUI();
 				shadow = null;
 				eventPoint = null;
 				gap = null;
@@ -428,6 +439,7 @@ public class ApplicationFx extends Application implements IApplication {
 					Point p2 = pointToBoard(event.getSceneX(), event.getSceneY());
 					Controller.getInstance().handleDragToolEvent(eventPoint, p2, mouseKey);
 				}
+				updateUI();
 				shadow = null;
 				eventPoint = null;
 				gap = null;
@@ -462,6 +474,7 @@ public class ApplicationFx extends Application implements IApplication {
 		menu.getItems().addAll(new Separator(), btnSave, btnLoad, new Separator(), btnUndo, btnRedo, new Separator());
 		
 		addEvents();
+		updateUI();
 		
 		// set app
 		primaryStage.setTitle("ShapeOfView");

@@ -52,8 +52,26 @@ public class Controller {
 		rect.setColor(new Color(200, 30, 30));
 		RegularPolygon poly = new RegularPolygon(new Point(30, 60), 5, 40);
 		poly.setColor(new Color(30, 30, 200));
-		addTool(rect);
-		addTool(poly);
+		tools.add(rect);
+		tools.add(poly);
+		redraw();
+	}
+	
+	public boolean canUndo() {
+		return journal.canUndo();
+	}
+	
+	public boolean canRedo() {
+		return journal.canRedo();
+	}
+	
+	public void undo() {
+		journal.undo();
+		redraw();
+	}
+	
+	public void redo() {
+		journal.redo();
 		redraw();
 	}
 	
@@ -157,15 +175,6 @@ public class Controller {
 		}
 		for (ListIterator<IShape> i = shapeIterator(); i.hasNext();) {
 		    IShape item = i.next();
-		    /*if (item instanceof Rectangle) {
-		    	view.draw((Rectangle) item);
-		    }
-		    else if (item instanceof RegularPolygon) {
-		    	view.draw((RegularPolygon) item);
-		    }
-		    else if (item instanceof ShapeComposite) {
-		    	view.draw((ShapeComposite) item);
-		    }*/
 		    view.draw(item);
 		}
 		view.addEvents();
@@ -185,15 +194,6 @@ public class Controller {
 	
 	public ListIterator<IShape> toolsIterator() {
 		return tools.listIterator();
-	}
-	
-	public void addTool(IShape s) {
-		tools.add(s);
-		//view.addTool(s);
-	}
-	
-	public void rmTool(IShape s) {
-		tools.remove(s);
 	}
 	
 	public IShape getShapeFromPoint(Point p) {
@@ -291,7 +291,9 @@ public class Controller {
 		if (mouseKey && p1 != null) {
 			IShape item = getToolFromPoint(p1);
 			if (item != null) {
-	    		rmTool(item);
+	    		ICommand cmd = new CommandRemove(tools, item);
+	    		cmd.execute();
+		    	journal.add(cmd);
 			}
 			redraw();
 		}
@@ -308,7 +310,9 @@ public class Controller {
 		    	Point newPos = new Point(p2.getX()-stepX, p2.getY()-stepY);
 		    	shape.setPosition(newPos);
 		    	if (isInBoard(shape)) {
-		    		addShape(shape);
+		    		ICommand cmd = new CommandAdd(shapes, shape);
+		    		cmd.execute();
+			    	journal.add(cmd);
 		    	}
 			}
 			redraw();

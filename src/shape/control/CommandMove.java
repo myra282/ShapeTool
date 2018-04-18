@@ -13,6 +13,7 @@ public class CommandMove implements ICommand {
 		this.shape = shape;
 		this.newPos = newPos;
 		this.oldPos = shape.getPosition();
+		//this.oldPos = new Point(shape.getPosition().getX(), shape.getPosition().getY());
 	}
 
 	@Override
