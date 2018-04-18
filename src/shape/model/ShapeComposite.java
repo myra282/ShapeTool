@@ -9,22 +9,22 @@ public class ShapeComposite extends AbstractShape {
 	
 	private double width;
 	private double height;
-	private Vector<IShapeSimple> shapes;
+	private Vector<IShape> shapes;
 
 	public ShapeComposite() {
 		super();
-		shapes = new Vector<IShapeSimple>();
+		shapes = new Vector<IShape>();
 		width = 0;
 		height = 0;
 	}
 	
 	@Override
-	public IShapeSimple clone() {
-		IShapeSimple s = null;
-		s = (IShapeSimple) (AbstractShape) super.clone();
-		((ShapeComposite) s).shapes = new Vector<IShapeSimple>();
-		for (ListIterator<IShapeSimple> i = iterator(); i.hasNext();) {
-		    IShapeSimple item = i.next();
+	public IShape clone() {
+		IShape s = null;
+		s = (IShape) (AbstractShape) super.clone();
+		((ShapeComposite) s).shapes = new Vector<IShape>();
+		for (ListIterator<IShape> i = iterator(); i.hasNext();) {
+		    IShape item = i.next();
 		    ((ShapeComposite) s).add(item.clone());
 		}
 		return s;
@@ -40,19 +40,19 @@ public class ShapeComposite extends AbstractShape {
 		return height;
 	}
 	
-	public Vector<IShapeSimple> getShapes() {
+	public Vector<IShape> getShapes() {
 		return shapes;
 	}
 	
-	public void add(IShapeSimple s) {
+	public void add(IShape s) {
 		((AbstractShape) s).setParent(this);
 		shapes.add(s);
 		update();
 	}
 	
-	public IShapeSimple remove(IShapeSimple s) {
+	public IShape remove(IShape s) {
 		int id = shapes.indexOf(s);
-		IShapeSimple removed = shapes.remove(id);
+		IShape removed = shapes.remove(id);
 		update();
 		return removed;
 	}
@@ -63,8 +63,8 @@ public class ShapeComposite extends AbstractShape {
 		double diffX = p.getX() - oldPos.getX();
 		double diffY = p.getY() - oldPos.getY();
 		// update each shape position
-		for (ListIterator<IShapeSimple> i = shapes.listIterator(); i.hasNext();) {
-		    IShapeSimple item = i.next();
+		for (ListIterator<IShape> i = shapes.listIterator(); i.hasNext();) {
+		    IShape item = i.next();
 		    Point pos = item.getPosition();
 		    item.setPosition(new Point(pos.getX()+diffX, pos.getY()+diffY));
 		}
@@ -74,10 +74,12 @@ public class ShapeComposite extends AbstractShape {
 	@Override
 	public void setColor(Color c) {
 		// update each shape color
-		for (ListIterator<IShapeSimple> i = shapes.listIterator(); i.hasNext();) {
-		    IShapeSimple item = i.next();
+		for (ListIterator<IShape> i = shapes.listIterator(); i.hasNext();) {
+		    IShape item = i.next();
 		    if (c.equals(getColor())) {
-		    	item.getColor().setAlpha(c.getAlpha());
+		    	Color itemColor = item.getColor();
+		    	itemColor.setAlpha(c.getAlpha());
+		    	item.setColor(itemColor);
 		    }
 		    else {
 		    	item.setColor(c);
@@ -90,8 +92,8 @@ public class ShapeComposite extends AbstractShape {
 		double minx = shapes.get(0).getPosition().getX();
 		double maxx = 0;
 		double x,w;
-		for (ListIterator<IShapeSimple> i = shapes.listIterator(); i.hasNext();) {
-		    IShapeSimple item = i.next();
+		for (ListIterator<IShape> i = shapes.listIterator(); i.hasNext();) {
+		    IShape item = i.next();
 		    x = item.getPosition().getX();
 		    w = x + item.getWidth();
 		    if (x < minx) {
@@ -108,8 +110,8 @@ public class ShapeComposite extends AbstractShape {
 		double miny = shapes.get(0).getPosition().getY();
 		double maxy = 0;
 		double y,h;
-		for (ListIterator<IShapeSimple> i = shapes.listIterator(); i.hasNext();) {
-		    IShapeSimple item = i.next();
+		for (ListIterator<IShape> i = shapes.listIterator(); i.hasNext();) {
+		    IShape item = i.next();
 		    y = item.getPosition().getY();
 		    h = y + item.getHeight();
 		    if (y < miny) {
@@ -126,8 +128,8 @@ public class ShapeComposite extends AbstractShape {
 		// compute new position
 		double x = shapes.get(0).getPosition().getX();
 		double y = shapes.get(0).getPosition().getY();
-		for (ListIterator<IShapeSimple> i = shapes.listIterator(); i.hasNext();) {
-		    IShapeSimple item = i.next();
+		for (ListIterator<IShape> i = shapes.listIterator(); i.hasNext();) {
+		    IShape item = i.next();
 		    Point pos = item.getPosition();
 		    if (pos.getX() < x) {
 		    	x = pos.getX();
@@ -158,8 +160,8 @@ public class ShapeComposite extends AbstractShape {
 
 	@Override
 	public void scale(double ratio) {
-		for (ListIterator<IShapeSimple> i = shapes.listIterator(); i.hasNext();) {
-		    IShapeSimple item = i.next();
+		for (ListIterator<IShape> i = shapes.listIterator(); i.hasNext();) {
+		    IShape item = i.next();
 		    item.scale(ratio);
 		    Point pos = item.getPosition();
 		    double diffX = (pos.getX() - getPosition().getX()) * ratio;
@@ -169,15 +171,15 @@ public class ShapeComposite extends AbstractShape {
 		update();
 	}
 
-	public ListIterator<IShapeSimple> iterator() {
+	public ListIterator<IShape> iterator() {
 		return shapes.listIterator();
 	}
 	
 	@Override
 	public boolean contains(Point p) {
 		boolean res = false;
-		for (ListIterator<IShapeSimple> i = shapes.listIterator(); i.hasNext();) {
-		    IShapeSimple item = i.next();
+		for (ListIterator<IShape> i = shapes.listIterator(); i.hasNext();) {
+		    IShape item = i.next();
 		    res |= item.contains(p);
 		}
 		return res;

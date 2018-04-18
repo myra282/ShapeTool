@@ -2,9 +2,9 @@ package shape.model;
 
 import shape.graphicapplication.Color;
 
-public interface IShape {
+public interface IShape extends Cloneable {
 	
-	public Point getPosition();
+public Point getPosition();
 	
 	public void setPosition(Point p);
 	
@@ -25,5 +25,13 @@ public interface IShape {
 	public Point getRotationCenter();
 	
 	public void scale(double ratio);
+	
+	public IShape clone();
+	
+	public IShape getParent();
+	
+	public boolean isInside(Point min, Point max);
+
+	public boolean contains(Point p);
 
 }

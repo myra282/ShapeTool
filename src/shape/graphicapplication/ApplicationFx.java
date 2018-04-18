@@ -3,7 +3,7 @@ package shape.graphicapplication;
 import javafx.scene.shape.Shape;
 import javafx.stage.Stage;
 import shape.control.Controller;
-import shape.model.IShapeSimple;
+import shape.model.IShape;
 import shape.model.Point;
 import shape.model.RegularPolygon;
 import shape.model.ShapeComposite;
@@ -12,6 +12,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
@@ -45,7 +46,7 @@ public class ApplicationFx extends Application implements IApplication {
 	private Button btnSave, btnLoad, btnUndo, btnRedo, btnTrash;
 	private Stage pStage;
 	
-	private IShapeSimple shadow;
+	private IShape shadow;
 	private Point eventPoint, gap;
 	
 	private static ApplicationFx instance = null;
@@ -142,12 +143,6 @@ public class ApplicationFx extends Application implements IApplication {
 		return p;
 	}
 	
-	/*private Point pointFromBoard(Point pos) {
-		Bounds b = board.getBoundsInLocal();
-		Point p = new Point(pos.getX() - b.getMinX(), pos.getY() - b.getMinY());
-		return p;
-	}*/
-	
 	private boolean inTrash(Point p) {
 		Bounds b = btnTrash.localToScene(btnTrash.getBoundsInLocal());
 		if ((p.getX() > b.getMinX() && p.getX() < b.getMinX() + btnTrash.getWidth())
@@ -211,8 +206,12 @@ public class ApplicationFx extends Application implements IApplication {
 	}
 	
 	private Shape draw(shape.model.Rectangle r, Pane pane) {
-		Shape sh = new Rectangle(r.getPosition().getX(), r.getPosition().getY(), r.getWidth(), r.getHeight());
+		Rectangle sh = new Rectangle(r.getWidth(), r.getHeight());
 		sh.setFill(Color.rgb(r.getColor().getR(), r.getColor().getG(), r.getColor().getB(), r.getColor().getAlpha()));
+		if (r.getRounded()) {
+			sh.setArcWidth(ROUNDED_VALUE);
+			sh.setArcHeight(ROUNDED_VALUE);
+		}
 		sh.setTranslateX(r.getPosition().getX());
 		sh.setTranslateY(r.getPosition().getY());
 		pane.getChildren().add(sh);
@@ -220,7 +219,7 @@ public class ApplicationFx extends Application implements IApplication {
 	}
 	
 	private Shape draw(RegularPolygon r, Pane pane) {
-		Shape sh = new Polygon(r.computePoints());
+		Polygon sh = new Polygon(r.computePoints());
 		sh.setFill(Color.rgb(r.getColor().getR(), r.getColor().getG(), r.getColor().getB(), r.getColor().getAlpha()));
 		sh.setTranslateX(r.getPosition().getX());
 		sh.setTranslateY(r.getPosition().getY());
@@ -229,13 +228,15 @@ public class ApplicationFx extends Application implements IApplication {
 	}
 	
 	private void draw(ShapeComposite s, Pane pane) {
-		for (Iterator<IShapeSimple> i = s.iterator(); i.hasNext();) {
-		    IShapeSimple item = i.next();
+		for (Iterator<IShape> i = s.iterator(); i.hasNext();) {
+		    IShape item = i.next();
 		    if (item instanceof shape.model.Rectangle) {
-		    	draw((shape.model.Rectangle) item, pane);
+		    	Shape sh = draw((shape.model.Rectangle) item, pane);
+		    	addMenu(sh);
 		    }
 		    else if (item instanceof RegularPolygon) {
-		    	draw((RegularPolygon) item, pane);
+		    	Shape sh = draw((RegularPolygon) item, pane);
+		    	addMenu(sh);
 		    }
 		    else if (item instanceof ShapeComposite) {
 		    	draw((ShapeComposite) item, pane);
@@ -243,82 +244,28 @@ public class ApplicationFx extends Application implements IApplication {
 		}
 	}
 	
-	public void draw(shape.model.Rectangle s) {
-		Shape sh = draw(s,board);
-		addMenu(sh);
-	}
-	
-	public void draw(RegularPolygon s) {
-		Shape sh = draw(s,board);
-		addMenu(sh);
-	}
-	
-	public void draw(ShapeComposite s) {
-		for (ListIterator<IShapeSimple> i = ((ShapeComposite) s).iterator(); i.hasNext();) {
-		    IShapeSimple item = i.next();
-		    if (item instanceof shape.model.Rectangle) {
-		    	draw((shape.model.Rectangle) item);
-		    }
-		    else if (item instanceof RegularPolygon) {
-		    	draw((RegularPolygon) item);
-		    }
-		    if (item instanceof ShapeComposite) {
-		    	draw((ShapeComposite) item);
-		    }
-		}
-	}
-	
-	private void dragNDrop(IShapeSimple s, Pane pane) {
-		Shape sh;
+	public void draw(IShape s) {
 		if (s instanceof shape.model.Rectangle) {
-			sh = draw((shape.model.Rectangle) s, pane);
-		}
-		else if (s instanceof RegularPolygon) {
-			sh = draw((RegularPolygon) s, pane);
-		}
-		else {
-			sh = null;
-		}
-		if (sh != null) {
-			Color c = (Color) sh.getFill();
-			sh.setOnMouseDragged(new EventHandler<MouseEvent>() {
-				@Override
-				public void handle(MouseEvent dragEvent) {
-					if (dragEvent.getEventType() == MouseEvent.MOUSE_DRAGGED  && dragEvent.isPrimaryButtonDown()) {
-						sh.setFill(Color.rgb(0, 200, 0));
-					}
-					dragEvent.consume();
-				}
-			});
-			sh.setOnMouseReleased(new EventHandler<MouseEvent>() {
-				@Override
-				public void handle(MouseEvent dropEvent) {
-					Point dropped = new Point(dropEvent.getSceneX(), dropEvent.getSceneY());
-					if (inBoard(dropped)) {
-						Point p = pointToBoard(dropEvent.getSceneX() - sh.getLayoutBounds().getWidth()/2, 
-											   dropEvent.getSceneY() - sh.getLayoutBounds().getHeight()/2);
-						Controller.getInstance().dragNDrop(s, p);
-					}
-					sh.setFill(c);
-					dropEvent.consume();
-				}
-			});
-		}
-	}
-	
-	public void dragNDrop(IShapeSimple s) {		
-		if(s instanceof RegularPolygon) {
-			dragNDrop((RegularPolygon) s,(StackPane) toolbar.getContent());
-		}
-		else if (s instanceof shape.model.Rectangle) {
-			dragNDrop((shape.model.Rectangle) s, (StackPane) toolbar.getContent());
-		}
+			addMenu(draw((shape.model.Rectangle) s, board));
+	    }
+	    else if (s instanceof RegularPolygon) {
+	    	addMenu(draw((RegularPolygon) s, board));
+	    }
+	    else if (s instanceof ShapeComposite) {
+	    	draw((ShapeComposite) s, board);
+	    }
 	}
 	
 	@Override
 	public void clear() {
 		board.getChildren().clear();
 		((StackPane) toolbar.getContent()).getChildren().clear();
+		for (ListIterator<Node> i = borderPane.getChildren().listIterator(); i.hasNext();) {
+		    Node item = i.next();
+		    if (item instanceof Shape) {
+				i.remove();
+			}
+		}
 	}
 	
 	private void selectionZone(Point p1, Point p2) {
@@ -349,7 +296,7 @@ public class ApplicationFx extends Application implements IApplication {
 	}
 	
 	@Override
-	public void addTool(IShapeSimple s) {
+	public void addTool(IShape s) {
 		if (s instanceof shape.model.Rectangle) {
 			draw((shape.model.Rectangle) s,(StackPane) toolbar.getContent());
 		}
@@ -371,36 +318,38 @@ public class ApplicationFx extends Application implements IApplication {
 		board.setOnMouseDragged(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
-				Point tmp = pointToBoard(event.getSceneX(), event.getSceneY());
-				if (eventPoint == null) {
-					eventPoint = new Point(tmp.getX(), tmp.getY());
-					if (shadow == null) {
-						IShapeSimple s = Controller.getInstance().getShapeFromPoint(eventPoint);
-						if (s != null) {
-							shadow = s.clone();
-							shape.graphicapplication.Color c = shadow.getColor().clone();
-							c.setAlpha(0.1);
-							shadow.setColor(c);
-							gap = new Point(eventPoint.getX() - s.getPosition().getX(), 
-											eventPoint.getY() - s.getPosition().getY());
+				if (event.getButton().compareTo(MouseButton.PRIMARY) == 0) {
+					Point tmp = pointToBoard(event.getSceneX(), event.getSceneY());
+					if (eventPoint == null) {
+						eventPoint = new Point(tmp.getX(), tmp.getY());
+						if (shadow == null) {
+							IShape s = Controller.getInstance().getShapeFromPoint(eventPoint);
+							if (s != null) {
+								shadow = s.clone();
+								shape.graphicapplication.Color c = shadow.getColor().clone();
+								c.setAlpha(0.1);
+								shadow.setColor(c);
+								gap = new Point(eventPoint.getX() - s.getPosition().getX(), 
+												eventPoint.getY() - s.getPosition().getY());
+							}
 						}
 					}
-				}
-				Controller.getInstance().redraw();
-				if (shadow != null && inBoard(new Point(event.getSceneX(), event.getSceneY()))) {
-					shadow.setPosition(new Point(tmp.getX() - gap.getX(), tmp.getY() - gap.getY()));
-					if (shadow instanceof shape.model.Rectangle) {
-				    	draw((shape.model.Rectangle) shadow);
-				    }
-				    else if (shadow instanceof RegularPolygon) {
-				    	draw((RegularPolygon) shadow);
-				    }
-				    else if (shadow instanceof ShapeComposite) {
-				    	draw((ShapeComposite) shadow, board);
-				    }
-				}
-				else if (shadow == null) {
-					selectionZone(eventPoint, tmp);
+					Controller.getInstance().redraw();
+					if (shadow != null) {
+						shadow.setPosition(new Point(event.getSceneX() - gap.getX(), event.getSceneY() - gap.getY()));
+						if (shadow instanceof shape.model.Rectangle) {
+					    	draw((shape.model.Rectangle) shadow, borderPane).setMouseTransparent(true);
+					    }
+					    else if (shadow instanceof RegularPolygon) {
+					    	draw((RegularPolygon) shadow, borderPane).setMouseTransparent(true);
+					    }
+					    else if (shadow instanceof ShapeComposite) {
+					    	draw((ShapeComposite) shadow, borderPane);
+					    }
+					}
+					else if (shadow == null) {
+						selectionZone(eventPoint, tmp);
+					}
 				}
 			}
 		});
@@ -431,33 +380,35 @@ public class ApplicationFx extends Application implements IApplication {
 		toolbar.getContent().setOnMouseDragged(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
-				Point tmp = pointToToolbar(event.getSceneX(), event.getSceneY());
-				if (eventPoint == null) {
-					eventPoint = new Point(tmp.getX(), tmp.getY());
-					if (shadow == null) {
-						IShapeSimple s = Controller.getInstance().getToolFromPoint(eventPoint);
-						if (s != null) {
-							shadow = s.clone();
-							shape.graphicapplication.Color c = shadow.getColor().clone();
-							c.setAlpha(0.1);
-							shadow.setColor(c);
-							gap = new Point(eventPoint.getX() - s.getPosition().getX(), 
-											eventPoint.getY() - s.getPosition().getY());
+				if (event.getButton().compareTo(MouseButton.PRIMARY) == 0) {
+					Point tmp = pointToToolbar(event.getSceneX(), event.getSceneY());
+					if (eventPoint == null) {
+						eventPoint = new Point(tmp.getX(), tmp.getY());
+						if (shadow == null) {
+							IShape s = Controller.getInstance().getToolFromPoint(eventPoint);
+							if (s != null) {
+								shadow = s.clone();
+								shape.graphicapplication.Color c = shadow.getColor().clone();
+								c.setAlpha(0.1);
+								shadow.setColor(c);
+								gap = new Point(eventPoint.getX() - s.getPosition().getX(), 
+												eventPoint.getY() - s.getPosition().getY());
+							}
 						}
 					}
-				}
-				if (shadow != null && inToolbar(new Point(event.getSceneX(), event.getSceneY()))) {
-					Controller.getInstance().redraw();
-					shadow.setPosition(new Point(tmp.getX() - gap.getX(), tmp.getY() - gap.getY()));
-					if (shadow instanceof shape.model.Rectangle) {
-				    	addTool((shape.model.Rectangle) shadow);
-				    }
-				    else if (shadow instanceof RegularPolygon) {
-				    	addTool((RegularPolygon) shadow);
-				    }
-				    else if (shadow instanceof ShapeComposite) {
-				    	addTool((ShapeComposite) shadow);
-				    }
+					if (shadow != null) {
+						Controller.getInstance().redraw();
+						shadow.setPosition(new Point(event.getSceneX() - gap.getX(), event.getSceneY() - gap.getY()));
+						if (shadow instanceof shape.model.Rectangle) {
+					    	draw((shape.model.Rectangle) shadow, borderPane).setMouseTransparent(true);
+					    }
+					    else if (shadow instanceof RegularPolygon) {
+					    	draw((RegularPolygon) shadow, borderPane).setMouseTransparent(true);
+					    }
+					    else if (shadow instanceof ShapeComposite) {
+					    	draw((ShapeComposite) shadow, borderPane);
+					    }
+					}
 				}
 			}
 		});

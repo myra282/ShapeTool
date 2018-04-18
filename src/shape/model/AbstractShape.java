@@ -2,9 +2,9 @@ package shape.model;
 
 import shape.graphicapplication.Color;
 
-public abstract class AbstractShape implements IShapeSimple {
+public abstract class AbstractShape implements IShape {
 	
-	private IShapeSimple parent;
+	private IShape parent;
 	private Point position;
 	private double rotation;
 	private Point rotationCenter;
@@ -27,9 +27,9 @@ public abstract class AbstractShape implements IShapeSimple {
 	}
 
 	@Override
-	public IShapeSimple clone() {
+	public IShape clone() {
 		try {
-			IShapeSimple s = (IShapeSimple) super.clone();
+			IShape s = (IShape) super.clone();
 			((AbstractShape) s).parent = null;
 			Point pos = getPosition();
 			((AbstractShape) s).position = new Point(pos.getX(), pos.getY());
@@ -52,11 +52,11 @@ public abstract class AbstractShape implements IShapeSimple {
 	}
 
 	@Override
-	public IShapeSimple getParent() {
+	public IShape getParent() {
 		return parent;
 	}
 
-	void setParent(IShapeSimple parent) {
+	void setParent(IShape parent) {
 		this.parent = parent;
 	}
 

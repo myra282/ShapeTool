@@ -2,14 +2,14 @@ package shape.control;
 
 import java.util.Vector;
 
-import shape.model.IShapeSimple;
+import shape.model.IShape;
 
 public class CommandRemove implements ICommand {
 	
-	private Vector<IShapeSimple> vector;
-	private IShapeSimple shape;
+	private Vector<IShape> vector;
+	private IShape shape;
 
-	public CommandRemove(Vector<IShapeSimple> vector, IShapeSimple shape) {
+	public CommandRemove(Vector<IShape> vector, IShape shape) {
 		this.vector = vector;
 		this.shape = shape;
 	}

@@ -54,8 +54,8 @@ public class RegularPolygon extends AbstractShape {
 		double angle = getRotation();
 		double radius = edgeWidth / (2 * Math.sin(Math.toRadians(180/nbEdges)));
 		for (int i = 0 ; i < nbEdges ; ++i) {
-			points[2 * i] = (radius * Math.cos(Math.toRadians(angle)));
-			points[2 * i + 1] = (radius * Math.sin(Math.toRadians(angle)));
+			points[2 * i] = (radius * Math.cos(Math.toRadians(angle))) + radius;
+			points[2 * i + 1] = (radius * Math.sin(Math.toRadians(angle))) + radius;
 			angle += inc;
 		}
 		return points;
@@ -75,8 +75,8 @@ public class RegularPolygon extends AbstractShape {
 		boolean res = false;
 		Point pos = getPosition();	
 		for (i = 0, j = nvert - 2; i < nvert; j = i , i+=2) {
-			Point pointi = new Point(points[i]+pos.getX()+radius,points[i+1]+pos.getY()+radius);
-			Point pointj = new Point(points[j]+pos.getX()+radius,points[j+1]+pos.getY()+radius);
+			Point pointi = new Point(points[i]+pos.getX(),points[i+1]+pos.getY());
+			Point pointj = new Point(points[j]+pos.getX(),points[j+1]+pos.getY());
 			if ((pointi.getY() > p.getY()) != (pointj.getY() > p.getY()) &&
 			(p.getX() <= (pointj.getX() - pointi.getX()) * (p.getY() - pointi.getY()) / (pointj.getY() - pointi.getY()) + pointi.getX())) {
 				res = !res;
