@@ -2,6 +2,7 @@ package shape.graphicapplication;
 
 import javafx.scene.shape.Shape;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 import javafx.util.StringConverter;
 import shape.control.Controller;
 import shape.model.IShape;
@@ -10,6 +11,7 @@ import shape.model.RegularPolygon;
 import shape.model.ShapeComposite;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
@@ -18,7 +20,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
@@ -26,7 +30,6 @@ import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
-import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.ToolBar;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.ContextMenuEvent;
@@ -75,7 +78,7 @@ public class ApplicationFx extends Application implements IApplication {
 				toolbar.setPannable(true);
 				scene = new Scene(borderPane);
 				menu = new ToolBar();
-				trash = new ToolBar(); // Pour la poubelle en bas
+				trash = new ToolBar();
 				
 				btnSave = new Button("Save");
 				ImageView imSave = new ImageView(ApplicationFx.class.getResource("/"+"save.png").toString());
@@ -226,17 +229,23 @@ public class ApplicationFx extends Application implements IApplication {
 		}
         if (!(s instanceof ShapeComposite)) {
         	String name1, name2;
+        	double d1, d2;
         	if (s instanceof shape.model.Rectangle) {
         		name1 = "Width : ";
+        		d1 = ((shape.model.Rectangle) s).getWidth();
         		name2 = "Height : ";
+        		d2 = ((shape.model.Rectangle) s).getHeight();
         	}
         	else {
         		name1 = "Edges : ";
+        		d1 = ((RegularPolygon) s).getNbEdges();
         		name2 = "Width : ";
+        		d2 = ((RegularPolygon) s).getEdgeWidth();
         	}
 	        MenuItem attrOption = new MenuItem("Attributes");
 	        attrOption.setOnAction(new EventHandler<ActionEvent>() {
-	            @Override
+	            @SuppressWarnings({ "rawtypes", "unchecked" })
+				@Override
 	            public void handle(ActionEvent event) {
 	            	// Text formatter
 	            	Pattern validEditingState = Pattern.compile("-?(([1-9][0-9]*)|0)?(\\.[0-9]*)?");
@@ -262,28 +271,88 @@ public class ApplicationFx extends Application implements IApplication {
 	            	        return d.toString();
 	            	    }
 	            	};
-	            	TextFormatter<Double> textFormatter1 = new TextFormatter<>(converter, 0.0, filter);
-	            	TextFormatter<Double> textFormatter2 = new TextFormatter<>(converter, 0.0, filter);
+	            	TextFormatter<Double> textFormatterx = new TextFormatter<>(converter, s.getPosition().getX(), filter);
+	            	TextFormatter<Double> textFormattery = new TextFormatter<>(converter, s.getPosition().getY(), filter);
+	            	TextFormatter<Double> textFormatter1 = new TextFormatter<>(converter, d1, filter);
+	            	TextFormatter<Double> textFormatter2 = new TextFormatter<>(converter, d2, filter);
+	            	TextFormatter<Double> textFormatterr = new TextFormatter<>(converter, s.getRotation(), filter);
+	            	TextFormatter<Double> textFormattercx = new TextFormatter<>(converter, s.getRotationCenter().getX(), filter);
+	            	TextFormatter<Double> textFormattercy = new TextFormatter<>(converter, s.getRotationCenter().getY(), filter);
+	            	TextFormatter<Double> textFormatterop = new TextFormatter<>(converter, s.getColor().getAlpha(), filter);
 	            	// Dialog
-	            	TextInputDialog dialog = new TextInputDialog();
+	            	Dialog<shape.model.Rectangle> dialog = new Dialog<>();
 	        		dialog.setTitle("Attributes Editor");
 	        		dialog.setHeaderText("Here you can modify the shape attributes");
+	        		Label labelPos = new Label("Position : ");
 	        		Label label1 = new Label(name1);
 	    			Label label2 = new Label(name2);
+	    			Label labelr = new Label("Rotation : ");
+	    			Label labelCtr = new Label("Rotation center : ");
+	    			Label labelOp = new Label("Opacity : ");
+	    			TextField textx = new TextField();
+	    			TextField texty = new TextField();
 	    			TextField text1 = new TextField();
 	    			TextField text2 = new TextField();
+	    			TextField textr = new TextField();
+	    			TextField textcx = new TextField();
+	    			TextField textcy = new TextField();
+	    			TextField textop = new TextField();
+	    			textx.setTextFormatter(textFormatterx);
+	    			texty.setTextFormatter(textFormattery);
 	    			text1.setTextFormatter(textFormatter1);
 	    			text2.setTextFormatter(textFormatter2);
+	    			textr.setTextFormatter(textFormatterr);
+	    			textcx.setTextFormatter(textFormattercx);
+	    			textcy.setTextFormatter(textFormattercy);
+	    			textop.setTextFormatter(textFormatterop);
+	    			shape.graphicapplication.Color color = s.getColor().clone();
+	    			ColorPicker colorPicker = new ColorPicker(Color.rgb(color.getR(), color.getG(), color.getB()));
+	    			 colorPicker.setOnAction(new EventHandler() {
+						@Override
+						public void handle(Event event) {
+							Color c = colorPicker.getValue();
+							color.setR((int) (c.getRed() * 255));
+							color.setG((int) (c.getGreen() * 255));
+							color.setB((int) (c.getBlue() * 255));
+						}
+	    			 });
 	    			GridPane grid = new GridPane();
-	    			grid.add(label1, 1, 1);
-	    			grid.add(text1, 2, 1);
-	    			grid.add(label2, 1, 2);
-	    			grid.add(text2, 2, 2);
+	    			grid.add(labelPos, 1, 1);
+	    			grid.add(textx, 2, 1);
+	    			grid.add(texty, 3, 1);
+	    			grid.add(label1, 1, 2);
+	    			grid.add(text1, 2, 2);
+	    			grid.add(label2, 1, 3);
+	    			grid.add(text2, 2, 3);
+	    			grid.add(labelr, 1, 4);
+	    			grid.add(textr, 2, 4);
+	    			grid.add(labelCtr, 1, 5);
+	    			grid.add(textcx, 2, 5);
+	    			grid.add(textcy, 3, 5);
+	    			grid.add(labelOp, 1, 6);
+	    			grid.add(textop, 2, 6);
+	    			grid.add(colorPicker, 2, 7);
 	    			dialog.getDialogPane().setContent(grid);
-	        		Optional<String> result = dialog.showAndWait();
-	        		String entered = "none.";
+	    			ButtonType buttonTypeOk = new ButtonType("Ok", ButtonData.OK_DONE);
+	    			dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
+	        		dialog.setResultConverter(new Callback<ButtonType,shape.model.Rectangle>() {
+						@Override
+						public shape.model.Rectangle call(ButtonType param) {
+							if (param == buttonTypeOk) {
+								shape.model.Rectangle res = new shape.model.Rectangle(new Point(Double.parseDouble(textx.getText()), 
+								Double.parseDouble(texty.getText())), Double.parseDouble(text1.getText()), Double.parseDouble(text2.getText()));
+								res.setRotation(Double.parseDouble(textr.getText()));
+								res.setRotationCenter(new Point(Double.parseDouble(textcx.getText()), Double.parseDouble(textcy.getText())));
+								color.setAlpha(Double.parseDouble(textop.getText()));
+								res.setColor(color);
+								return res;
+							}
+							return null;
+						}
+	        		});
+	        		Optional<shape.model.Rectangle> result = dialog.showAndWait();
 	        		if (result.isPresent()) {
-	        		    entered = result.get();
+	        			Controller.getInstance().changeAttributes(s, result.get());
 	        		}
 	                updateUI();
 	                event.consume();
