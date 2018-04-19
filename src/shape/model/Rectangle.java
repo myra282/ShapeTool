@@ -8,15 +8,15 @@ public class Rectangle extends AbstractShape {
 
 	public Rectangle(Point position, double width, double height, boolean rounded) {
 		super(position);
-		this.width = width;
-		this.height = height;
+		this.width = Math.abs(width);
+		this.height = Math.abs(height);
 		this.rounded = rounded;
 	}
 
 	public Rectangle(Point position, double width, double height) {
 		super(position);
-		this.width = width;
-		this.height = height;
+		this.width = Math.abs(width);
+		this.height = Math.abs(height);
 		this.rounded = false;
 	}
 
@@ -25,7 +25,7 @@ public class Rectangle extends AbstractShape {
 	}
 
 	public void setWidth(double width) {
-		this.width = width;
+		this.width = Math.abs(width);
 	}
 
 	public double getHeight() {
@@ -33,7 +33,7 @@ public class Rectangle extends AbstractShape {
 	}
 
 	public void setHeight(double height) {
-		this.height = height;
+		this.height = Math.abs(height);
 	}
 
 	public boolean getRounded() {
@@ -46,8 +46,8 @@ public class Rectangle extends AbstractShape {
 
 	@Override
 	public void scale(double ratio) {
-		setWidth(width*ratio);
-		setHeight(height*ratio);
+		setWidth(width*Math.abs(ratio));
+		setHeight(height*Math.abs(ratio));
 	}
 
 	@Override

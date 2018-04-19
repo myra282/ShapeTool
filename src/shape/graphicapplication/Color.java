@@ -8,16 +8,22 @@ public class Color implements Cloneable {
 	private double alpha;
 	
 	public Color(int r, int g, int b, double alpha) {
-		this.r = r;
-		this.g = g;
-		this.b = b;
-		this.alpha = alpha;
+		this.r = Math.abs(r);
+		this.g = Math.abs(g);
+		this.b = Math.abs(b);
+		double tmpAlpha = Math.abs(alpha);
+		if (tmpAlpha > 1) {
+			this.alpha = 1;
+		}
+		else {
+			this.alpha = tmpAlpha;
+		}
 	}
 
 	public Color(int r, int g, int b) {
-		this.r = r;
-		this.g = g;
-		this.b = b;
+		this.r = Math.abs(r);
+		this.g = Math.abs(g);
+		this.b = Math.abs(b);
 		this.alpha = 1;
 	}
 	
@@ -35,7 +41,7 @@ public class Color implements Cloneable {
 	}
 
 	public void setR(int r) {
-		this.r = r;
+		this.r = Math.abs(r);
 	}
 
 	public int getG() {
@@ -43,7 +49,7 @@ public class Color implements Cloneable {
 	}
 
 	public void setG(int g) {
-		this.g = g;
+		this.g = Math.abs(g);
 	}
 
 	public int getB() {
@@ -51,7 +57,7 @@ public class Color implements Cloneable {
 	}
 
 	public void setB(int b) {
-		this.b = b;
+		this.b = Math.abs(b);
 	}
 
 	public double getAlpha() {
@@ -59,7 +65,13 @@ public class Color implements Cloneable {
 	}
 
 	public void setAlpha(double alpha) {
-		this.alpha = alpha;
+		double tmpAlpha = Math.abs(alpha);
+		if (tmpAlpha > 1) {
+			this.alpha = 1;
+		}
+		else {
+			this.alpha = tmpAlpha;
+		}
 	}
 	
 	@Override

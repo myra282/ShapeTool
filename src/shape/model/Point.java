@@ -6,8 +6,8 @@ public class Point {
 	private double y;
 	
 	public Point(double x, double y) {
-		this.x = x;
-		this.y = y;
+		this.x = Math.abs(x);
+		this.y = Math.abs(y);
 	}
 
 	public double getX() {
@@ -15,7 +15,7 @@ public class Point {
 	}
 
 	public void setX(double x) {
-		this.x = x;
+		this.x = Math.abs(x);
 	}
 
 	public double getY() {
@@ -23,7 +23,7 @@ public class Point {
 	}
 
 	public void setY(double y) {
-		this.y = y;
+		this.y = Math.abs(y);
 	}
 	
 	@Override
