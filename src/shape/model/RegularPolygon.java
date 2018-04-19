@@ -46,7 +46,7 @@ public class RegularPolygon extends AbstractShape {
 	public double[] computePoints() {
 		double points[] = new double[nbEdges * 2];
 		double inc = 360 / nbEdges;
-		double angle = getRotation();
+		double angle = 0;//getRotation();
 		double radius = edgeWidth / (2 * Math.sin(Math.toRadians(180/nbEdges)));
 		for (int i = 0 ; i < nbEdges ; ++i) {
 			points[2 * i] = (radius * Math.cos(Math.toRadians(angle))) + radius;

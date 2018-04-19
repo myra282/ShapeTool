@@ -1,6 +1,7 @@
 package shape.graphicapplication;
 
 import javafx.scene.shape.Shape;
+import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
@@ -379,6 +380,7 @@ public class ApplicationFx extends Application implements IApplication {
 		}
 		sh.setTranslateX(r.getPosition().getX());
 		sh.setTranslateY(r.getPosition().getY());
+		sh.getTransforms().add(new Rotate(r.getRotation(), r.getRotationCenter().getX(), r.getRotationCenter().getY()));
 		pane.getChildren().add(sh);
 		return sh;
 	}
@@ -388,6 +390,7 @@ public class ApplicationFx extends Application implements IApplication {
 		sh.setFill(Color.rgb(r.getColor().getR(), r.getColor().getG(), r.getColor().getB(), r.getColor().getAlpha()));
 		sh.setTranslateX(r.getPosition().getX());
 		sh.setTranslateY(r.getPosition().getY());
+		sh.getTransforms().add(new Rotate(r.getRotation(), r.getRotationCenter().getX() + r.getRadius(), r.getRotationCenter().getY() + r.getRadius()));
 		pane.getChildren().add(sh);
 		return sh;
 	}
