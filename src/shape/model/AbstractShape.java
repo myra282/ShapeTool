@@ -1,7 +1,5 @@
 package shape.model;
 
-import shape.graphicapplication.Color;
-
 public abstract class AbstractShape implements IShape {
 	
 	private IShape parent;

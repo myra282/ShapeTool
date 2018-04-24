@@ -1,7 +1,5 @@
 package shape.model;
 
-import shape.graphicapplication.Color;
-
 public interface IShape extends Cloneable {
 	
 public Point getPosition();

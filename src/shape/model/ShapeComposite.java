@@ -3,8 +3,6 @@ package shape.model;
 import java.util.ListIterator;
 import java.util.Vector;
 
-import shape.graphicapplication.Color;
-
 public class ShapeComposite extends AbstractShape {
 	
 	private double width;

@@ -1,4 +1,4 @@
-package shape.graphicapplication;
+package shape.model;
 
 public class Color implements Cloneable {
 	

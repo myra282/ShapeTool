@@ -306,7 +306,7 @@ public class ApplicationFx extends Application implements IApplication {
 	    			textcx.setTextFormatter(textFormattercx);
 	    			textcy.setTextFormatter(textFormattercy);
 	    			textop.setTextFormatter(textFormatterop);
-	    			shape.graphicapplication.Color color = s.getColor().clone();
+	    			shape.model.Color color = s.getColor().clone();
 	    			ColorPicker colorPicker = new ColorPicker(Color.rgb(color.getR(), color.getG(), color.getB()));
 	    			 colorPicker.setOnAction(new EventHandler() {
 						@Override
@@ -499,7 +499,7 @@ public class ApplicationFx extends Application implements IApplication {
 							IShape s = Mediator.getInstance().getShapeFromPoint(eventPoint);
 							if (s != null) {
 								shadow = s.clone();
-								shape.graphicapplication.Color c = shadow.getColor().clone();
+								shape.model.Color c = shadow.getColor().clone();
 								c.setAlpha(0.1);
 								shadow.setColor(c);
 								gap = new Point(eventPoint.getX() - s.getPosition().getX(), 
@@ -562,7 +562,7 @@ public class ApplicationFx extends Application implements IApplication {
 							IShape s = Mediator.getInstance().getToolFromPoint(eventPoint);
 							if (s != null) {
 								shadow = s.clone();
-								shape.graphicapplication.Color c = shadow.getColor().clone();
+								shape.model.Color c = shadow.getColor().clone();
 								c.setAlpha(0.1);
 								shadow.setColor(c);
 								gap = new Point(eventPoint.getX() - s.getPosition().getX(), 
