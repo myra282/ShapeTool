@@ -65,13 +65,47 @@ public class Rectangle extends AbstractShape {
 		setWidth(width*Math.abs(ratio));
 		setHeight(height*Math.abs(ratio));
 	}
+	
+	private Point computePoint(Point p) {
+		Point c = getPosition();
+		// translate point to origin
+		double tmpX = p.getX() - c.getX();
+		double tmpY = p.getY() - c.getY();
+		// apply rotation
+		double newX = tmpX * Math.cos(Math.toRadians(getRotation())) - tmpY * Math.sin(Math.toRadians(getRotation()));
+		double newY = tmpX * Math.sin(Math.toRadians(getRotation())) + tmpY * Math.cos(Math.toRadians(getRotation()));
+		// translate back
+		return new Point(newX + c.getX(), newY + c.getY());
+	}
+	
+	private Point[] computePoints() {
+		Point oldPoints[] = new Point[4];
+		Point newPoints[] = new Point[4];
+		oldPoints[0] = getPosition();
+		oldPoints[1] = new Point(getPosition().getX() + width, getPosition().getY());
+		oldPoints[2] = new Point(getPosition().getX() + width, getPosition().getY() + height);
+		oldPoints[3] = new Point(getPosition().getX(), getPosition().getY() + height);
+		for (int i = 0 ; i < oldPoints.length ; ++i) {
+			newPoints[i] = computePoint(oldPoints[i]);
+		}
+		return newPoints;
+	}
 
 	@Override
 	public boolean contains(Point p) {
-		Point pos = getPosition();
-		return ((p.getX() >= pos.getX() && p.getY() >= pos.getY()) && 
-				(pos.getX() + getWidth() >= p.getX() && 
-				 pos.getY() + getHeight() >= p.getY()));
+		Point[] points = computePoints();
+		int i,j; 
+		int nvert = points.length;
+		boolean res = false;
+		for (i = 0, j = nvert - 1; i < nvert; j = i , ++i) {
+			Point pointi = new Point(points[i].getX(), points[i].getY());
+			Point pointj = new Point(points[j].getX(), points[j].getY());
+			if ((pointi.getY() >= p.getY()) != (pointj.getY() >= p.getY()) &&
+			(p.getX() <= (pointj.getX() - pointi.getX()) * (p.getY() - pointi.getY()) / (pointj.getY() - pointi.getY()) + pointi.getX())) {
+				res = !res;
+			}
+		}
+		return res;
 	}
 
 }
