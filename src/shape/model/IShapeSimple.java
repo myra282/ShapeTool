@@ -1,6 +1,8 @@
 package shape.model;
 
-public interface IShapeSimple extends Cloneable, IShape {
+import java.io.Serializable;
+
+public interface IShapeSimple extends Cloneable, IShape, Serializable {
 	
 	public IShapeSimple clone();
 	

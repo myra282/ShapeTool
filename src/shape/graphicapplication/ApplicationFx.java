@@ -2,6 +2,7 @@ package shape.graphicapplication;
 
 import javafx.scene.shape.Shape;
 import javafx.scene.transform.Rotate;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
@@ -45,6 +46,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 
+import java.io.File;
 import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.Optional;
@@ -86,12 +88,37 @@ public class ApplicationFx extends Application implements IApplication {
 				imSave.setFitWidth(20);
 				imSave.setPreserveRatio(true);
 				btnSave.setGraphic(imSave);
+				btnSave.setOnAction(new EventHandler<ActionEvent>() {
+					@Override
+					public void handle(ActionEvent event) {
+						FileChooser fileChooser = new FileChooser();
+						fileChooser.setTitle("Save file :");
+						fileChooser.setInitialFileName("default.ser");
+						File savedFile = fileChooser.showSaveDialog(null);
+						if (savedFile != null) {
+							Mediator.getInstance().save(savedFile.getAbsolutePath());
+						}
+						event.consume();
+					}
+				});
 				
 				btnLoad = new Button("Load");
 				ImageView imLoad = new ImageView(ApplicationFx.class.getResource("/"+"load.png").toString());
 				imLoad.setFitWidth(20);
 				imLoad.setPreserveRatio(true);
 				btnLoad.setGraphic(imLoad);
+				btnLoad.setOnAction(new EventHandler<ActionEvent>() {
+					@Override
+					public void handle(ActionEvent event) {
+						FileChooser fileChooser = new FileChooser();
+						fileChooser.setTitle("Choose file to load :");
+						File selectedFile = fileChooser.showOpenDialog(null);
+						if (selectedFile != null) {
+							Mediator.getInstance().load(selectedFile.getAbsolutePath());
+						}
+						event.consume();
+					}
+				});
 				
 				btnUndo = new Button("Undo");
 				ImageView imUndo = new ImageView(ApplicationFx.class.getResource("/"+"undo.png").toString());

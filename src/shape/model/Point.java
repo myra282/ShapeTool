@@ -1,6 +1,8 @@
 package shape.model;
 
-public class Point implements Cloneable {
+import java.io.Serializable;
+
+public class Point implements Cloneable, Serializable {
 	
 	private double x;
 	private double y;

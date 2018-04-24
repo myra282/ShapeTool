@@ -1,6 +1,8 @@
 package shape.model;
 
-public class Color implements Cloneable {
+import java.io.Serializable;
+
+public class Color implements Cloneable, Serializable {
 	
 	private int r;
 	private int g;

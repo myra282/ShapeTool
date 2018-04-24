@@ -1,5 +1,12 @@
 package shape.control;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.Enumeration;
 import java.util.ListIterator;
 import java.util.Vector;
 
@@ -312,6 +319,41 @@ public class Mediator {
 			}
 			redraw();
 		}
+	}
+	
+	private void save(String name, Vector<IShapeSimple> v) {		
+		File file =  new File(name) ;
+		ObjectOutputStream ostream;
+		try {
+			ostream = new ObjectOutputStream(new FileOutputStream(file));
+			ostream.writeObject(v) ;
+			ostream.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void save(String name) {
+		save(name, shapes);
+	}
+	
+	private void load(String name, Vector<IShapeSimple> v) {
+		File file =  new File(name) ;
+		ObjectInputStream istream;
+		try {
+			istream = new ObjectInputStream(new FileInputStream(file));
+			Vector<IShapeSimple> tmp = (Vector<IShapeSimple>) istream.readObject() ;
+			Enumeration<IShapeSimple> e = tmp.elements();
+		    while (e.hasMoreElements()) {
+		    	v.add(e.nextElement());
+		    }
+			istream.close();
+			redraw();
+		} catch (IOException | ClassNotFoundException e) {}
+	}
+	
+	public void load(String name) {
+		load(name, shapes);
 	}
 
 }
