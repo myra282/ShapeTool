@@ -5,7 +5,7 @@ import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
-import shape.control.Controller;
+import shape.control.Mediator;
 import shape.model.IShape;
 import shape.model.Point;
 import shape.model.RegularPolygon;
@@ -101,7 +101,7 @@ public class ApplicationFx extends Application implements IApplication {
 				btnUndo.setOnAction(new EventHandler<ActionEvent>() {
 					@Override
 					public void handle(ActionEvent event) {
-						Controller.getInstance().undo();
+						Mediator.getInstance().undo();
 						updateUI();
 						event.consume();
 					}
@@ -115,7 +115,7 @@ public class ApplicationFx extends Application implements IApplication {
 				btnRedo.setOnAction(new EventHandler<ActionEvent>() {
 					@Override
 					public void handle(ActionEvent event) {
-						Controller.getInstance().redo();
+						Mediator.getInstance().redo();
 						updateUI();
 						event.consume();
 					}
@@ -129,7 +129,7 @@ public class ApplicationFx extends Application implements IApplication {
 				btnTrash.setOnAction(new EventHandler<ActionEvent>() {
 					@Override
 					public void handle(ActionEvent event) {
-						Controller.getInstance().eraseAll();
+						Mediator.getInstance().eraseAll();
 						updateUI();
 						event.consume();
 					}
@@ -199,7 +199,7 @@ public class ApplicationFx extends Application implements IApplication {
         groupOption.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                Controller.getInstance().group();
+                Mediator.getInstance().group();
                 updateUI();
                 event.consume();
             }
@@ -211,8 +211,8 @@ public class ApplicationFx extends Application implements IApplication {
             public void handle(ActionEvent event) {
             	Point p = new Point(sh.getTranslateX()+sh.getLayoutBounds().getWidth()/2,
             						sh.getTranslateY() + sh.getLayoutBounds().getHeight()/2);
-            	Controller.getInstance().select(p);
-                Controller.getInstance().ungroup();
+            	Mediator.getInstance().select(p);
+                Mediator.getInstance().ungroup();
                 updateUI();
                 event.consume();
             }
@@ -222,7 +222,7 @@ public class ApplicationFx extends Application implements IApplication {
 	        MenuItem roundedOption = new MenuItem("Rounded");
 	        roundedOption.setOnAction(new EventHandler<ActionEvent>() {
 	            @Override public void handle(ActionEvent e) {
-	            	Controller.getInstance().roundCorners((shape.model.Rectangle) s);
+	            	Mediator.getInstance().roundCorners((shape.model.Rectangle) s);
 	            	updateUI();
 	            }
 	        });
@@ -353,7 +353,7 @@ public class ApplicationFx extends Application implements IApplication {
 	        		});
 	        		Optional<shape.model.Rectangle> result = dialog.showAndWait();
 	        		if (result.isPresent()) {
-	        			Controller.getInstance().changeAttributes(s, result.get());
+	        			Mediator.getInstance().changeAttributes(s, result.get());
 	        		}
 	                updateUI();
 	                event.consume();
@@ -437,8 +437,8 @@ public class ApplicationFx extends Application implements IApplication {
 	}
 	
 	private void updateUI() {
-		btnUndo.setDisable(!Controller.getInstance().canUndo());
-		btnRedo.setDisable(!Controller.getInstance().canRedo());
+		btnUndo.setDisable(!Mediator.getInstance().canUndo());
+		btnRedo.setDisable(!Mediator.getInstance().canRedo());
 	}
 	
 	private void selectionZone(Point p1, Point p2) {
@@ -496,7 +496,7 @@ public class ApplicationFx extends Application implements IApplication {
 					if (eventPoint == null) {
 						eventPoint = new Point(tmp.getX(), tmp.getY());
 						if (shadow == null) {
-							IShape s = Controller.getInstance().getShapeFromPoint(eventPoint);
+							IShape s = Mediator.getInstance().getShapeFromPoint(eventPoint);
 							if (s != null) {
 								shadow = s.clone();
 								shape.graphicapplication.Color c = shadow.getColor().clone();
@@ -507,7 +507,7 @@ public class ApplicationFx extends Application implements IApplication {
 							}
 						}
 					}
-					Controller.getInstance().redraw();
+					Mediator.getInstance().redraw();
 					if (shadow != null) {
 						shadow.setPosition(new Point(event.getSceneX() - gap.getX(), event.getSceneY() - gap.getY()));
 						if (shadow instanceof shape.model.Rectangle) {
@@ -533,14 +533,14 @@ public class ApplicationFx extends Application implements IApplication {
 				Point dropped = new Point(event.getSceneX(),event.getSceneY());
 				if (inBoard(dropped)) {
 					Point p2 = pointToBoard(event.getSceneX(), event.getSceneY());
-					Controller.getInstance().handleMouseEvent(eventPoint, p2, mouseKey);
+					Mediator.getInstance().handleMouseEvent(eventPoint, p2, mouseKey);
 				}
 				else if (inTrash(dropped)) {
-					Controller.getInstance().handleTrashEvent(eventPoint, mouseKey);
+					Mediator.getInstance().handleTrashEvent(eventPoint, mouseKey);
 				}
 				else if (inToolbar(dropped)) {
 					Point p2 = pointToToolbar(event.getSceneX(), event.getSceneY());
-					Controller.getInstance().handleNewToolEvent(eventPoint, p2, mouseKey);
+					Mediator.getInstance().handleNewToolEvent(eventPoint, p2, mouseKey);
 				}
 				updateUI();
 				shadow = null;
@@ -559,7 +559,7 @@ public class ApplicationFx extends Application implements IApplication {
 					if (eventPoint == null) {
 						eventPoint = new Point(tmp.getX(), tmp.getY());
 						if (shadow == null) {
-							IShape s = Controller.getInstance().getToolFromPoint(eventPoint);
+							IShape s = Mediator.getInstance().getToolFromPoint(eventPoint);
 							if (s != null) {
 								shadow = s.clone();
 								shape.graphicapplication.Color c = shadow.getColor().clone();
@@ -571,7 +571,7 @@ public class ApplicationFx extends Application implements IApplication {
 						}
 					}
 					if (shadow != null) {
-						Controller.getInstance().redraw();
+						Mediator.getInstance().redraw();
 						shadow.setPosition(new Point(event.getSceneX() - gap.getX(), event.getSceneY() - gap.getY()));
 						if (shadow instanceof shape.model.Rectangle) {
 					    	draw((shape.model.Rectangle) shadow, borderPane).setMouseTransparent(true);
@@ -593,14 +593,14 @@ public class ApplicationFx extends Application implements IApplication {
 				Point dropped = new Point(event.getSceneX(),event.getSceneY());
 				if (inToolbar(dropped)) {
 					Point p2 = pointToToolbar(event.getSceneX(), event.getSceneY());
-					Controller.getInstance().handleMouseToolEvent(eventPoint, p2, mouseKey);
+					Mediator.getInstance().handleMouseToolEvent(eventPoint, p2, mouseKey);
 				}
 				else if (inTrash(dropped)) {
-					Controller.getInstance().handleTrashToolEvent(eventPoint, mouseKey);
+					Mediator.getInstance().handleTrashToolEvent(eventPoint, mouseKey);
 				}
 				else if (inBoard(dropped)) {
 					Point p2 = pointToBoard(event.getSceneX(), event.getSceneY());
-					Controller.getInstance().handleDragToolEvent(eventPoint, p2, mouseKey);
+					Mediator.getInstance().handleDragToolEvent(eventPoint, p2, mouseKey);
 				}
 				updateUI();
 				shadow = null;

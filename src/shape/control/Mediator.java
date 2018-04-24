@@ -4,6 +4,16 @@ import java.util.ListIterator;
 import java.util.Vector;
 
 import javafx.application.Application;
+import shape.actions.ActionJournal;
+import shape.actions.CommandAdd;
+import shape.actions.CommandChange;
+import shape.actions.CommandGroup;
+import shape.actions.CommandMove;
+import shape.actions.CommandRemove;
+import shape.actions.CommandRemoveAll;
+import shape.actions.CommandRoundCorners;
+import shape.actions.CommandUngroup;
+import shape.actions.ICommand;
 import shape.graphicapplication.ApplicationFx;
 import shape.graphicapplication.Color;
 import shape.graphicapplication.IApplication;
@@ -13,7 +23,7 @@ import shape.model.Rectangle;
 import shape.model.RegularPolygon;
 import shape.model.ShapeComposite;
 
-public class Controller {
+public class Mediator {
 	
 	private Vector<IShape> tools;
 	private Vector<IShape> shapes;
@@ -21,9 +31,9 @@ public class Controller {
 	
 	private ActionJournal journal;
 	private IApplication view;
-	private static Controller controller = new Controller();
+	private static Mediator controller = new Mediator();
 	
-	private Controller() {
+	private Mediator() {
 		tools = new Vector<IShape>();
 		shapes = new Vector<IShape>();
 		selected = new Vector<Integer>();
@@ -42,7 +52,7 @@ public class Controller {
         begin();
 	}
 	
-	public static Controller getInstance() {
+	public static Mediator getInstance() {
 		return controller;
 	}
 	

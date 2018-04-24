@@ -1,5 +1,6 @@
-package shape.control;
+package shape.actions;
 
+import shape.control.Mediator;
 import shape.model.IShape;
 import shape.model.Point;
 
@@ -18,7 +19,7 @@ public class CommandMove implements ICommand {
 	@Override
 	public void execute() {
 		shape.setPosition(newPos);
-    	if (!Controller.getInstance().isInBoard(shape)) { //if shape exceeds board bounds, rollback
+    	if (!Mediator.getInstance().isInBoard(shape)) { //if shape exceeds board bounds, rollback
     		shape.setPosition(oldPos);
     	}
 	}

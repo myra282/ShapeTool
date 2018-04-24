@@ -1,4 +1,4 @@
-package shape.control;
+package shape.actions;
 
 import java.util.Vector;
 

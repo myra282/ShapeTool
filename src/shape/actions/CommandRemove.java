@@ -1,27 +1,27 @@
-package shape.control;
+package shape.actions;
 
 import java.util.Vector;
 
 import shape.model.IShape;
 
-public class CommandAdd implements ICommand {
+public class CommandRemove implements ICommand {
 	
 	private Vector<IShape> vector;
 	private IShape shape;
 
-	public CommandAdd(Vector<IShape> vector, IShape shape) {
+	public CommandRemove(Vector<IShape> vector, IShape shape) {
 		this.vector = vector;
 		this.shape = shape;
 	}
 
 	@Override
 	public void execute() {
-		vector.add(shape);
+		vector.remove(shape);
 	}
 
 	@Override
 	public void unexecute() {
-		vector.remove(shape);
+		vector.add(shape);
 	}
 
 }
