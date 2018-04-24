@@ -86,6 +86,14 @@ public class Mediator {
 		redraw();
 	}
 	
+	public ListIterator<IShapeSimple> shapeIterator(int index) {
+		return shapes.listIterator(index);
+	}
+	
+	public ListIterator<IShapeSimple> toolsIterator(int index) {
+		return tools.listIterator(index);
+	}
+	
 	public boolean isInBoard(IShapeSimple s) {
 		Point min = new Point(0, 0);
 		Point max = new Point(IApplication.BOARD_WIDTH, IApplication.BOARD_HEIGHT);
@@ -107,8 +115,8 @@ public class Mediator {
 	
 	public void select(Point p) {
 		selected.removeAllElements();
-		for (ListIterator<IShapeSimple> i = shapeIterator(); i.hasNext();) {
-		    IShapeSimple item = i.next();
+		for (ListIterator<IShapeSimple> i = shapeIterator(shapes.size()); i.hasPrevious();) {
+		    IShapeSimple item = i.previous();
 		    if (item.contains(p)) {
 		    	selected.add(shapes.indexOf(item));
 		    	break;
@@ -135,7 +143,7 @@ public class Mediator {
 			miny = p2.getY();
 			maxy = p1.getY();
 		}
-		for (ListIterator<IShapeSimple> i = shapeIterator(); i.hasNext();) {
+		for (ListIterator<IShapeSimple> i = shapeIterator(0); i.hasNext();) {
 		    IShapeSimple item = i.next();
 		    if (item.isInside(new Point(minx, miny), new Point(maxx, maxy))) {
 		    	selected.add(shapes.indexOf(item));
@@ -180,28 +188,20 @@ public class Mediator {
 	
 	public void redraw() {
 		view.clear();
-		for (ListIterator<IShapeSimple> i = toolsIterator(); i.hasNext();) {
+		for (ListIterator<IShapeSimple> i = toolsIterator(0); i.hasNext();) {
 		    IShapeSimple item = i.next();
 		    view.addTool(item);
 		}
-		for (ListIterator<IShapeSimple> i = shapeIterator(); i.hasNext();) {
+		for (ListIterator<IShapeSimple> i = shapeIterator(0); i.hasNext();) {
 		    IShapeSimple item = i.next();
 		    view.draw(item);
 		}
 		view.addEvents();
 	}
 	
-	public ListIterator<IShapeSimple> shapeIterator() {
-		return shapes.listIterator();
-	}
-	
-	public ListIterator<IShapeSimple> toolsIterator() {
-		return tools.listIterator();
-	}
-	
 	public IShapeSimple getShapeFromPoint(Point p) {
-		for (ListIterator<IShapeSimple> i = shapeIterator(); i.hasNext();) {
-			IShapeSimple item = i.next();
+		for (ListIterator<IShapeSimple> i = shapeIterator(shapes.size()); i.hasPrevious();) {
+			IShapeSimple item = i.previous();
 		    if (item.contains(p)) { //Move
 	    		return item;
 		    }
@@ -210,8 +210,8 @@ public class Mediator {
 	}
 	
 	public IShapeSimple getToolFromPoint(Point p) {
-		for (ListIterator<IShapeSimple> i = toolsIterator(); i.hasNext();) {
-			IShapeSimple item = i.next();
+		for (ListIterator<IShapeSimple> i = toolsIterator(tools.size()); i.hasPrevious();) {
+			IShapeSimple item = i.previous();
 			if (item.contains(p)) {
 				return item;
 			}
