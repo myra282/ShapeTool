@@ -1,16 +1,16 @@
 package shape.actions;
 
 import shape.control.Mediator;
-import shape.model.IShape;
+import shape.model.IShapeSimple;
 import shape.model.Point;
 
 public class CommandMove implements ICommand {
 	
-	private IShape shape;
+	private IShapeSimple shape;
 	private Point newPos;
 	private Point oldPos;
 
-	public CommandMove(IShape shape, Point newPos) {
+	public CommandMove(IShapeSimple shape, Point newPos) {
 		this.shape = shape;
 		this.newPos = newPos;
 		this.oldPos = shape.getPosition();

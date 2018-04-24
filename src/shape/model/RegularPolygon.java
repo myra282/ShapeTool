@@ -12,6 +12,21 @@ public class RegularPolygon extends AbstractShape {
 		this.edgeWidth = Math.abs(edgeWidth);
 		this.radius = this.edgeWidth / (2 * Math.sin(Math.toRadians(180/this.nbEdges)));
 	}
+	
+	@Override
+	public ShapeMemento createMemento() {
+		return new ShapeMemento(nbEdges, edgeWidth, getPosition(), getRotation(), getRotationCenter(), getColor(), getRounded());
+	}
+
+	@Override
+	public void restoreMemento(ShapeMemento mem) {
+		this.setNbEdges((int) mem.getD1());
+		this.setEdgeWidth(mem.getD2());
+		this.setPosition(mem.getPosition().clone());
+		this.setRotation(mem.getRotation());
+		this.setRotationCenter(mem.getRotationCenter().clone());
+		this.setColor(mem.getColor());
+	}
 
 	public int getNbEdges() {
 		return nbEdges;

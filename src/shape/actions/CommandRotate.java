@@ -1,14 +1,14 @@
 package shape.actions;
 
-import shape.model.IShape;
+import shape.model.IShapeSimple;
 
 public class CommandRotate implements ICommand {
 	
-	private IShape shape;
+	private IShapeSimple shape;
 	private double newD;
 	private double oldD;
 
-	public CommandRotate(IShape shape, double newD, double oldD) {
+	public CommandRotate(IShapeSimple shape, double newD, double oldD) {
 		this.shape = shape;
 		this.newD = newD;
 		this.oldD = oldD;

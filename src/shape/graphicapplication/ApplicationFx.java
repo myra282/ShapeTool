@@ -6,7 +6,7 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 import shape.control.Mediator;
-import shape.model.IShape;
+import shape.model.IShapeSimple;
 import shape.model.Point;
 import shape.model.RegularPolygon;
 import shape.model.ShapeComposite;
@@ -61,7 +61,7 @@ public class ApplicationFx extends Application implements IApplication {
 	private Button btnSave, btnLoad, btnUndo, btnRedo, btnTrash;
 	private Stage pStage;
 	
-	private IShape shadow;
+	private IShapeSimple shadow;
 	private Point eventPoint, gap;
 	
 	private static ApplicationFx instance = null;
@@ -192,7 +192,7 @@ public class ApplicationFx extends Application implements IApplication {
 		return p;
 	}
 	
-	private void addMenu(Shape sh, IShape s) {
+	private void addMenu(Shape sh, IShapeSimple s) {
 		// Context Menu
 		ContextMenu contextMenu = new ContextMenu();
         MenuItem groupOption = new MenuItem("Group");
@@ -281,7 +281,7 @@ public class ApplicationFx extends Application implements IApplication {
 	            	TextFormatter<Double> textFormattercy = new TextFormatter<>(converter, s.getRotationCenter().getY(), filter);
 	            	TextFormatter<Double> textFormatterop = new TextFormatter<>(converter, s.getColor().getAlpha(), filter);
 	            	// Dialog
-	            	Dialog<shape.model.Rectangle> dialog = new Dialog<>();
+	            	Dialog<shape.model.ShapeMemento> dialog = new Dialog<>();
 	        		dialog.setTitle("Attributes Editor");
 	        		dialog.setHeaderText("Here you can modify the shape attributes");
 	        		Label labelPos = new Label("Position : ");
@@ -336,22 +336,19 @@ public class ApplicationFx extends Application implements IApplication {
 	    			dialog.getDialogPane().setContent(grid);
 	    			ButtonType buttonTypeOk = new ButtonType("Ok", ButtonData.OK_DONE);
 	    			dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
-	        		dialog.setResultConverter(new Callback<ButtonType,shape.model.Rectangle>() {
+	        		dialog.setResultConverter(new Callback<ButtonType,shape.model.ShapeMemento>() {
 						@Override
-						public shape.model.Rectangle call(ButtonType param) {
+						public shape.model.ShapeMemento call(ButtonType param) {
 							if (param == buttonTypeOk) {
-								shape.model.Rectangle res = new shape.model.Rectangle(new Point(Double.parseDouble(textx.getText()), 
-								Double.parseDouble(texty.getText())), Double.parseDouble(text1.getText()), Double.parseDouble(text2.getText()));
-								res.setRotation(Double.parseDouble(textr.getText()));
-								res.setRotationCenter(new Point(Double.parseDouble(textcx.getText()), Double.parseDouble(textcy.getText())));
 								color.setAlpha(Double.parseDouble(textop.getText()));
-								res.setColor(color);
+								shape.model.ShapeMemento res = new shape.model.ShapeMemento(Double.parseDouble(text1.getText()), Double.parseDouble(text2.getText()), new Point(Double.parseDouble(textx.getText()), 
+										Double.parseDouble(texty.getText())), Double.parseDouble(textr.getText()), new Point(Double.parseDouble(textcx.getText()), Double.parseDouble(textcy.getText())), color, s.getRounded());
 								return res;
 							}
 							return null;
 						}
 	        		});
-	        		Optional<shape.model.Rectangle> result = dialog.showAndWait();
+	        		Optional<shape.model.ShapeMemento> result = dialog.showAndWait();
 	        		if (result.isPresent()) {
 	        			Mediator.getInstance().changeAttributes(s, result.get());
 	        		}
@@ -396,8 +393,8 @@ public class ApplicationFx extends Application implements IApplication {
 	}
 	
 	private void draw(ShapeComposite s, Pane pane) {
-		for (Iterator<IShape> i = s.iterator(); i.hasNext();) {
-		    IShape item = i.next();
+		for (Iterator<IShapeSimple> i = s.iterator(); i.hasNext();) {
+		    IShapeSimple item = i.next();
 		    if (item instanceof shape.model.Rectangle) {
 		    	Shape sh = draw((shape.model.Rectangle) item, pane);
 		    	addMenu(sh, s);
@@ -412,7 +409,8 @@ public class ApplicationFx extends Application implements IApplication {
 		}
 	}
 	
-	public void draw(IShape s) {
+	@Override
+	public void draw(IShapeSimple s) {
 		if (s instanceof shape.model.Rectangle) {
 			addMenu(draw((shape.model.Rectangle) s, board), s);
 	    }
@@ -422,6 +420,19 @@ public class ApplicationFx extends Application implements IApplication {
 	    else if (s instanceof ShapeComposite) {
 	    	draw((ShapeComposite) s, board);
 	    }
+	}
+	
+	@Override
+	public void addTool(IShapeSimple s) {
+		if (s instanceof shape.model.Rectangle) {
+			draw((shape.model.Rectangle) s, (StackPane) toolbar.getContent());
+		}
+		else if (s instanceof RegularPolygon) {
+			draw((RegularPolygon) s, (StackPane) toolbar.getContent());
+		}
+		else if (s instanceof ShapeComposite) {
+			draw((ShapeComposite) s, (StackPane) toolbar.getContent());
+		}
 	}
 	
 	@Override
@@ -466,22 +477,9 @@ public class ApplicationFx extends Application implements IApplication {
 		selectionZone.setStroke(Color.DARKGREY);
 		selectionZone.setFill(Color.TRANSPARENT);
 		board.getChildren().add(selectionZone);
-	}
+	}	
 	
 	@Override
-	public void addTool(IShape s) {
-		if (s instanceof shape.model.Rectangle) {
-			draw((shape.model.Rectangle) s,(StackPane) toolbar.getContent());
-		}
-		else if (s instanceof RegularPolygon) {
-			draw((RegularPolygon) s,(StackPane) toolbar.getContent());
-		}
-		else if (s instanceof ShapeComposite) {
-			draw((ShapeComposite) s,(StackPane) toolbar.getContent());
-		}
-	}
-	
-	
 	public void addEvents() {
 		addBoardEvents();
 		addToolbarEvents();
@@ -496,7 +494,7 @@ public class ApplicationFx extends Application implements IApplication {
 					if (eventPoint == null) {
 						eventPoint = new Point(tmp.getX(), tmp.getY());
 						if (shadow == null) {
-							IShape s = Mediator.getInstance().getShapeFromPoint(eventPoint);
+							IShapeSimple s = Mediator.getInstance().getShapeFromPoint(eventPoint);
 							if (s != null) {
 								shadow = s.clone();
 								shape.model.Color c = shadow.getColor().clone();
@@ -559,7 +557,7 @@ public class ApplicationFx extends Application implements IApplication {
 					if (eventPoint == null) {
 						eventPoint = new Point(tmp.getX(), tmp.getY());
 						if (shadow == null) {
-							IShape s = Mediator.getInstance().getToolFromPoint(eventPoint);
+							IShapeSimple s = Mediator.getInstance().getToolFromPoint(eventPoint);
 							if (s != null) {
 								shadow = s.clone();
 								shape.model.Color c = shadow.getColor().clone();

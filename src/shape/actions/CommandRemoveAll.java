@@ -2,16 +2,16 @@ package shape.actions;
 
 import java.util.Vector;
 
-import shape.model.IShape;
+import shape.model.IShapeSimple;
 
 public class CommandRemoveAll implements ICommand {
 	
-	private Vector<IShape> vector;
-	private Vector<IShape> backup;
+	private Vector<IShapeSimple> vector;
+	private Vector<IShapeSimple> backup;
 
-	public CommandRemoveAll(Vector<IShape> vector) {
+	public CommandRemoveAll(Vector<IShapeSimple> vector) {
 		this.vector = vector;
-		this.backup = new Vector<IShape>();
+		this.backup = new Vector<IShapeSimple>();
 	}
 
 	@Override

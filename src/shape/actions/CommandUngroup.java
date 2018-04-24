@@ -3,15 +3,15 @@ package shape.actions;
 import java.util.ListIterator;
 import java.util.Vector;
 
-import shape.model.IShape;
+import shape.model.IShapeSimple;
 import shape.model.ShapeComposite;
 
 public class CommandUngroup implements ICommand {
 	
-	private Vector<IShape> vector;
+	private Vector<IShapeSimple> vector;
 	private ShapeComposite selected;
 	
-	public CommandUngroup(Vector<IShape> vector, ShapeComposite s) {
+	public CommandUngroup(Vector<IShapeSimple> vector, ShapeComposite s) {
 		this.vector = vector;
 		this.selected = s;
 	}
@@ -25,8 +25,8 @@ public class CommandUngroup implements ICommand {
 	@Override
 	public void unexecute() {
 		ShapeComposite group = new ShapeComposite();
-		for (ListIterator<IShape> i = selected.iterator(); i.hasNext();) {
-		    IShape item = i.next();
+		for (ListIterator<IShapeSimple> i = selected.iterator(); i.hasNext();) {
+		    IShapeSimple item = i.next();
 		    group.add(item);
 		}
 		vector.removeAll(group.getShapes());

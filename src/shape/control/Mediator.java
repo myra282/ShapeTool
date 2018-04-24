@@ -17,16 +17,17 @@ import shape.actions.ICommand;
 import shape.graphicapplication.ApplicationFx;
 import shape.graphicapplication.IApplication;
 import shape.model.Color;
-import shape.model.IShape;
+import shape.model.IShapeSimple;
 import shape.model.Point;
 import shape.model.Rectangle;
 import shape.model.RegularPolygon;
 import shape.model.ShapeComposite;
+import shape.model.ShapeMemento;
 
 public class Mediator {
 	
-	private Vector<IShape> tools;
-	private Vector<IShape> shapes;
+	private Vector<IShapeSimple> tools;
+	private Vector<IShapeSimple> shapes;
 	private Vector<Integer> selected;
 	
 	private ActionJournal journal;
@@ -34,8 +35,8 @@ public class Mediator {
 	private static Mediator controller = new Mediator();
 	
 	private Mediator() {
-		tools = new Vector<IShape>();
-		shapes = new Vector<IShape>();
+		tools = new Vector<IShapeSimple>();
+		shapes = new Vector<IShapeSimple>();
 		selected = new Vector<Integer>();
 		journal = new ActionJournal();
 		
@@ -85,13 +86,13 @@ public class Mediator {
 		redraw();
 	}
 	
-	public boolean isInBoard(IShape s) {
+	public boolean isInBoard(IShapeSimple s) {
 		Point min = new Point(0, 0);
 		Point max = new Point(IApplication.BOARD_WIDTH, IApplication.BOARD_HEIGHT);
 		return s.isInside(min, max);
 	}
 	
-	public boolean isInToolbar(IShape s) {
+	public boolean isInToolbar(IShapeSimple s) {
 		Point min = new Point(0, 0);
 		Point max = new Point(IApplication.BAR_MAX_WIDTH, IApplication.BOARD_HEIGHT);
 		return s.isInside(min, max);
@@ -106,8 +107,8 @@ public class Mediator {
 	
 	public void select(Point p) {
 		selected.removeAllElements();
-		for (ListIterator<IShape> i = shapeIterator(); i.hasNext();) {
-		    IShape item = i.next();
+		for (ListIterator<IShapeSimple> i = shapeIterator(); i.hasNext();) {
+		    IShapeSimple item = i.next();
 		    if (item.contains(p)) {
 		    	selected.add(shapes.indexOf(item));
 		    	break;
@@ -134,8 +135,8 @@ public class Mediator {
 			miny = p2.getY();
 			maxy = p1.getY();
 		}
-		for (ListIterator<IShape> i = shapeIterator(); i.hasNext();) {
-		    IShape item = i.next();
+		for (ListIterator<IShapeSimple> i = shapeIterator(); i.hasNext();) {
+		    IShapeSimple item = i.next();
 		    if (item.isInside(new Point(minx, miny), new Point(maxx, maxy))) {
 		    	selected.add(shapes.indexOf(item));
 		    }
@@ -153,7 +154,7 @@ public class Mediator {
 	}
 	
 	public void ungroup() {
-		IShape s = shapes.get(selected.get(0));
+		IShapeSimple s = shapes.get(selected.get(0));
 		if (selected.size() == 1 && s instanceof ShapeComposite) {
 			ICommand cmd = new CommandUngroup(shapes, (ShapeComposite) s);
 			cmd.execute();
@@ -170,8 +171,8 @@ public class Mediator {
     	redraw();
 	}
 	
-	public void changeAttributes(IShape s, Rectangle r) {
-		ICommand cmd = new CommandChange(s, r);
+	public void changeAttributes(IShapeSimple s, ShapeMemento mem) {
+		ICommand cmd = new CommandChange(s, mem);
 		cmd.execute();
     	journal.add(cmd);
     	redraw();
@@ -179,28 +180,28 @@ public class Mediator {
 	
 	public void redraw() {
 		view.clear();
-		for (ListIterator<IShape> i = toolsIterator(); i.hasNext();) {
-		    IShape item = i.next();
+		for (ListIterator<IShapeSimple> i = toolsIterator(); i.hasNext();) {
+		    IShapeSimple item = i.next();
 		    view.addTool(item);
 		}
-		for (ListIterator<IShape> i = shapeIterator(); i.hasNext();) {
-		    IShape item = i.next();
+		for (ListIterator<IShapeSimple> i = shapeIterator(); i.hasNext();) {
+		    IShapeSimple item = i.next();
 		    view.draw(item);
 		}
 		view.addEvents();
 	}
 	
-	public ListIterator<IShape> shapeIterator() {
+	public ListIterator<IShapeSimple> shapeIterator() {
 		return shapes.listIterator();
 	}
 	
-	public ListIterator<IShape> toolsIterator() {
+	public ListIterator<IShapeSimple> toolsIterator() {
 		return tools.listIterator();
 	}
 	
-	public IShape getShapeFromPoint(Point p) {
-		for (ListIterator<IShape> i = shapeIterator(); i.hasNext();) {
-			IShape item = i.next();
+	public IShapeSimple getShapeFromPoint(Point p) {
+		for (ListIterator<IShapeSimple> i = shapeIterator(); i.hasNext();) {
+			IShapeSimple item = i.next();
 		    if (item.contains(p)) { //Move
 	    		return item;
 		    }
@@ -208,25 +209,28 @@ public class Mediator {
 		return null;
 	}
 	
-	public IShape getToolFromPoint(Point p) {
-		for (ListIterator<IShape> i = toolsIterator(); i.hasNext();) {
-			IShape item = i.next();
+	public IShapeSimple getToolFromPoint(Point p) {
+		for (ListIterator<IShapeSimple> i = toolsIterator(); i.hasNext();) {
+			IShapeSimple item = i.next();
 			if (item.contains(p)) {
 				return item;
 			}
 		}
 		return null;
 	}
+	
+	private Point computeNewPos(IShapeSimple s, Point p1, Point p2) {
+		Point oldPos = s.getPosition();
+    	double stepX = p1.getX() - oldPos.getX();
+    	double stepY = p1.getY() - oldPos.getY();
+    	return new Point(p2.getX()-stepX, p2.getY()-stepY);
+	}
 
 	public void handleMouseEvent(Point p1, Point p2, boolean mouseKey) { //mouseKey : true for primary key
 		if (mouseKey && p1 != null) {
-			IShape item = getShapeFromPoint(p1);
+			IShapeSimple item = getShapeFromPoint(p1);
 			if (item != null) {
-				Point oldPos = item.getPosition();
-		    	double stepX = p1.getX() - oldPos.getX();
-		    	double stepY = p1.getY() - oldPos.getY();
-		    	Point newPos = new Point(p2.getX()-stepX, p2.getY()-stepY);
-		    	ICommand cmd = new CommandMove(item, newPos);
+		    	ICommand cmd = new CommandMove(item, computeNewPos(item, p1, p2));
 		    	cmd.execute();
 		    	journal.add(cmd);
 			}
@@ -239,7 +243,7 @@ public class Mediator {
 	
 	public void handleTrashEvent(Point p1, boolean mouseKey) { //mouseKey : true for primary key
 		if (mouseKey && p1 != null) {
-			IShape item = getShapeFromPoint(p1);
+			IShapeSimple item = getShapeFromPoint(p1);
 			if (item != null) {
 	    		ICommand cmd = new CommandRemove(shapes, item);
 	    		cmd.execute();
@@ -251,13 +255,10 @@ public class Mediator {
 	
 	public void handleNewToolEvent(Point p1, Point p2, boolean mouseKey) { //mouseKey : true for primary key
 		if (mouseKey && p1 != null) {
-			IShape item = getShapeFromPoint(p1);
+			IShapeSimple item = getShapeFromPoint(p1);
 			if (item != null) {
-				IShape newTool = item.clone();
-				Point oldPos = newTool.getPosition();
-		    	double stepX = p1.getX() - oldPos.getX();
-		    	double stepY = p1.getY() - oldPos.getY();
-		    	Point newPos = new Point(p2.getX()-stepX, p2.getY()-stepY);
+				IShapeSimple newTool = item.clone();
+		    	Point newPos = computeNewPos(item, p1, p2);
 		    	if (newTool.getWidth() > IApplication.BAR_MAX_WIDTH) {
 					newTool.scale(0.8 * IApplication.BAR_MAX_WIDTH / newTool.getWidth());
 					newPos.setX(0);
@@ -275,13 +276,9 @@ public class Mediator {
 
 	public void handleMouseToolEvent(Point p1, Point p2, boolean mouseKey) {
 		if (mouseKey && p1 != null) {
-			IShape item = getToolFromPoint(p1);
+			IShapeSimple item = getToolFromPoint(p1);
 			if (item != null) {
-				Point oldPos = item.getPosition();
-		    	double stepX = p1.getX() - oldPos.getX();
-		    	double stepY = p1.getY() - oldPos.getY();
-		    	Point newPos = new Point(p2.getX()-stepX, p2.getY()-stepY);
-		    	ICommand cmd = new CommandMove(item, newPos);
+		    	ICommand cmd = new CommandMove(item, computeNewPos(item, p1, p2));
 		    	cmd.execute();
 		    	journal.add(cmd);
 			}
@@ -291,7 +288,7 @@ public class Mediator {
 
 	public void handleTrashToolEvent(Point p1, boolean mouseKey) {
 		if (mouseKey && p1 != null) {
-			IShape item = getToolFromPoint(p1);
+			IShapeSimple item = getToolFromPoint(p1);
 			if (item != null) {
 	    		ICommand cmd = new CommandRemove(tools, item);
 	    		cmd.execute();
@@ -303,14 +300,10 @@ public class Mediator {
 
 	public void handleDragToolEvent(Point p1, Point p2, boolean mouseKey) {
 		if (mouseKey && p1 != null) {
-			IShape item = getToolFromPoint(p1);
+			IShapeSimple item = getToolFromPoint(p1);
 			if (item != null) {
-				IShape shape = item.clone();
-				Point oldPos = shape.getPosition();
-		    	double stepX = p1.getX() - oldPos.getX();
-		    	double stepY = p1.getY() - oldPos.getY();
-		    	Point newPos = new Point(p2.getX()-stepX, p2.getY()-stepY);
-		    	shape.setPosition(newPos);
+				IShapeSimple shape = item.clone();
+		    	shape.setPosition(computeNewPos(item, p1, p2));
 		    	if (isInBoard(shape)) {
 		    		ICommand cmd = new CommandAdd(shapes, shape);
 		    		cmd.execute();

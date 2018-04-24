@@ -1,6 +1,6 @@
 package shape.graphicapplication;
 
-import shape.model.IShape;
+import shape.model.IShapeSimple;
 
 public interface IApplication {
 	
@@ -11,9 +11,9 @@ public interface IApplication {
 	
 	public static final double ROUNDED_VALUE = 30;
 	
-	public void addTool(IShape s);
+	public void addTool(IShapeSimple s);
 	
-	public void draw(IShape s);
+	public void draw(IShapeSimple s);
 	
 	public void clear();
 	

@@ -1,8 +1,8 @@
 package shape.model;
 
-public abstract class AbstractShape implements IShape {
+public abstract class AbstractShape implements IShapeSimple {
 	
-	private IShape parent;
+	private IShapeSimple parent;
 	private Point position;
 	private double rotation;
 	private Point rotationCenter;
@@ -25,14 +25,14 @@ public abstract class AbstractShape implements IShape {
 	}
 
 	@Override
-	public IShape clone() {
+	public IShapeSimple clone() {
 		try {
-			IShape s = (IShape) super.clone();
+			IShapeSimple s = (IShapeSimple) super.clone();
 			((AbstractShape) s).parent = null;
-			Point pos = getPosition();
+			/*Point pos = getPosition();
 			((AbstractShape) s).position = new Point(pos.getX(), pos.getY());
 			Point center = getRotationCenter();
-			((AbstractShape) s).rotationCenter = new Point(center.getX(), center.getY());
+			((AbstractShape) s).rotationCenter = new Point(center.getX(), center.getY());*/
 			((AbstractShape) s).color = color.clone();
 			return s;
 		} catch (CloneNotSupportedException e) {}
@@ -46,44 +46,57 @@ public abstract class AbstractShape implements IShape {
 	}
 
 	@Override
-	public IShape getParent() {
+	public IShapeSimple getParent() {
 		return parent;
 	}
 
-	void setParent(IShape parent) {
+	public void setParent(IShapeSimple parent) {
 		this.parent = parent;
 	}
 
+	@Override
 	public Point getPosition() {
 		return position;
 	}
 
+	@Override
 	public void setPosition(Point position) {
 		this.position = position;
 	}
 
+	@Override
 	public double getRotation() {
 		return rotation;
 	}
 
+	@Override
 	public void setRotation(double rotation) {
 		this.rotation = rotation;
 	}
 
+	@Override
 	public Color getColor() {
 		return color;
 	}
 
+	@Override
 	public void setColor(Color color) {
 		this.color = color;
 	}
 
+	@Override
 	public Point getRotationCenter() {
 		return rotationCenter;
 	}
 	
+	@Override
 	public void setRotationCenter(Point p) {
 		this.rotationCenter = p;
+	}
+	
+	@Override
+	public boolean getRounded() {
+		return false;
 	}
 	
 	@Override

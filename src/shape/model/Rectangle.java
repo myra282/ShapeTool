@@ -19,6 +19,22 @@ public class Rectangle extends AbstractShape {
 		this.height = Math.abs(height);
 		this.rounded = false;
 	}
+	
+	@Override
+	public ShapeMemento createMemento() {
+		return new ShapeMemento(width, height, getPosition(), getRotation(), getRotationCenter(), getColor(), getRounded());
+	}
+
+	@Override
+	public void restoreMemento(ShapeMemento mem) {
+		this.setWidth(mem.getD1());
+		this.setHeight(mem.getD2());
+		this.setPosition(mem.getPosition().clone());
+		this.setRotation(mem.getRotation());
+		this.setRotationCenter(mem.getRotationCenter().clone());
+		this.setRounded(mem.getRounded());
+		this.setColor(mem.getColor());
+	}
 
 	public double getWidth() {
 		return width;
