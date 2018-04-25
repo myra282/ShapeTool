@@ -63,7 +63,6 @@ public class ApplicationFx extends Application implements IApplication {
 	private Scene scene;
 	private ToolBar menu, trash;
 	private Button btnSave, btnLoad, btnUndo, btnRedo, btnTrash;
-	private Stage pStage;
 	
 	private IShapeSimple shadow;
 	private Point eventPoint, gap;
@@ -76,94 +75,6 @@ public class ApplicationFx extends Application implements IApplication {
 				throw new UnsupportedOperationException(getClass()+" is a singleton but constructor was called multiple times !");
 			}
 			else {
-				borderPane = new BorderPane();
-				board = new StackPane();
-				toolbar = new ScrollPane();
-				toolbar.setContent(new StackPane());
-				toolbar.setPannable(true);
-				scene = new Scene(borderPane);
-				menu = new ToolBar();
-				trash = new ToolBar();
-				
-				btnSave = new Button("Save");
-				ImageView imSave = new ImageView(ApplicationFx.class.getResource("/"+"save.png").toString());
-				imSave.setFitWidth(20);
-				imSave.setPreserveRatio(true);
-				btnSave.setGraphic(imSave);
-				btnSave.setOnAction(new EventHandler<ActionEvent>() {
-					@Override
-					public void handle(ActionEvent event) {
-						FileChooser fileChooser = new FileChooser();
-						fileChooser.setTitle("Save file :");
-						fileChooser.setInitialFileName("default.ser");
-						File savedFile = fileChooser.showSaveDialog(null);
-						if (savedFile != null) {
-							Mediator.getInstance().save(savedFile.getAbsolutePath());
-						}
-						event.consume();
-					}
-				});
-				
-				btnLoad = new Button("Load");
-				ImageView imLoad = new ImageView(ApplicationFx.class.getResource("/"+"load.png").toString());
-				imLoad.setFitWidth(20);
-				imLoad.setPreserveRatio(true);
-				btnLoad.setGraphic(imLoad);
-				btnLoad.setOnAction(new EventHandler<ActionEvent>() {
-					@Override
-					public void handle(ActionEvent event) {
-						FileChooser fileChooser = new FileChooser();
-						fileChooser.setTitle("Choose file to load :");
-						File selectedFile = fileChooser.showOpenDialog(null);
-						if (selectedFile != null) {
-							Mediator.getInstance().load(selectedFile.getAbsolutePath());
-						}
-						event.consume();
-					}
-				});
-				
-				btnUndo = new Button("Undo");
-				ImageView imUndo = new ImageView(ApplicationFx.class.getResource("/"+"undo.png").toString());
-				imUndo.setFitWidth(20);
-				imUndo.setPreserveRatio(true);
-				btnUndo.setGraphic(imUndo);
-				btnUndo.setOnAction(new EventHandler<ActionEvent>() {
-					@Override
-					public void handle(ActionEvent event) {
-						Mediator.getInstance().undo();
-						updateUI();
-						event.consume();
-					}
-				});
-				
-				btnRedo = new Button("Redo");
-				ImageView imRedo = new ImageView(ApplicationFx.class.getResource("/"+"redo.png").toString());
-				imRedo.setFitWidth(20);
-				imRedo.setPreserveRatio(true);
-				btnRedo.setGraphic(imRedo);
-				btnRedo.setOnAction(new EventHandler<ActionEvent>() {
-					@Override
-					public void handle(ActionEvent event) {
-						Mediator.getInstance().redo();
-						updateUI();
-						event.consume();
-					}
-				});
-				
-				btnTrash = new Button("");
-				ImageView imTrash = new ImageView(ApplicationFx.class.getResource("/"+"trash.png").toString());
-				imTrash.setFitWidth(20);
-				imTrash.setPreserveRatio(true);
-				btnTrash.setGraphic(imTrash);
-				btnTrash.setOnAction(new EventHandler<ActionEvent>() {
-					@Override
-					public void handle(ActionEvent event) {
-						Mediator.getInstance().eraseAll();
-						updateUI();
-						event.consume();
-					}
-				});
-				
 				shadow = null;
 				eventPoint = null;
 				gap = null;
@@ -173,6 +84,21 @@ public class ApplicationFx extends Application implements IApplication {
 	}
 	
 	public static ApplicationFx getInstance() {
+		Thread t1 = new Thread() {
+            @Override
+            public void run() {
+            	Application.launch(ApplicationFx.class);
+            }
+        };
+        t1.start();
+        while (!t1.isAlive() || instance == null) {
+        	// Wait for initialisation
+        	try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+        }
 		return instance;
 	}
 	
@@ -652,11 +578,97 @@ public class ApplicationFx extends Application implements IApplication {
 			}
 		});
 	}
-
+	
 	@Override
-	public void start(Stage primaryStage) throws Exception {
-		pStage = primaryStage;
+	public void init() throws Exception {
+		borderPane = new BorderPane();
+		board = new StackPane();
+		toolbar = new ScrollPane();
+		toolbar.setContent(new StackPane());
+		toolbar.setPannable(true);
+		scene = new Scene(borderPane);
+		menu = new ToolBar();
+		trash = new ToolBar();
 		
+		btnSave = new Button("Save");
+		ImageView imSave = new ImageView(ApplicationFx.class.getResource("/"+"save.png").toString());
+		imSave.setFitWidth(20);
+		imSave.setPreserveRatio(true);
+		btnSave.setGraphic(imSave);
+		btnSave.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				FileChooser fileChooser = new FileChooser();
+				fileChooser.setTitle("Save file :");
+				fileChooser.setInitialFileName("default.ser");
+				File savedFile = fileChooser.showSaveDialog(null);
+				if (savedFile != null) {
+					Mediator.getInstance().save(savedFile.getAbsolutePath());
+				}
+				event.consume();
+			}
+		});
+		
+		btnLoad = new Button("Load");
+		ImageView imLoad = new ImageView(ApplicationFx.class.getResource("/"+"load.png").toString());
+		imLoad.setFitWidth(20);
+		imLoad.setPreserveRatio(true);
+		btnLoad.setGraphic(imLoad);
+		btnLoad.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				FileChooser fileChooser = new FileChooser();
+				fileChooser.setTitle("Choose file to load :");
+				File selectedFile = fileChooser.showOpenDialog(null);
+				if (selectedFile != null) {
+					Mediator.getInstance().load(selectedFile.getAbsolutePath());
+				}
+				event.consume();
+			}
+		});
+		
+		btnUndo = new Button("Undo");
+		ImageView imUndo = new ImageView(ApplicationFx.class.getResource("/"+"undo.png").toString());
+		imUndo.setFitWidth(20);
+		imUndo.setPreserveRatio(true);
+		btnUndo.setGraphic(imUndo);
+		btnUndo.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				Mediator.getInstance().undo();
+				updateUI();
+				event.consume();
+			}
+		});
+		
+		btnRedo = new Button("Redo");
+		ImageView imRedo = new ImageView(ApplicationFx.class.getResource("/"+"redo.png").toString());
+		imRedo.setFitWidth(20);
+		imRedo.setPreserveRatio(true);
+		btnRedo.setGraphic(imRedo);
+		btnRedo.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				Mediator.getInstance().redo();
+				updateUI();
+				event.consume();
+			}
+		});
+		
+		btnTrash = new Button("");
+		ImageView imTrash = new ImageView(ApplicationFx.class.getResource("/"+"trash.png").toString());
+		imTrash.setFitWidth(20);
+		imTrash.setPreserveRatio(true);
+		btnTrash.setGraphic(imTrash);
+		btnTrash.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				Mediator.getInstance().eraseAll();
+				updateUI();
+				event.consume();
+			}
+		});
+		// Window
 		HBox statusbar = new HBox();
 		board.setStyle("-fx-border-color: black;");
 		toolbar.setStyle("-fx-border-color: black;");
@@ -681,23 +693,15 @@ public class ApplicationFx extends Application implements IApplication {
 		
 		addEvents();
 		updateUI();
-		
+	}
+
+	@Override
+	public void start(Stage primaryStage) throws Exception {
 		// set app
 		primaryStage.setTitle("ShapeOfView");
 		primaryStage.setScene(scene);
 		primaryStage.setResizable(false);
 		primaryStage.show();
 	}
-	
-	public Stage getpStage() {
-		return pStage;
-	}
-
-	@Override
-	public void begin() {
-		Application.launch(ApplicationFx.class);
-	}
-
-	
 
 }

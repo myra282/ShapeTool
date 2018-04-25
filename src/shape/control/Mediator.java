@@ -47,7 +47,7 @@ public class Mediator {
 		selected = new Vector<Integer>();
 		journal = new ActionJournal();
 		
-		Thread t1 = new Thread() {
+		/*Thread t1 = new Thread() {
             @Override
             public void run() {
             	Application.launch(ApplicationFx.class);
@@ -56,16 +56,20 @@ public class Mediator {
         t1.start();
         while (!t1.isAlive() || ApplicationFx.getInstance() == null) {
         	// Wait for initialisation
-        }
-        begin();
+        }*/
+        //begin();
 	}
 	
 	public static Mediator getInstance() {
 		return controller;
 	}
 	
+	public void setIApplication(IApplication app) {
+		view = app;
+	}
+	
 	public void begin() {
-		view = ApplicationFx.getInstance();
+		//view = ApplicationFx.getInstance();
 		shape.model.Rectangle rect = new Rectangle(new Point(30, 5), 60, 40);
 		rect.setColor(new Color(200, 30, 30));
 		RegularPolygon poly = new RegularPolygon(new Point(30, 60), 5, 40);

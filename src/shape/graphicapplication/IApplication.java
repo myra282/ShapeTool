@@ -19,7 +19,7 @@ public interface IApplication {
 	
 	public void displayMessage(String message, boolean warning);
 	
-	public void begin();
+	//public void begin();
 
 	public void addEvents();
 
