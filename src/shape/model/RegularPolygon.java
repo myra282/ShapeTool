@@ -34,6 +34,7 @@ public class RegularPolygon extends AbstractShape {
 
 	public void setNbEdges(int nbEdges) {
 		this.nbEdges = Math.abs(nbEdges);
+		updateRadius();
 	}
 
 	public double getEdgeWidth() {
@@ -42,6 +43,7 @@ public class RegularPolygon extends AbstractShape {
 
 	public void setEdgeWidth(double edgeWidth) {
 		this.edgeWidth = Math.abs(edgeWidth);
+		updateRadius();
 	}
 
 	@Override
@@ -58,23 +60,27 @@ public class RegularPolygon extends AbstractShape {
 		return radius;
 	}
 	
+	private void updateRadius() {
+		this.radius = edgeWidth / (2 * Math.sin(Math.toRadians(180/nbEdges)));
+	}
+	
 	public double[] computePoints() {
+		updateRadius();
 		double points[] = new double[nbEdges * 2];
 		double inc = 360 / nbEdges;
 		double angle = getRotation();
-		double radius = edgeWidth / (2 * Math.sin(Math.toRadians(180/nbEdges)));
 		for (int i = 0 ; i < nbEdges ; ++i) {
 			points[2 * i] = (radius * Math.cos(Math.toRadians(angle))) + radius;
 			points[2 * i + 1] = (radius * Math.sin(Math.toRadians(angle))) + radius;
 			angle += inc;
 		}
 		return points;
-}
+	}
 
 	@Override
 	public void scale(double ratio) {
 		setEdgeWidth(edgeWidth*Math.abs(ratio));
-		this.radius = edgeWidth / (2 * Math.sin(Math.toRadians(180/nbEdges)));
+		updateRadius();
 	}
 	
 	@Override

@@ -8,8 +8,8 @@ public class Point implements Cloneable, Serializable {
 	private double y;
 	
 	public Point(double x, double y) {
-		this.x = Math.abs(x);
-		this.y = Math.abs(y);
+		this.x = x;
+		this.y = y;
 	}
 	
 	@Override
@@ -26,7 +26,7 @@ public class Point implements Cloneable, Serializable {
 	}
 
 	public void setX(double x) {
-		this.x = Math.abs(x);
+		this.x = x;
 	}
 
 	public double getY() {
@@ -34,7 +34,7 @@ public class Point implements Cloneable, Serializable {
 	}
 
 	public void setY(double y) {
-		this.y = Math.abs(y);
+		this.y = y;
 	}
 	
 	@Override

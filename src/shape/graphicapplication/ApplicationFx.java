@@ -186,25 +186,25 @@ public class ApplicationFx extends Application implements IApplication {
 	        contextMenu.getItems().add(roundedOption);
 		}
         if (!(s instanceof ShapeComposite)) {
-        	String name1, name2;
-        	double d1, d2;
-        	if (s instanceof shape.model.Rectangle) {
-        		name1 = "Width : ";
-        		d1 = ((shape.model.Rectangle) s).getWidth();
-        		name2 = "Height : ";
-        		d2 = ((shape.model.Rectangle) s).getHeight();
-        	}
-        	else {
-        		name1 = "Edges : ";
-        		d1 = ((RegularPolygon) s).getNbEdges();
-        		name2 = "Width : ";
-        		d2 = ((RegularPolygon) s).getEdgeWidth();
-        	}
 	        MenuItem attrOption = new MenuItem("Attributes");
 	        attrOption.setOnAction(new EventHandler<ActionEvent>() {
 	            @SuppressWarnings({ "rawtypes", "unchecked" })
 				@Override
 	            public void handle(ActionEvent event) {
+	            	String name1, name2;
+		        	double d1, d2;
+		        	if (s instanceof shape.model.Rectangle) {
+		        		name1 = "Width : ";
+		        		d1 = ((shape.model.Rectangle) s).getWidth();
+		        		name2 = "Height : ";
+		        		d2 = ((shape.model.Rectangle) s).getHeight();
+		        	}
+		        	else {
+		        		name1 = "Edges : ";
+		        		d1 = ((RegularPolygon) s).getNbEdges();
+		        		name2 = "Width : ";
+		        		d2 = ((RegularPolygon) s).getEdgeWidth();
+		        	}
 	            	// Text formatter
 	            	Pattern validEditingState = Pattern.compile("-?(([1-9][0-9]*)|0)?(\\.[0-9]*)?");
 	            	UnaryOperator<TextFormatter.Change> filter = c -> {
@@ -298,8 +298,14 @@ public class ApplicationFx extends Application implements IApplication {
 						public shape.model.ShapeMemento call(ButtonType param) {
 							if (param == buttonTypeOk) {
 								color.setAlpha(Double.parseDouble(textop.getText()));
-								shape.model.ShapeMemento res = new shape.model.ShapeMemento(Double.parseDouble(text1.getText()), Double.parseDouble(text2.getText()), new Point(Double.parseDouble(textx.getText()), 
-										Double.parseDouble(texty.getText())), Double.parseDouble(textr.getText()), new Point(Double.parseDouble(textcx.getText()), Double.parseDouble(textcy.getText())), color, s.getRounded());
+								double x = Double.parseDouble(textx.getText());
+								x = (x < 0 ? 0 : x);
+								x = (x > BOARD_WIDTH - s.getWidth() ? BOARD_WIDTH - s.getWidth() : x);
+								double y = Double.parseDouble(texty.getText());
+								y = (y < 0 ? 0 : y);
+								y = (y > BOARD_HEIGHT - s.getHeight() ? BOARD_HEIGHT - s.getHeight() : y);
+								shape.model.ShapeMemento res = new shape.model.ShapeMemento(Double.parseDouble(text1.getText()), Double.parseDouble(text2.getText()), new Point(x,y), 
+									Double.parseDouble(textr.getText()), new Point(Double.parseDouble(textcx.getText()), Double.parseDouble(textcy.getText())), color, s.getRounded());
 								return res;
 							}
 							return null;

@@ -29,10 +29,6 @@ public abstract class AbstractShape implements IShapeSimple {
 		try {
 			IShapeSimple s = (IShapeSimple) super.clone();
 			((AbstractShape) s).parent = null;
-			/*Point pos = getPosition();
-			((AbstractShape) s).position = new Point(pos.getX(), pos.getY());
-			Point center = getRotationCenter();
-			((AbstractShape) s).rotationCenter = new Point(center.getX(), center.getY());*/
 			((AbstractShape) s).color = color.clone();
 			return s;
 		} catch (CloneNotSupportedException e) {}
