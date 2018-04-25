@@ -679,17 +679,20 @@ public class ApplicationFx extends Application implements IApplication {
 		
 		addEvents();
 		updateUI();
-		
 		Mediator.getInstance().begin();
 	}
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		// set app
 		primaryStage.setTitle("ShapeOfView");
 		primaryStage.setScene(scene);
 		primaryStage.setResizable(false);
 		primaryStage.show();
+	}
+	
+	@Override
+    public void stop() {
+		Mediator.getInstance().saveToolbar();
 	}
 
 }

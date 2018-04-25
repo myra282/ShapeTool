@@ -38,6 +38,7 @@ public class Mediator {
 	private ActionJournal journal;
 	private IApplication view;
 	private static Mediator controller = new Mediator();
+	private static String FILENAME = "toolbar.ser";
 	
 	private Mediator() {
 		tools = new Vector<IShapeSimple>();
@@ -55,12 +56,14 @@ public class Mediator {
 	}
 	
 	public void begin() {
-		shape.model.Rectangle rect = new Rectangle(new Point(30, 5), 60, 40);
-		rect.setColor(new Color(200, 30, 30));
-		RegularPolygon poly = new RegularPolygon(new Point(30, 60), 5, 40);
-		poly.setColor(new Color(30, 30, 200));
-		tools.add(rect);
-		tools.add(poly);
+		if (!load(FILENAME, tools)) {
+			shape.model.Rectangle rect = new Rectangle(new Point(30, 5), 60, 40);
+			rect.setColor(new Color(200, 30, 30));
+			RegularPolygon poly = new RegularPolygon(new Point(30, 60), 5, 40);
+			poly.setColor(new Color(30, 30, 200));
+			tools.add(rect);
+			tools.add(poly);
+		}
 		redraw();
 	}
 	
@@ -82,11 +85,11 @@ public class Mediator {
 		redraw();
 	}
 	
-	public ListIterator<IShapeSimple> shapeIterator(int index) {
+	private ListIterator<IShapeSimple> shapeIterator(int index) {
 		return shapes.listIterator(index);
 	}
 	
-	public ListIterator<IShapeSimple> toolsIterator(int index) {
+	private ListIterator<IShapeSimple> toolsIterator(int index) {
 		return tools.listIterator(index);
 	}
 	
@@ -96,7 +99,7 @@ public class Mediator {
 		return s.isInside(min, max);
 	}
 	
-	public boolean isInToolbar(IShapeSimple s) {
+	private boolean isInToolbar(IShapeSimple s) {
 		Point min = new Point(0, 0);
 		Point max = new Point(IApplication.BAR_MAX_WIDTH, IApplication.BOARD_HEIGHT);
 		return s.isInside(min, max);
@@ -333,6 +336,10 @@ public class Mediator {
 			message = "Your file was correctly saved.";
 		}
 		view.displayMessage(message, warning);
+	}
+	
+	public void saveToolbar() {
+		save(FILENAME, tools);
 	}
 	
 	private boolean load(String name, Vector<IShapeSimple> v) {
