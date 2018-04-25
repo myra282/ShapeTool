@@ -18,6 +18,7 @@ import shape.actions.CommandMove;
 import shape.actions.CommandRemove;
 import shape.actions.CommandRemoveAll;
 import shape.actions.CommandRoundCorners;
+import shape.actions.CommandScale;
 import shape.actions.CommandUngroup;
 import shape.actions.ICommand;
 import shape.graphicapplication.IApplication;
@@ -173,6 +174,13 @@ public class Mediator {
 	
 	public void roundCorners(Rectangle r) {
 		ICommand cmd = new CommandRoundCorners(r);
+		cmd.execute();
+    	journal.add(cmd);
+    	redraw();
+	}
+	
+	public void scale(IShapeSimple s, double scale) {
+		ICommand cmd = new CommandScale(s, scale);
 		cmd.execute();
     	journal.add(cmd);
     	redraw();

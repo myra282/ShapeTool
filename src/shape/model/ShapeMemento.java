@@ -1,5 +1,7 @@
 package shape.model;
 
+import java.util.Vector;
+
 public class ShapeMemento implements IShape {
 	
 	private double d1, d2;

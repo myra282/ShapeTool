@@ -185,26 +185,13 @@ public class ApplicationFx extends Application implements IApplication {
 	        });
 	        contextMenu.getItems().add(roundedOption);
 		}
-        if (!(s instanceof ShapeComposite)) {
+        //if (!(s instanceof ShapeComposite)) {
 	        MenuItem attrOption = new MenuItem("Attributes");
 	        attrOption.setOnAction(new EventHandler<ActionEvent>() {
 	            @SuppressWarnings({ "rawtypes", "unchecked" })
 				@Override
 	            public void handle(ActionEvent event) {
-	            	String name1, name2;
-		        	double d1, d2;
-		        	if (s instanceof shape.model.Rectangle) {
-		        		name1 = "Width : ";
-		        		d1 = ((shape.model.Rectangle) s).getWidth();
-		        		name2 = "Height : ";
-		        		d2 = ((shape.model.Rectangle) s).getHeight();
-		        	}
-		        	else {
-		        		name1 = "Edges : ";
-		        		d1 = ((RegularPolygon) s).getNbEdges();
-		        		name2 = "Width : ";
-		        		d2 = ((RegularPolygon) s).getEdgeWidth();
-		        	}
+	            	GridPane grid = new GridPane();
 	            	// Text formatter
 	            	Pattern validEditingState = Pattern.compile("-?(([1-9][0-9]*)|0)?(\\.[0-9]*)?");
 	            	UnaryOperator<TextFormatter.Change> filter = c -> {
@@ -229,40 +216,78 @@ public class ApplicationFx extends Application implements IApplication {
 	            	        return d.toString();
 	            	    }
 	            	};
+	            	TextField textx = new TextField();
+	    			TextField texty = new TextField();
+	    			TextField text1 = new TextField();
+	    			TextField text2 = new TextField();
+	    			TextField texts = new TextField();
+	    			TextField textr = new TextField();
+	    			TextField textcx = new TextField();
+	    			TextField textcy = new TextField();
+	    			TextField textop = new TextField();
 	            	TextFormatter<Double> textFormatterx = new TextFormatter<>(converter, s.getPosition().getX(), filter);
 	            	TextFormatter<Double> textFormattery = new TextFormatter<>(converter, s.getPosition().getY(), filter);
-	            	TextFormatter<Double> textFormatter1 = new TextFormatter<>(converter, d1, filter);
-	            	TextFormatter<Double> textFormatter2 = new TextFormatter<>(converter, d2, filter);
-	            	TextFormatter<Double> textFormatterr = new TextFormatter<>(converter, s.getRotation(), filter);
-	            	TextFormatter<Double> textFormattercx = new TextFormatter<>(converter, s.getRotationCenter().getX(), filter);
-	            	TextFormatter<Double> textFormattercy = new TextFormatter<>(converter, s.getRotationCenter().getY(), filter);
 	            	TextFormatter<Double> textFormatterop = new TextFormatter<>(converter, s.getColor().getAlpha(), filter);
+	            	textx.setTextFormatter(textFormatterx);
+	    			texty.setTextFormatter(textFormattery);
+	    			textop.setTextFormatter(textFormatterop);
+	            	String name1 = "", name2 = "";
+		        	double d1 = 0, d2 = 0;
+		        	if (s instanceof shape.model.Rectangle) {
+		        		name1 = "Width : ";
+		        		d1 = ((shape.model.Rectangle) s).getWidth();
+		        		name2 = "Height : ";
+		        		d2 = ((shape.model.Rectangle) s).getHeight();
+		        	}
+		        	else if (s instanceof RegularPolygon) {
+		        		name1 = "Edges : ";
+		        		d1 = ((RegularPolygon) s).getNbEdges();
+		        		name2 = "Width : ";
+		        		d2 = ((RegularPolygon) s).getEdgeWidth();
+		        	}
+	            	if (name1 != "") {
+			        	TextFormatter<Double> textFormatter1 = new TextFormatter<>(converter, d1, filter);
+		            	TextFormatter<Double> textFormatter2 = new TextFormatter<>(converter, d2, filter);
+		            	TextFormatter<Double> textFormatterr = new TextFormatter<>(converter, s.getRotation(), filter);
+		            	TextFormatter<Double> textFormattercx = new TextFormatter<>(converter, s.getRotationCenter().getX(), filter);
+		            	TextFormatter<Double> textFormattercy = new TextFormatter<>(converter, s.getRotationCenter().getY(), filter);
+		            	Label label1 = new Label(name1);
+		    			Label label2 = new Label(name2);
+		    			Label labelr = new Label("Rotation : ");
+		    			Label labelCtr = new Label("Rotation center : ");
+		    			text1.setTextFormatter(textFormatter1);
+		    			text2.setTextFormatter(textFormatter2);
+		    			textr.setTextFormatter(textFormatterr);
+		    			textcx.setTextFormatter(textFormattercx);
+		    			textcy.setTextFormatter(textFormattercy);
+		    			grid.add(label1, 1, 2);
+		    			grid.add(text1, 2, 2);
+		    			grid.add(label2, 1, 3);
+		    			grid.add(text2, 2, 3);
+		    			grid.add(labelr, 1, 4);
+		    			grid.add(textr, 2, 4);
+		    			grid.add(labelCtr, 1, 5);
+		    			grid.add(textcx, 2, 5);
+		    			grid.add(textcy, 3, 5);
+	            	}
+	            	else {
+	            		text1.setText("0");
+		    			text2.setText("0");
+		    			textr.setText("0");
+		    			textcx.setText("0");
+		    			textcy.setText("0");
+		    			TextFormatter<Double> textFormatters = new TextFormatter<>(converter, 1.0, filter);
+		    			texts.setTextFormatter(textFormatters);
+		    			Label labelS = new Label("Scale : ");
+		    			grid.add(labelS, 1, 6);
+		    			grid.add(texts, 2, 6);
+	            	}
 	            	// Dialog
 	            	Dialog<shape.model.ShapeMemento> dialog = new Dialog<>();
 	        		dialog.setTitle("Attributes Editor");
 	        		dialog.setHeaderText("Here you can modify the shape attributes");
 	        		Label labelPos = new Label("Position : ");
-	        		Label label1 = new Label(name1);
-	    			Label label2 = new Label(name2);
-	    			Label labelr = new Label("Rotation : ");
-	    			Label labelCtr = new Label("Rotation center : ");
 	    			Label labelOp = new Label("Opacity : ");
-	    			TextField textx = new TextField();
-	    			TextField texty = new TextField();
-	    			TextField text1 = new TextField();
-	    			TextField text2 = new TextField();
-	    			TextField textr = new TextField();
-	    			TextField textcx = new TextField();
-	    			TextField textcy = new TextField();
-	    			TextField textop = new TextField();
-	    			textx.setTextFormatter(textFormatterx);
-	    			texty.setTextFormatter(textFormattery);
-	    			text1.setTextFormatter(textFormatter1);
-	    			text2.setTextFormatter(textFormatter2);
-	    			textr.setTextFormatter(textFormatterr);
-	    			textcx.setTextFormatter(textFormattercx);
-	    			textcy.setTextFormatter(textFormattercy);
-	    			textop.setTextFormatter(textFormatterop);
 	    			shape.model.Color color = s.getColor().clone();
 	    			ColorPicker colorPicker = new ColorPicker(Color.rgb(color.getR(), color.getG(), color.getB()));
 	    			 colorPicker.setOnAction(new EventHandler() {
@@ -274,22 +299,12 @@ public class ApplicationFx extends Application implements IApplication {
 							color.setB((int) (c.getBlue() * 255));
 						}
 	    			 });
-	    			GridPane grid = new GridPane();
 	    			grid.add(labelPos, 1, 1);
 	    			grid.add(textx, 2, 1);
 	    			grid.add(texty, 3, 1);
-	    			grid.add(label1, 1, 2);
-	    			grid.add(text1, 2, 2);
-	    			grid.add(label2, 1, 3);
-	    			grid.add(text2, 2, 3);
-	    			grid.add(labelr, 1, 4);
-	    			grid.add(textr, 2, 4);
-	    			grid.add(labelCtr, 1, 5);
-	    			grid.add(textcx, 2, 5);
-	    			grid.add(textcy, 3, 5);
-	    			grid.add(labelOp, 1, 6);
-	    			grid.add(textop, 2, 6);
-	    			grid.add(colorPicker, 2, 7);
+	    			grid.add(labelOp, 1, 7);
+	    			grid.add(textop, 2, 7);
+	    			grid.add(colorPicker, 2, 8);
 	    			dialog.getDialogPane().setContent(grid);
 	    			ButtonType buttonTypeOk = new ButtonType("Ok", ButtonData.OK_DONE);
 	    			dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
@@ -306,6 +321,9 @@ public class ApplicationFx extends Application implements IApplication {
 								y = (y > BOARD_HEIGHT - s.getHeight() ? BOARD_HEIGHT - s.getHeight() : y);
 								shape.model.ShapeMemento res = new shape.model.ShapeMemento(Double.parseDouble(text1.getText()), Double.parseDouble(text2.getText()), new Point(x,y), 
 									Double.parseDouble(textr.getText()), new Point(Double.parseDouble(textcx.getText()), Double.parseDouble(textcy.getText())), color, s.getRounded());
+								if (s instanceof ShapeComposite) {
+									Mediator.getInstance().scale(s, Double.parseDouble(texts.getText()));
+								}
 								return res;
 							}
 							return null;
@@ -320,7 +338,7 @@ public class ApplicationFx extends Application implements IApplication {
 	            }
 	        });
 	        contextMenu.getItems().add(attrOption);
-        }
+        //}
         // Add MenuItem to ContextMenu
         sh.setOnContextMenuRequested(new EventHandler<ContextMenuEvent>() {
             @Override

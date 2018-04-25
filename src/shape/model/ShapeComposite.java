@@ -1,5 +1,6 @@
 package shape.model;
 
+import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.Vector;
 
@@ -30,12 +31,15 @@ public class ShapeComposite extends AbstractShape {
 	
 	@Override
 	public ShapeMemento createMemento() {
-		throw new UnsupportedOperationException(getClass()+" doesn't support memento");
+		return new ShapeMemento(0, 0, getPosition(), getRotation(), getRotationCenter(), getColor(), getRounded());
 	}
 
 	@Override
 	public void restoreMemento(ShapeMemento mem) {
-		throw new UnsupportedOperationException(getClass()+" doesn't support memento");
+		this.setPosition(mem.getPosition().clone());
+		this.setRotation(mem.getRotation());
+		this.setRotationCenter(mem.getRotationCenter().clone());
+		this.setColor(mem.getColor());
 	}
 	
 	@Override
