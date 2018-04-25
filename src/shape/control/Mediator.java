@@ -10,7 +10,6 @@ import java.util.Enumeration;
 import java.util.ListIterator;
 import java.util.Vector;
 
-import javafx.application.Application;
 import shape.actions.ActionJournal;
 import shape.actions.CommandAdd;
 import shape.actions.CommandChange;
@@ -21,7 +20,6 @@ import shape.actions.CommandRemoveAll;
 import shape.actions.CommandRoundCorners;
 import shape.actions.CommandUngroup;
 import shape.actions.ICommand;
-import shape.graphicapplication.ApplicationFx;
 import shape.graphicapplication.IApplication;
 import shape.model.Color;
 import shape.model.IShapeSimple;
@@ -46,18 +44,6 @@ public class Mediator {
 		shapes = new Vector<IShapeSimple>();
 		selected = new Vector<Integer>();
 		journal = new ActionJournal();
-		
-		/*Thread t1 = new Thread() {
-            @Override
-            public void run() {
-            	Application.launch(ApplicationFx.class);
-            }
-        };
-        t1.start();
-        while (!t1.isAlive() || ApplicationFx.getInstance() == null) {
-        	// Wait for initialisation
-        }*/
-        //begin();
 	}
 	
 	public static Mediator getInstance() {
@@ -69,7 +55,6 @@ public class Mediator {
 	}
 	
 	public void begin() {
-		//view = ApplicationFx.getInstance();
 		shape.model.Rectangle rect = new Rectangle(new Point(30, 5), 60, 40);
 		rect.setColor(new Color(200, 30, 30));
 		RegularPolygon poly = new RegularPolygon(new Point(30, 60), 5, 40);

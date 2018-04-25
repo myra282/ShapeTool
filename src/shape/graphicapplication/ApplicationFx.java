@@ -79,26 +79,12 @@ public class ApplicationFx extends Application implements IApplication {
 				eventPoint = null;
 				gap = null;
 				instance = this;
+				Mediator.getInstance().setIApplication(instance);
 			}
 		}
 	}
 	
 	public static ApplicationFx getInstance() {
-		Thread t1 = new Thread() {
-            @Override
-            public void run() {
-            	Application.launch(ApplicationFx.class);
-            }
-        };
-        t1.start();
-        while (!t1.isAlive() || instance == null) {
-        	// Wait for initialisation
-        	try {
-				Thread.sleep(500);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-        }
 		return instance;
 	}
 	
@@ -693,6 +679,8 @@ public class ApplicationFx extends Application implements IApplication {
 		
 		addEvents();
 		updateUI();
+		
+		Mediator.getInstance().begin();
 	}
 
 	@Override
