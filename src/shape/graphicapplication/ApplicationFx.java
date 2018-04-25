@@ -19,6 +19,8 @@ import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
@@ -172,6 +174,22 @@ public class ApplicationFx extends Application implements IApplication {
 	
 	public static ApplicationFx getInstance() {
 		return instance;
+	}
+	
+	@Override
+	public void displayMessage(String message, boolean warning) {
+		AlertType type;
+		if (warning) {
+			type = AlertType.WARNING;
+		}
+		else {
+			type = AlertType.INFORMATION;
+		}
+		Alert alert = new Alert(type);
+		alert.setTitle("ShapeOfView : Message");
+		alert.setHeaderText(null);
+		alert.setContentText(message);
+		alert.showAndWait();
 	}
 	
 	private boolean inBoard(Point p) {

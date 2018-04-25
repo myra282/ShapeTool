@@ -17,6 +17,8 @@ public interface IApplication {
 	
 	public void clear();
 	
+	public void displayMessage(String message, boolean warning);
+	
 	public void begin();
 
 	public void addEvents();

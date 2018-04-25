@@ -321,23 +321,32 @@ public class Mediator {
 		}
 	}
 	
-	private void save(String name, Vector<IShapeSimple> v) {		
+	private boolean save(String name, Vector<IShapeSimple> v) {		
 		File file =  new File(name) ;
 		ObjectOutputStream ostream;
 		try {
 			ostream = new ObjectOutputStream(new FileOutputStream(file));
 			ostream.writeObject(v) ;
 			ostream.close();
+			return true;
 		} catch (IOException e) {
-			e.printStackTrace();
+			return false;
 		}
 	}
 	
 	public void save(String name) {
-		save(name, shapes);
+		boolean warning = !save(name, shapes);
+		String message;
+		if (warning) {
+			message = "An error occured when trying to save !";
+		}
+		else {
+			message = "Your file was correctly saved.";
+		}
+		view.displayMessage(message, warning);
 	}
 	
-	private void load(String name, Vector<IShapeSimple> v) {
+	private boolean load(String name, Vector<IShapeSimple> v) {
 		File file =  new File(name) ;
 		ObjectInputStream istream;
 		try {
@@ -349,11 +358,22 @@ public class Mediator {
 		    }
 			istream.close();
 			redraw();
-		} catch (IOException | ClassNotFoundException e) {}
+			return true;
+		} catch (IOException | ClassNotFoundException e) {
+			return false;
+		}
 	}
 	
 	public void load(String name) {
-		load(name, shapes);
+		boolean warning = !load(name, shapes);
+		String message;
+		if (warning) {
+			message = "An error occured when loading !";
+		}
+		else {
+			message = "Your file was correctly loaded.";
+		}
+		view.displayMessage(message, warning);
 	}
 
 }
