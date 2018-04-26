@@ -1,5 +1,6 @@
 package shape.actions;
 
+import shape.control.Mediator;
 import shape.model.IShapeSimple;
 
 public class CommandScale implements ICommand {
@@ -15,6 +16,10 @@ public class CommandScale implements ICommand {
 	@Override
 	public void execute() {
 		shape.scale(newScale);
+		if (!Mediator.getInstance().isInBoard(shape)) {
+    		unexecute();
+    		Mediator.getInstance().displayMessage("Invalid scale, your shape wouldn't be in board.", true);
+    	}
 	}
 
 	@Override

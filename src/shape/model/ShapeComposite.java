@@ -1,5 +1,6 @@
 package shape.model;
 
+import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.Vector;
 
@@ -46,7 +47,16 @@ public class ShapeComposite extends AbstractShape {
 	
 	@Override
 	public ShapeMemento createMemento() {
-		return new ShapeMemento(0, 0, getPosition(), getRotation(), getRotationCenter(), getColor(), getRounded());
+		return new ShapeMementoComposite(0, 0, getPosition(), getRotation(), getRotationCenter(), getColor(), getRounded(), createMementos());
+	}
+	
+	public Vector<ShapeMemento> createMementos() {
+		Vector<ShapeMemento> mementos = new Vector<ShapeMemento>();
+		for (ListIterator<IShapeSimple> i = iterator(); i.hasNext();) {
+		    IShapeSimple item = i.next();
+		    mementos.add(item.createMemento());
+		};
+		return mementos;
 	}
 
 	@Override
@@ -54,7 +64,18 @@ public class ShapeComposite extends AbstractShape {
 		this.setPosition(mem.getPosition().clone());
 		this.setRotation(mem.getRotation());
 		this.setRotationCenter(mem.getRotationCenter().clone());
-		this.setColor(mem.getColor());
+		if (!mem.getColor().equals(getColor())) {
+			setColor(mem.getColor());
+		}
+	}
+	
+	public void restoreMementos(ShapeMementoComposite mem) {
+		Iterator<ShapeMemento> it = ((ShapeMementoComposite) mem).iterator();
+		for (ListIterator<IShapeSimple> i = shapes.listIterator(); i.hasNext();) {
+			IShapeSimple item = i.next();
+			ShapeMemento m = it.next();
+			item.restoreMemento(m);
+		}
 	}
 	
 	@Override
@@ -76,7 +97,6 @@ public class ShapeComposite extends AbstractShape {
 		Point oldPos = getPosition();
 		double diffX = p.getX() - oldPos.getX();
 		double diffY = p.getY() - oldPos.getY();
-		// update each shape position
 		for (ListIterator<IShapeSimple> i = shapes.listIterator(); i.hasNext();) {
 		    IShapeSimple item = i.next();
 		    Point pos = item.getPosition();
@@ -85,9 +105,12 @@ public class ShapeComposite extends AbstractShape {
 		super.setPosition(p);
 	}
 	
+	public void setSelfColor(Color c) {
+		super.setColor(c);
+	}
+	
 	@Override
 	public void setColor(Color c) {
-		// update each shape color
 		for (ListIterator<IShapeSimple> i = shapes.listIterator(); i.hasNext();) {
 		    IShapeSimple item = i.next();
 		    if (c.equals(getColor())) {
@@ -99,7 +122,7 @@ public class ShapeComposite extends AbstractShape {
 		    	item.setColor(c);
 		    }
 		}
-		super.setColor(c);
+		setSelfColor(c);
 	}
 	
 	public void add(IShapeSimple s) {
@@ -152,7 +175,6 @@ public class ShapeComposite extends AbstractShape {
 	}
 	
 	public void computePosition() {
-		// compute new position
 		double x = shapes.get(0).getPosition().getX();
 		double y = shapes.get(0).getPosition().getY();
 		for (ListIterator<IShapeSimple> i = shapes.listIterator(); i.hasNext();) {

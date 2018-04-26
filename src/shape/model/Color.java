@@ -93,7 +93,7 @@ public class Color implements Cloneable, Serializable {
 	    }
 	    else {
 	    	Color otherColor = (Color) other;
-	    	if ((r == otherColor.r) && (g == otherColor.g) && (b == otherColor.b)) {
+	    	if ((r == otherColor.r) && (g == otherColor.g) && (b == otherColor.b) && (alpha == otherColor.alpha)) {
 	    		return true;
 	    	}
 	    	else {

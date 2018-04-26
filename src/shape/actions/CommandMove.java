@@ -21,11 +21,10 @@ public class CommandMove implements ICommand {
 	@Override
 	public void execute() {
 		shape.setPosition(newPos);
-    	if (!tool && !Mediator.getInstance().isInBoard(shape)) {
-    		shape.setPosition(oldPos);
-    	}
-    	else if (tool && !Mediator.getInstance().isInToolbar(shape)) {
-    		shape.setPosition(oldPos);
+    	if (!tool && !Mediator.getInstance().isInBoard(shape) ||
+    		tool && !Mediator.getInstance().isInToolbar(shape)) {
+    		unexecute();
+    		Mediator.getInstance().displayMessage("Your shape wouldn't be in board...", true);
     	}
 	}
 

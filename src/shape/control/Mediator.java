@@ -239,7 +239,7 @@ public class Mediator {
     	return new Point(p2.getX()-stepX, p2.getY()-stepY);
 	}
 
-	public void handleMouseEvent(Point p1, Point p2, boolean mouseKey) { //mouseKey : true for primary key
+	public void handleMouseEvent(Point p1, Point p2, boolean mouseKey) {
 		if (mouseKey && p1 != null) {
 			IShapeSimple item = getShapeFromPoint(p1);
 			if (item != null) {
@@ -254,7 +254,7 @@ public class Mediator {
 		}
 	}
 	
-	public void handleTrashEvent(Point p1, boolean mouseKey) { //mouseKey : true for primary key
+	public void handleTrashEvent(Point p1, boolean mouseKey) {
 		if (mouseKey && p1 != null) {
 			IShapeSimple item = getShapeFromPoint(p1);
 			if (item != null) {
@@ -266,7 +266,7 @@ public class Mediator {
 		}
 	}
 	
-	public void handleNewToolEvent(Point p1, Point p2, boolean mouseKey) { //mouseKey : true for primary key
+	public void handleNewToolEvent(Point p1, Point p2, boolean mouseKey) {
 		if (mouseKey && p1 != null) {
 			IShapeSimple item = getShapeFromPoint(p1);
 			if (item != null) {
@@ -327,6 +327,10 @@ public class Mediator {
 		}
 	}
 	
+	public void displayMessage(String message, boolean warning) {
+		view.displayMessage(message, warning);
+	}
+	
 	private boolean save(String name, Vector<IShapeSimple> v) {		
 		File file =  new File(name) ;
 		ObjectOutputStream ostream;
@@ -349,7 +353,7 @@ public class Mediator {
 		else {
 			message = "Your file was correctly saved.";
 		}
-		view.displayMessage(message, warning);
+		displayMessage(message, warning);
 	}
 	
 	public void saveToolbar() {
@@ -383,7 +387,7 @@ public class Mediator {
 		else {
 			message = "Your file was correctly loaded.";
 		}
-		view.displayMessage(message, warning);
+		displayMessage(message, warning);
 	}
 
 }

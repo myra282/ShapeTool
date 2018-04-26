@@ -1,7 +1,9 @@
 package shape.actions;
 
 import shape.model.IShapeSimple;
+import shape.model.ShapeComposite;
 import shape.model.ShapeMemento;
+import shape.model.ShapeMementoComposite;
 
 public class CommandChange implements ICommand {
 	
@@ -23,6 +25,9 @@ public class CommandChange implements ICommand {
 	@Override
 	public void unexecute() {
 		shape.restoreMemento(old);
+		if (shape instanceof ShapeComposite) {
+			((ShapeComposite) shape).restoreMementos((ShapeMementoComposite) old);
+		}
 	}
 
 }
