@@ -95,10 +95,9 @@ public class Mediator {
 		return s.isInside(min, max);
 	}
 	
-	private boolean isInToolbar(IShapeSimple s) {
-		Point min = new Point(0, 0);
+	private boolean isInToolbar(Point p) {
 		Point max = new Point(IApplication.BAR_MAX_WIDTH, IApplication.BOARD_HEIGHT);
-		return s.isInside(min, max);
+		return ((p.getX() >= 0 && p.getY() >= 0) && (p.getX() <= max.getX() && p.getY() <= max.getY()));
 	}
 	
 	public void eraseAll() {
@@ -268,10 +267,10 @@ public class Mediator {
 		    	Point newPos = computeNewPos(item, p1, p2);
 		    	if (newTool.getWidth() > IApplication.BAR_MAX_WIDTH) {
 					newTool.scale(IApplication.BAR_MAX_WIDTH / newTool.getWidth());
-					newPos.setX(0);
 				}
+		    	newPos.setX(0);
 		    	newTool.setPosition(newPos);
-		    	if (isInToolbar(newTool)) {
+		    	if (isInToolbar(p2)) {
 		    		ICommand cmd = new CommandAdd(tools, newTool);
 		    		cmd.execute();
 			    	journal.add(cmd);
