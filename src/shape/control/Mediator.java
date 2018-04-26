@@ -40,6 +40,7 @@ public class Mediator {
 	private IApplication view;
 	private static Mediator controller = new Mediator();
 	private static String FILENAME = "toolbar.ser";
+	private static double RESIZE_RATIO = 0.9;
 	
 	private Mediator() {
 		tools = new Vector<IShapeSimple>();
@@ -98,6 +99,12 @@ public class Mediator {
 	private boolean isInToolbar(Point p) {
 		Point max = new Point(IApplication.BAR_MAX_WIDTH, IApplication.BOARD_HEIGHT);
 		return ((p.getX() >= 0 && p.getY() >= 0) && (p.getX() <= max.getX() && p.getY() <= max.getY()));
+	}
+	
+	public boolean isInToolbar(IShapeSimple s) {
+		Point min = new Point(0, 0);
+		Point max = new Point(IApplication.BAR_MAX_WIDTH, IApplication.BOARD_HEIGHT);
+		return s.isInside(min, max);
 	}
 	
 	public void eraseAll() {
@@ -236,7 +243,7 @@ public class Mediator {
 		if (mouseKey && p1 != null) {
 			IShapeSimple item = getShapeFromPoint(p1);
 			if (item != null) {
-		    	ICommand cmd = new CommandMove(item, computeNewPos(item, p1, p2));
+		    	ICommand cmd = new CommandMove(item, computeNewPos(item, p1, p2), false);
 		    	cmd.execute();
 		    	journal.add(cmd);
 			}
@@ -266,9 +273,9 @@ public class Mediator {
 				IShapeSimple newTool = item.clone();
 		    	Point newPos = computeNewPos(item, p1, p2);
 		    	if (newTool.getWidth() > IApplication.BAR_MAX_WIDTH) {
-					newTool.scale(IApplication.BAR_MAX_WIDTH / newTool.getWidth());
+					newTool.scale(RESIZE_RATIO * IApplication.BAR_MAX_WIDTH / newTool.getWidth());
+					newPos.setX(0);
 				}
-		    	newPos.setX(0);
 		    	newTool.setPosition(newPos);
 		    	if (isInToolbar(p2)) {
 		    		ICommand cmd = new CommandAdd(tools, newTool);
@@ -284,7 +291,7 @@ public class Mediator {
 		if (mouseKey && p1 != null) {
 			IShapeSimple item = getToolFromPoint(p1);
 			if (item != null) {
-		    	ICommand cmd = new CommandMove(item, computeNewPos(item, p1, p2));
+		    	ICommand cmd = new CommandMove(item, computeNewPos(item, p1, p2), true);
 		    	cmd.execute();
 		    	journal.add(cmd);
 			}

@@ -29,8 +29,6 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
@@ -59,7 +57,6 @@ public class ApplicationFx extends Application implements IApplication {
 	
 	private BorderPane borderPane;
 	private StackPane board;
-	//private ScrollPane toolbar;
 	private StackPane toolbar;
 	private Scene scene;
 	private ToolBar menu, trash;
@@ -685,9 +682,6 @@ public class ApplicationFx extends Application implements IApplication {
 		toolbar.setStyle("-fx-border-color: black;");
 		toolbar.setMaxWidth(BAR_MAX_WIDTH);
 		toolbar.setMinWidth(BAR_MAX_WIDTH);
-	//	toolbar.setHbarPolicy(ScrollBarPolicy.NEVER);
-	//	toolbar.setVbarPolicy(ScrollBarPolicy.NEVER);
-	//	toolbar.setFitToWidth(true);
 		toolbar.setAlignment(Pos.TOP_LEFT);
 		borderPane.setTop(menu);
 		borderPane.setLeft(toolbar);
