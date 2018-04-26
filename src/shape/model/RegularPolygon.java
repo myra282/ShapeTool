@@ -2,6 +2,10 @@ package shape.model;
 
 public class RegularPolygon extends AbstractShape {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -722303808651984802L;
 	private int nbEdges;
 	private double edgeWidth;
 	private double radius;

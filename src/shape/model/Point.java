@@ -4,6 +4,10 @@ import java.io.Serializable;
 
 public class Point implements Cloneable, Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6742121893913531922L;
 	private double x;
 	private double y;
 	

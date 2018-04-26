@@ -56,6 +56,27 @@ public class Mediator {
 		view = app;
 	}
 	
+	private ListIterator<IShapeSimple> shapeIterator(int index) {
+		return shapes.listIterator(index);
+	}
+	
+	private ListIterator<IShapeSimple> toolsIterator(int index) {
+		return tools.listIterator(index);
+	}
+	
+	public void redraw() {
+		view.clear();
+		for (ListIterator<IShapeSimple> i = toolsIterator(0); i.hasNext();) {
+		    IShapeSimple item = i.next();
+		    view.addTool(item);
+		}
+		for (ListIterator<IShapeSimple> i = shapeIterator(0); i.hasNext();) {
+		    IShapeSimple item = i.next();
+		    view.draw(item);
+		}
+		view.addEvents();
+	}
+	
 	public void begin() {
 		if (!load(FILENAME, tools)) {
 			shape.model.Rectangle rect = new Rectangle(new Point(30, 5), 60, 40);
@@ -66,32 +87,6 @@ public class Mediator {
 			tools.add(poly);
 		}
 		redraw();
-	}
-	
-	public boolean canUndo() {
-		return journal.canUndo();
-	}
-	
-	public boolean canRedo() {
-		return journal.canRedo();
-	}
-	
-	public void undo() {
-		journal.undo();
-		redraw();
-	}
-	
-	public void redo() {
-		journal.redo();
-		redraw();
-	}
-	
-	private ListIterator<IShapeSimple> shapeIterator(int index) {
-		return shapes.listIterator(index);
-	}
-	
-	private ListIterator<IShapeSimple> toolsIterator(int index) {
-		return tools.listIterator(index);
 	}
 	
 	public boolean isInBoard(IShapeSimple s) {
@@ -124,7 +119,7 @@ public class Mediator {
 		}
 	}
 	
-	public void select(Point p1, Point p2) {
+	private void select(Point p1, Point p2) {
 		selected.removeAllElements();
 		double minx, miny, maxx, maxy;
 		if (p1.getX() < p2.getX()) {
@@ -193,17 +188,22 @@ public class Mediator {
     	redraw();
 	}
 	
-	public void redraw() {
-		view.clear();
-		for (ListIterator<IShapeSimple> i = toolsIterator(0); i.hasNext();) {
-		    IShapeSimple item = i.next();
-		    view.addTool(item);
-		}
-		for (ListIterator<IShapeSimple> i = shapeIterator(0); i.hasNext();) {
-		    IShapeSimple item = i.next();
-		    view.draw(item);
-		}
-		view.addEvents();
+	public boolean canUndo() {
+		return journal.canUndo();
+	}
+	
+	public boolean canRedo() {
+		return journal.canRedo();
+	}
+	
+	public void undo() {
+		journal.undo();
+		redraw();
+	}
+	
+	public void redo() {
+		journal.redo();
+		redraw();
 	}
 	
 	public IShapeSimple getShapeFromPoint(Point p) {

@@ -12,10 +12,14 @@ public interface IShapeSimple extends Cloneable, IShape, Serializable {
 	
 	public void setPosition(Point p);
 	
+	public IShapeSimple getParent();
+	
 	public double getWidth();
 	
 	public double getHeight();	
 	
+	public boolean getRounded();
+
 	public void setRotation(double angle);
 
 	public void setColor(Color color);
@@ -24,12 +28,7 @@ public interface IShapeSimple extends Cloneable, IShape, Serializable {
 	
 	public void scale(double ratio);
 	
-	public IShapeSimple getParent();
-	
 	public boolean isInside(Point min, Point max);
 
 	public boolean contains(Point p);
-
-	public boolean getRounded();
-
 }

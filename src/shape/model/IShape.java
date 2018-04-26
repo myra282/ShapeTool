@@ -6,8 +6,8 @@ public interface IShape {
 	
 	public double getRotation();
 	
+	public Point getRotationCenter();
+	
 	public Color getColor();
 	
-	public Point getRotationCenter();
-
 }

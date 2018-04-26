@@ -2,6 +2,10 @@ package shape.model;
 
 public abstract class AbstractShape implements IShapeSimple {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4790140894741680843L;
 	private IShapeSimple parent;
 	private Point position;
 	private double rotation;
@@ -36,7 +40,7 @@ public abstract class AbstractShape implements IShapeSimple {
 		return null;
 	}
 
-	void update() {
+	public void update() {
 		Point pos = getPosition();
 		rotationCenter = new Point(pos.getX()+getWidth()/2, pos.getY()+getHeight()/2);
 	}

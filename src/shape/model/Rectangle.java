@@ -2,6 +2,10 @@ package shape.model;
 
 public class Rectangle extends AbstractShape {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -538599620883214232L;
 	private double width;
 	private double height;
 	private boolean rounded;

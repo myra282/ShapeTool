@@ -1,11 +1,14 @@
 package shape.model;
 
-import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.Vector;
 
 public class ShapeComposite extends AbstractShape {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1603757406664688043L;
 	private double width;
 	private double height;
 	private Vector<IShapeSimple> shapes;
@@ -15,6 +18,10 @@ public class ShapeComposite extends AbstractShape {
 		shapes = new Vector<IShapeSimple>();
 		width = 0;
 		height = 0;
+	}
+	
+	public ListIterator<IShapeSimple> iterator() {
+		return shapes.listIterator();
 	}
 	
 	@Override
@@ -27,6 +34,14 @@ public class ShapeComposite extends AbstractShape {
 		    ((ShapeComposite) s).add(item.clone());
 		}
 		return s;
+	}
+	
+	@Override
+	public void update() {
+		computeWidth();
+		computeHeight();
+		computePosition();
+		super.update();
 	}
 	
 	@Override
@@ -54,19 +69,6 @@ public class ShapeComposite extends AbstractShape {
 	
 	public Vector<IShapeSimple> getShapes() {
 		return shapes;
-	}
-	
-	public void add(IShapeSimple s) {
-		((AbstractShape) s).setParent(this);
-		shapes.add(s);
-		update();
-	}
-	
-	public IShapeSimple remove(IShapeSimple s) {
-		int id = shapes.indexOf(s);
-		IShapeSimple removed = shapes.remove(id);
-		update();
-		return removed;
 	}
 	
 	@Override
@@ -98,6 +100,19 @@ public class ShapeComposite extends AbstractShape {
 		    }
 		}
 		super.setColor(c);
+	}
+	
+	public void add(IShapeSimple s) {
+		((AbstractShape) s).setParent(this);
+		shapes.add(s);
+		update();
+	}
+	
+	public IShapeSimple remove(IShapeSimple s) {
+		int id = shapes.indexOf(s);
+		IShapeSimple removed = shapes.remove(id);
+		update();
+		return removed;
 	}
 	
 	private void computeWidth() {
@@ -153,17 +168,6 @@ public class ShapeComposite extends AbstractShape {
 		Point p = new Point(x,y);
 		super.setPosition(p);
 	}
-	
-	@Override
-	public void update() {
-		// compute new width and height
-		computeWidth();
-		computeHeight();
-		// compute new position
-		computePosition();
-		// update rotation center
-		super.update();
-	}
 
 	@Override
 	public void scale(double ratio) {
@@ -176,10 +180,6 @@ public class ShapeComposite extends AbstractShape {
 		    item.setPosition(new Point(getPosition().getX() + diffX, getPosition().getY() + diffY));
 		}
 		update();
-	}
-
-	public ListIterator<IShapeSimple> iterator() {
-		return shapes.listIterator();
 	}
 	
 	@Override

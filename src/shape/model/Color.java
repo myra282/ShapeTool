@@ -4,6 +4,10 @@ import java.io.Serializable;
 
 public class Color implements Cloneable, Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6686743383101465278L;
 	private int r;
 	private int g;
 	private int b;

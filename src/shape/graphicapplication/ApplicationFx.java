@@ -88,22 +88,6 @@ public class ApplicationFx extends Application implements IApplication {
 		return instance;
 	}
 	
-	@Override
-	public void displayMessage(String message, boolean warning) {
-		AlertType type;
-		if (warning) {
-			type = AlertType.WARNING;
-		}
-		else {
-			type = AlertType.INFORMATION;
-		}
-		Alert alert = new Alert(type);
-		alert.setTitle("ShapeOfView : Message");
-		alert.setHeaderText(null);
-		alert.setContentText(message);
-		alert.showAndWait();
-	}
-	
 	private boolean inBoard(Point p) {
 		Bounds b = board.localToScene(board.getBoundsInLocal());
 		if ((p.getX() > b.getMinX() && p.getX() < b.getMinX() + board.getWidth())
@@ -426,6 +410,22 @@ public class ApplicationFx extends Application implements IApplication {
 				i.remove();
 			}
 		}
+	}
+	
+	@Override
+	public void displayMessage(String message, boolean warning) {
+		AlertType type;
+		if (warning) {
+			type = AlertType.WARNING;
+		}
+		else {
+			type = AlertType.INFORMATION;
+		}
+		Alert alert = new Alert(type);
+		alert.setTitle("ShapeOfView : Message");
+		alert.setHeaderText(null);
+		alert.setContentText(message);
+		alert.showAndWait();
 	}
 	
 	private void updateUI() {
