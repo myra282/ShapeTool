@@ -267,7 +267,7 @@ public class Mediator {
 				IShapeSimple newTool = item.clone();
 		    	Point newPos = computeNewPos(item, p1, p2);
 		    	if (newTool.getWidth() > IApplication.BAR_MAX_WIDTH) {
-					newTool.scale(0.8 * IApplication.BAR_MAX_WIDTH / newTool.getWidth());
+					newTool.scale(IApplication.BAR_MAX_WIDTH / newTool.getWidth());
 					newPos.setX(0);
 				}
 		    	newTool.setPosition(newPos);

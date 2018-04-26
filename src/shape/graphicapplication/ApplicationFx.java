@@ -59,7 +59,8 @@ public class ApplicationFx extends Application implements IApplication {
 	
 	private BorderPane borderPane;
 	private StackPane board;
-	private ScrollPane toolbar;
+	//private ScrollPane toolbar;
+	private StackPane toolbar;
 	private Scene scene;
 	private ToolBar menu, trash;
 	private Button btnSave, btnLoad, btnUndo, btnRedo, btnTrash;
@@ -117,7 +118,7 @@ public class ApplicationFx extends Application implements IApplication {
 	}
 	
 	private boolean inToolbar(Point p) {
-		Bounds b = toolbar.getContent().localToScene(toolbar.getContent().getBoundsInLocal());
+		Bounds b = toolbar.localToScene(toolbar.getBoundsInLocal());
 		if ((p.getX() > b.getMinX() && p.getX() < b.getMinX() + toolbar.getWidth())
 		&& (p.getY() > b.getMinY() && p.getY() < b.getMinY() + toolbar.getHeight())) {
 			return true;
@@ -128,7 +129,7 @@ public class ApplicationFx extends Application implements IApplication {
 	}
 	
 	private Point pointToToolbar(double x, double y) {
-		Bounds b = toolbar.getContent().localToScene(toolbar.getContent().getBoundsInLocal());
+		Bounds b = toolbar.localToScene(toolbar.getBoundsInLocal());
 		Point p = new Point(x - b.getMinX(), y - b.getMinY());
 		return p;
 	}
@@ -390,20 +391,20 @@ public class ApplicationFx extends Application implements IApplication {
 	@Override
 	public void addTool(IShapeSimple s) {
 		if (s instanceof shape.model.Rectangle) {
-			draw((shape.model.Rectangle) s, (StackPane) toolbar.getContent());
+			draw((shape.model.Rectangle) s, toolbar);
 		}
 		else if (s instanceof RegularPolygon) {
-			draw((RegularPolygon) s, (StackPane) toolbar.getContent());
+			draw((RegularPolygon) s, toolbar);
 		}
 		else if (s instanceof ShapeComposite) {
-			draw((ShapeComposite) s, (StackPane) toolbar.getContent());
+			draw((ShapeComposite) s, toolbar);
 		}
 	}
 	
 	@Override
 	public void clear() {
 		board.getChildren().clear();
-		((StackPane) toolbar.getContent()).getChildren().clear();
+		toolbar.getChildren().clear();
 		for (ListIterator<Node> i = borderPane.getChildren().listIterator(); i.hasNext();) {
 		    Node item = i.next();
 		    if (item instanceof Shape) {
@@ -530,7 +531,7 @@ public class ApplicationFx extends Application implements IApplication {
 	}
 	
 	private void addToolbarEvents() {
-		toolbar.getContent().setOnMouseDragged(new EventHandler<MouseEvent>() {
+		toolbar.setOnMouseDragged(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
 				if (event.getButton().compareTo(MouseButton.PRIMARY) == 0) {
@@ -565,7 +566,7 @@ public class ApplicationFx extends Application implements IApplication {
 				}
 			}
 		});
-		toolbar.getContent().setOnMouseReleased(new EventHandler<MouseEvent>() {
+		toolbar.setOnMouseReleased(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
 				boolean mouseKey = event.getButton().compareTo(MouseButton.PRIMARY) == 0;
@@ -593,9 +594,9 @@ public class ApplicationFx extends Application implements IApplication {
 	public void init() throws Exception {
 		borderPane = new BorderPane();
 		board = new StackPane();
-		toolbar = new ScrollPane();
-		toolbar.setContent(new StackPane());
-		toolbar.setPannable(true);
+		toolbar = new StackPane();
+		//toolbar.setContent(new StackPane());
+		//toolbar.setPannable(true);
 		scene = new Scene(borderPane);
 		menu = new ToolBar();
 		trash = new ToolBar();
@@ -684,10 +685,10 @@ public class ApplicationFx extends Application implements IApplication {
 		toolbar.setStyle("-fx-border-color: black;");
 		toolbar.setMaxWidth(BAR_MAX_WIDTH);
 		toolbar.setMinWidth(BAR_MAX_WIDTH);
-		toolbar.setHbarPolicy(ScrollBarPolicy.ALWAYS);
-		toolbar.setVbarPolicy(ScrollBarPolicy.ALWAYS);
-		toolbar.setFitToWidth(true);
-		((StackPane) toolbar.getContent()).setAlignment(Pos.TOP_LEFT);
+	//	toolbar.setHbarPolicy(ScrollBarPolicy.NEVER);
+	//	toolbar.setVbarPolicy(ScrollBarPolicy.NEVER);
+	//	toolbar.setFitToWidth(true);
+		toolbar.setAlignment(Pos.TOP_LEFT);
 		borderPane.setTop(menu);
 		borderPane.setLeft(toolbar);
 		borderPane.setCenter(board);
