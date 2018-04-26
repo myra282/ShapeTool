@@ -1,10 +1,15 @@
 package shape.model;
 
+/**
+ * 
+ * @author Mary Pascal & Marc Saint-Jean-Clergeau <br><br>
+ *
+ * This class depicts a regular polygon under IShapeSimple interface
+ * @see IShapeSimple
+ * @see AbstractShape
+ */
 public class RegularPolygon extends AbstractShape {
 	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -722303808651984802L;
 	private int nbEdges;
 	private double edgeWidth;

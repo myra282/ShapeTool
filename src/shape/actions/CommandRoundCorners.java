@@ -2,6 +2,15 @@ package shape.actions;
 
 import shape.model.Rectangle;
 
+/**
+ * 
+ * @author Mary Pascal & Marc Saint-Jean-Clergeau <br><br>
+ *
+ * This class defines an operation to round corners of a given Rectangle
+ * @see ICommand
+ * @see Rectangle
+ * 
+ */
 public class CommandRoundCorners implements ICommand {
 	
 	private Rectangle shape;

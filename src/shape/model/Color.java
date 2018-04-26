@@ -2,11 +2,15 @@ package shape.model;
 
 import java.io.Serializable;
 
+/**
+ * 
+ * @author Mary Pascal & Marc Saint-Jean-Clergeau <br><br>
+ *
+ * This class depicts a color under RGB standard
+ * 
+ */
 public class Color implements Cloneable, Serializable {
-	
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 6686743383101465278L;
 	private int r;
 	private int g;

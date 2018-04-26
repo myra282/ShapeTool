@@ -6,6 +6,15 @@ import java.util.Vector;
 import shape.model.IShapeSimple;
 import shape.model.ShapeComposite;
 
+/**
+ * 
+ * @author Mary Pascal & Marc Saint-Jean-Clergeau <br><br>
+ *
+ * This class defines an "ungroup" operation on a given ShapeComposite
+ * @see ICommand
+ * @see ShapeComposite
+ * 
+ */
 public class CommandUngroup implements ICommand {
 	
 	private Vector<IShapeSimple> vector;

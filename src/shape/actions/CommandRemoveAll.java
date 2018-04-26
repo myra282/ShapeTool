@@ -4,6 +4,15 @@ import java.util.Vector;
 
 import shape.model.IShapeSimple;
 
+/**
+ * 
+ * @author Mary Pascal & Marc Saint-Jean-Clergeau <br><br>
+ *
+ * This class defines a "clear" operation on a given vector
+ * @see ICommand
+ * @see IShapeSimple
+ * 
+ */
 public class CommandRemoveAll implements ICommand {
 	
 	private Vector<IShapeSimple> vector;

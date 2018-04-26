@@ -4,6 +4,15 @@ import shape.control.Mediator;
 import shape.model.IShapeSimple;
 import shape.model.Point;
 
+/**
+ * 
+ * @author Mary Pascal & Marc Saint-Jean-Clergeau <br><br>
+ *
+ * This class defines a "move" operation on a given shape
+ * @see ICommand
+ * @see IShapeSimple
+ * 
+ */
 public class CommandMove implements ICommand {
 	
 	private IShapeSimple shape;

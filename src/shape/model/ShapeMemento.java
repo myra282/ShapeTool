@@ -1,5 +1,14 @@
 package shape.model;
 
+/**
+ * 
+ * @author Mary Pascal & Marc Saint-Jean-Clergeau <br><br>
+ *
+ * This class is a Memento for the IShapeSimple classes
+ * @see IShape
+ * @see IShapeSimple
+ * @see AbstractShape
+ */
 public class ShapeMemento implements IShape {
 	
 	private double d1, d2;

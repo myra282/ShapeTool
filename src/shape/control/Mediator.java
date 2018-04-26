@@ -30,6 +30,14 @@ import shape.model.RegularPolygon;
 import shape.model.ShapeComposite;
 import shape.model.ShapeMemento;
 
+/**
+ * 
+ * @author Mary Pascal & Marc Saint-Jean-Clergeau <br><br>
+ *
+ * This class is a mediator to handle interactions with the composed IApplication
+ * @see IApplication
+ * 
+ */
 public class Mediator {
 	
 	private Vector<IShapeSimple> tools;
@@ -38,7 +46,7 @@ public class Mediator {
 	
 	private ActionJournal journal;
 	private IApplication view;
-	private static Mediator controller = new Mediator();
+	private static Mediator instance = new Mediator();
 	private static String FILENAME = "toolbar.ser";
 	private static double RESIZE_RATIO = 0.9;
 	
@@ -50,7 +58,7 @@ public class Mediator {
 	}
 	
 	public static Mediator getInstance() {
-		return controller;
+		return instance;
 	}
 	
 	public void setIApplication(IApplication app) {
@@ -215,7 +223,7 @@ public class Mediator {
 	public IShapeSimple getShapeFromPoint(Point p) {
 		for (ListIterator<IShapeSimple> i = shapeIterator(shapes.size()); i.hasPrevious();) {
 			IShapeSimple item = i.previous();
-		    if (item.contains(p)) { //Move
+		    if (item.contains(p)) {
 	    		return item;
 		    }
 		}

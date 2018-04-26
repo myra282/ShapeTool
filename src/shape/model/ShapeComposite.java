@@ -4,11 +4,16 @@ import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.Vector;
 
+/**
+ * 
+ * @author Mary Pascal & Marc Saint-Jean-Clergeau <br><br>
+ *
+ * This class is a Composite of IShapeSimple objects
+ * @see IShapeSimple
+ * @see AbstractShape
+ */
 public class ShapeComposite extends AbstractShape {
 	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1603757406664688043L;
 	private double width;
 	private double height;
@@ -71,7 +76,7 @@ public class ShapeComposite extends AbstractShape {
 	
 	public void restoreMementos(ShapeMementoComposite mem) {
 		Iterator<ShapeMemento> it = ((ShapeMementoComposite) mem).iterator();
-		for (ListIterator<IShapeSimple> i = shapes.listIterator(); i.hasNext();) {
+		for (ListIterator<IShapeSimple> i = iterator(); i.hasNext();) {
 			IShapeSimple item = i.next();
 			ShapeMemento m = it.next();
 			item.restoreMemento(m);
@@ -97,7 +102,7 @@ public class ShapeComposite extends AbstractShape {
 		Point oldPos = getPosition();
 		double diffX = p.getX() - oldPos.getX();
 		double diffY = p.getY() - oldPos.getY();
-		for (ListIterator<IShapeSimple> i = shapes.listIterator(); i.hasNext();) {
+		for (ListIterator<IShapeSimple> i = iterator(); i.hasNext();) {
 		    IShapeSimple item = i.next();
 		    Point pos = item.getPosition();
 		    item.setPosition(new Point(pos.getX()+diffX, pos.getY()+diffY));
@@ -105,13 +110,18 @@ public class ShapeComposite extends AbstractShape {
 		super.setPosition(p);
 	}
 	
-	public void setSelfColor(Color c) {
-		super.setColor(c);
+	@Override
+	public void setRotation(double rotation) {
+		super.setRotation(rotation);
+		for (ListIterator<IShapeSimple> i = iterator(); i.hasNext();) {
+		    IShapeSimple item = i.next();
+		    item.setRotation(rotation);
+		}
 	}
 	
 	@Override
 	public void setColor(Color c) {
-		for (ListIterator<IShapeSimple> i = shapes.listIterator(); i.hasNext();) {
+		for (ListIterator<IShapeSimple> i = iterator(); i.hasNext();) {
 		    IShapeSimple item = i.next();
 		    if (c.equals(getColor())) {
 		    	Color itemColor = item.getColor();
@@ -122,7 +132,7 @@ public class ShapeComposite extends AbstractShape {
 		    	item.setColor(c);
 		    }
 		}
-		setSelfColor(c);
+		super.setColor(c);
 	}
 	
 	public void add(IShapeSimple s) {
@@ -142,7 +152,7 @@ public class ShapeComposite extends AbstractShape {
 		double minx = shapes.get(0).getPosition().getX();
 		double maxx = 0;
 		double x,w;
-		for (ListIterator<IShapeSimple> i = shapes.listIterator(); i.hasNext();) {
+		for (ListIterator<IShapeSimple> i = iterator(); i.hasNext();) {
 		    IShapeSimple item = i.next();
 		    x = item.getPosition().getX();
 		    w = x + item.getWidth();
@@ -160,7 +170,7 @@ public class ShapeComposite extends AbstractShape {
 		double miny = shapes.get(0).getPosition().getY();
 		double maxy = 0;
 		double y,h;
-		for (ListIterator<IShapeSimple> i = shapes.listIterator(); i.hasNext();) {
+		for (ListIterator<IShapeSimple> i = iterator(); i.hasNext();) {
 		    IShapeSimple item = i.next();
 		    y = item.getPosition().getY();
 		    h = y + item.getHeight();
@@ -177,7 +187,7 @@ public class ShapeComposite extends AbstractShape {
 	public void computePosition() {
 		double x = shapes.get(0).getPosition().getX();
 		double y = shapes.get(0).getPosition().getY();
-		for (ListIterator<IShapeSimple> i = shapes.listIterator(); i.hasNext();) {
+		for (ListIterator<IShapeSimple> i = iterator(); i.hasNext();) {
 		    IShapeSimple item = i.next();
 		    Point pos = item.getPosition();
 		    if (pos.getX() < x) {
@@ -193,7 +203,7 @@ public class ShapeComposite extends AbstractShape {
 
 	@Override
 	public void scale(double ratio) {
-		for (ListIterator<IShapeSimple> i = shapes.listIterator(); i.hasNext();) {
+		for (ListIterator<IShapeSimple> i = iterator(); i.hasNext();) {
 		    IShapeSimple item = i.next();
 		    item.scale(ratio);
 		    Point pos = item.getPosition();
@@ -207,7 +217,7 @@ public class ShapeComposite extends AbstractShape {
 	@Override
 	public boolean contains(Point p) {
 		boolean res = false;
-		for (ListIterator<IShapeSimple> i = shapes.listIterator(); i.hasNext();) {
+		for (ListIterator<IShapeSimple> i = iterator(); i.hasNext();) {
 		    IShapeSimple item = i.next();
 		    res |= item.contains(p);
 		}

@@ -2,6 +2,14 @@ package shape.model;
 
 import java.io.Serializable;
 
+/**
+ * 
+ * @author Mary Pascal & Marc Saint-Jean-Clergeau <br><br>
+ *
+ * This defines an interface for a simple shape
+ * @see IShape
+ * 
+ */
 public interface IShapeSimple extends Cloneable, IShape, Serializable {
 	
 	public IShapeSimple clone();

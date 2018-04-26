@@ -6,6 +6,15 @@ import java.util.Vector;
 import shape.model.IShapeSimple;
 import shape.model.ShapeComposite;
 
+/**
+ * 
+ * @author Mary Pascal & Marc Saint-Jean-Clergeau <br><br>
+ *
+ * This class defines a group operation on given shapes
+ * @see ICommand
+ * @see IShapeSimple
+ * 
+ */
 public class CommandGroup implements ICommand {
 	
 	private Vector<IShapeSimple> vector;

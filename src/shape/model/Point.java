@@ -2,11 +2,15 @@ package shape.model;
 
 import java.io.Serializable;
 
+/**
+ * 
+ * @author Mary Pascal & Marc Saint-Jean-Clergeau <br><br>
+ *
+ * This class depicts a 2D point
+ * 
+ */
 public class Point implements Cloneable, Serializable {
-	
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = -6742121893913531922L;
 	private double x;
 	private double y;

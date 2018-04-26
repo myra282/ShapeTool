@@ -1,5 +1,13 @@
 package shape.model;
 
+/**
+ * 
+ * @author Mary Pascal & Marc Saint-Jean-Clergeau <br><br>
+ *
+ * This class depicts a rectangle under IShapeSimple interface
+ * @see IShapeSimple
+ * @see AbstractShape
+ */
 public class Rectangle extends AbstractShape {
 	
 	/**
@@ -72,10 +80,10 @@ public class Rectangle extends AbstractShape {
 	
 	private Point computePoint(Point p) {
 		Point c = getPosition();
-		// translate point to origin
+		// translate to origin
 		double tmpX = p.getX() - c.getX();
 		double tmpY = p.getY() - c.getY();
-		// apply rotation
+		// rotate
 		double newX = tmpX * Math.cos(Math.toRadians(getRotation())) - tmpY * Math.sin(Math.toRadians(getRotation()));
 		double newY = tmpX * Math.sin(Math.toRadians(getRotation())) + tmpY * Math.cos(Math.toRadians(getRotation()));
 		// translate back

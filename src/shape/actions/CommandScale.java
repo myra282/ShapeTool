@@ -3,6 +3,15 @@ package shape.actions;
 import shape.control.Mediator;
 import shape.model.IShapeSimple;
 
+/**
+ * 
+ * @author Mary Pascal & Marc Saint-Jean-Clergeau <br><br>
+ *
+ * This class defines a "scale" operation on a given shape
+ * @see ICommand
+ * @see IShapeSimple
+ * 
+ */
 public class CommandScale implements ICommand {
 	
 	private IShapeSimple shape;

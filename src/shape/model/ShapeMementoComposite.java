@@ -3,6 +3,14 @@ package shape.model;
 import java.util.Iterator;
 import java.util.Vector;
 
+/**
+ * 
+ * @author Mary Pascal & Marc Saint-Jean-Clergeau <br><br>
+ *
+ * This class is a special ShapeMemento for the ShapeComposite class
+ * @see ShapeMemento
+ * @see ShapeComposite
+ */
 public class ShapeMementoComposite extends ShapeMemento {
 	
 	private Vector<ShapeMemento> mementos;

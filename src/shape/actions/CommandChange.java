@@ -5,6 +5,15 @@ import shape.model.ShapeComposite;
 import shape.model.ShapeMemento;
 import shape.model.ShapeMementoComposite;
 
+/**
+ * 
+ * @author Mary Pascal & Marc Saint-Jean-Clergeau <br><br>
+ *
+ * This class defines an operation to change a given shape attributes
+ * @see ICommand
+ * @see IShapeSimple
+ * 
+ */
 public class CommandChange implements ICommand {
 	
 	private IShapeSimple shape;

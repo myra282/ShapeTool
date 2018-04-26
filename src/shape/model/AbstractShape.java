@@ -1,10 +1,15 @@
 package shape.model;
 
+/**
+ * 
+ * @author Mary Pascal & Marc Saint-Jean-Clergeau <br><br>
+ *
+ * This class shares code for simple shapes
+ * @see IShapeSimple
+ * 
+ */
 public abstract class AbstractShape implements IShapeSimple {
 	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 4790140894741680843L;
 	private IShapeSimple parent;
 	private Point position;
