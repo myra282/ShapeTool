@@ -318,7 +318,7 @@ public class ApplicationFx extends Application implements IApplication {
 						double y = Double.parseDouble(texty.getText());
 						y = (y < 0 ? 0 : y);
 						y = (y > BOARD_HEIGHT - s.getHeight() ? BOARD_HEIGHT - s.getHeight() : y);
-						shape.model.ShapeMemento res;
+						ShapeMemento res;
 						if (s instanceof ShapeComposite) {
 							res = new ShapeMementoComposite(Double.parseDouble(text1.getText()), Double.parseDouble(text2.getText()), new Point(x,y), 
 									Double.parseDouble(textr.getText()), new Point(Double.parseDouble(textcx.getText()), Double.parseDouble(textcy.getText())), color, s.getRounded(), ((ShapeComposite) s).createMementos());
@@ -367,7 +367,7 @@ public class ApplicationFx extends Application implements IApplication {
 		}
 		sh.setTranslateX(r.getPosition().getX());
 		sh.setTranslateY(r.getPosition().getY());
-		sh.getTransforms().add(new Rotate(r.getRotation(), r.getRotationCenter().getX(), r.getRotationCenter().getY()));
+		sh.getTransforms().add(new Rotate(r.getRotation(), 0, 0));
 		pane.getChildren().add(sh);
 		return sh;
 	}
@@ -383,15 +383,19 @@ public class ApplicationFx extends Application implements IApplication {
 	}
 	
 	private void draw(ShapeComposite s, Pane pane) {
+		ShapeComposite parent = s;
+		while (parent.getParent() != null) {
+			parent = (ShapeComposite) parent.getParent();
+		}
 		for (Iterator<IShapeSimple> i = s.iterator(); i.hasNext();) {
 		    IShapeSimple item = i.next();
 		    if (item instanceof shape.model.Rectangle) {
 		    	Shape sh = draw((shape.model.Rectangle) item, pane);
-		    	addMenu(sh, s);
+		    	addMenu(sh, parent);
 		    }
 		    else if (item instanceof RegularPolygon) {
 		    	Shape sh = draw((RegularPolygon) item, pane);
-		    	addMenu(sh, s);
+		    	addMenu(sh, parent);
 		    }
 		    else if (item instanceof ShapeComposite) {
 		    	draw((ShapeComposite) item, pane);

@@ -373,6 +373,7 @@ public class Mediator {
 		ObjectInputStream istream;
 		try {
 			istream = new ObjectInputStream(new FileInputStream(file));
+			@SuppressWarnings("unchecked")
 			Vector<IShapeSimple> tmp = (Vector<IShapeSimple>) istream.readObject() ;
 			Enumeration<IShapeSimple> e = tmp.elements();
 		    while (e.hasMoreElements()) {
